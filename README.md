@@ -66,4 +66,8 @@ I'm currently seeking an internship or rotational role where I can apply my know
   <a href="https://www.facebook.com/profile.php?id=100072569739964">
     <img alt="Willie | Facebook" width="22px" src="https://cdn.jsdelivr.net/npm/simple-icons@v3/icons/facebook.svg" style="color: #1877F2;" />
   </a>
+  <a href="https://www.upwork.com/freelancers/~013eca3ce95c0a28db?mp_source=share">
+    <img alt="Willie | Upwork" width="22px" src="https://cdn.jsdelivr.net/npm/simple-icons@v3/icons/upwork.svg" style="color: #6fda44;" />
+  </a>
 </div>
+
