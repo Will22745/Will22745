@@ -55,14 +55,15 @@ I'm currently seeking an internship or rotational role where I can apply my know
 <h2> 🤝 Connect with me:</h2>
 <div style="display: flex; gap: 16px; align-items: center;">
   <a href="https://www.linkedin.com/in/williemcclain922/">
-    <img alt="Willie | LinkedIn" width="22px" src="https://cdn.jsdelivr.net/npm/simple-icons@v3/icons/linkedin.svg" />
+    <img alt="Willie | LinkedIn" width="22px" src="https://cdn.jsdelivr.net/npm/simple-icons@v3/icons/linkedin.svg" style="color: #0077B5;" />
   </a>
   <a href="https://www.instagram.com/will22cool/">
-    <img alt="Willie | Instagram" width="22px" src="https://cdn.jsdelivr.net/npm/simple-icons@v3/icons/instagram.svg" />
+    <img alt="Willie | Instagram" width="22px" src="https://cdn.jsdelivr.net/npm/simple-icons@v3/icons/instagram.svg" style="color: #E1306C;" />
   </a>
   <a href="https://www.tiktok.com/@will22cool">
-    <img alt="Willie | TikTok" width="22px" src="https://cdn.jsdelivr.net/npm/simple-icons@v3/icons/tiktok.svg" />
+    <img alt="Willie | TikTok" width="22px" src="https://cdn.jsdelivr.net/npm/simple-icons@v3/icons/tiktok.svg" style="color: #000000;" />
+  </a>
+  <a href="https://www.facebook.com/profile.php?id=100072569739964">
+    <img alt="Willie | Facebook" width="22px" src="https://cdn.jsdelivr.net/npm/simple-icons@v3/icons/facebook.svg" style="color: #1877F2;" />
   </a>
 </div>
-
-
