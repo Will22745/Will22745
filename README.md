@@ -14,6 +14,7 @@ Through hands-on personal projects and home lab experiments, I’m building real
 <p>
 I'm currently seeking an internship or rotational role where I can apply my knowledge, contribute to meaningful projects, and grow as a professional in the tech industry.
 </p>
+<p><strong>Disclaimer:</strong> All cybersecurity and hacking-related projects listed are strictly for ethical learning purposes and are developed in controlled lab environments that I own. None of these tools or techniques are used or promoted for illegal activities.</p>
 
 <h2>🎓 Education & Projects</h2>
 
@@ -38,21 +39,24 @@ I'm currently seeking an internship or rotational role where I can apply my know
 <small>Specialization: Artificial Intelligence and Machine Learning - Western Governors University</small></h3>
 <ul>
   <li><a href="https://github.com/WillieLabs/Beginner-AI-Chatbot"><b>Beginner AI Chatbot</b></a> <i>(In Progress)</i><br/>
-    Python-based chatbot that responds to user input and stores simple memory using JSON.
+    Python chatbot that responds to user input and stores simple memory using JSON.
   </li>
-  <li><a href="https://github.com/WillieLabs/Student-Performance-ML"><b>ML Model to Predict Student Performance</b></a> <i>(Planned)</i><br/>
-    Train a machine learning model to predict grades based on data like study hours and class participation.
+  <li><a href="https://github.com/WillieLabs/Live-Translator-App"><b>Live Translator App</b></a> <i>(Planned)</i><br/>
+    Real-time language translator using Google Translate API with optional voice input/output.
   </li>
-  <li><a href="https://github.com/WillieLabs/Text-Summarizer-App"><b>Text Summarizer App</b></a> <i>(Planned)</i><br/>
-    Use OpenAI or Hugging Face API to summarize long-form text into clear, digestible bullet points.
+  <li><a href="https://github.com/WillieLabs/Text-to-Speech-Reader"><b>Text-to-Speech Reader</b></a> <i>(Planned)</i><br/>
+    Converts text to speech using Python with the option to upload files and export audio.
   </li>
 </ul>
 
 <h2>📺 Popular YouTube Videos</h2>
+<ul>
+  <li>Visit my channel: <a href="https://youtube.com/@techtalksbywillie?si=BgKTyvWvrELFLZZa" target="_blank">Tech Talks by Willie</a></li>
+  <li>On this channel, I walk through the projects featured in my portfolio — explaining my thought process, demonstrating functionality, and helping others learn as I build.</li>
+  <li>More videos and tutorials coming soon!</li>
+</ul>
 
-- 🚫 No YouTube channel at the moment. Stay tuned!
-
-<h2> 🤝 Connect with me:</h2>
+<h2>🤝 Connect with me:</h2>
 <div style="display: flex; gap: 16px; align-items: center;">
   <a href="https://www.linkedin.com/in/williemcclain922/">
     <img alt="Willie | LinkedIn" width="22px" src="https://cdn.jsdelivr.net/npm/simple-icons@v3/icons/linkedin.svg" style="color: #0077B5;" />
@@ -69,5 +73,10 @@ I'm currently seeking an internship or rotational role where I can apply my know
   <a href="https://www.upwork.com/freelancers/~013eca3ce95c0a28db?mp_source=share">
     <img alt="Willie | Upwork" width="22px" src="https://cdn.jsdelivr.net/npm/simple-icons@v3/icons/upwork.svg" style="color: #6fda44;" />
   </a>
+  <a href="https://youtube.com/@techtalksbywillie?si=BgKTyvWvrELFLZZa">
+    <img alt="Willie | YouTube" width="22px" src="https://cdn.jsdelivr.net/npm/simple-icons@v3/icons/youtube.svg" style="color: #FF0000;" />
+  </a>
 </div>
+
+
 
