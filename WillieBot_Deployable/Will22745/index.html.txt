@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Willie McClain Portfolio</title>
+  <script src="https://cdn.jsdelivr.net/npm/typed.js@2.0.12"></script>
+  <style>
+    body {
+      background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+      color: #f0f0f0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      padding: 20px;
+      line-height: 1.6;
+    }
+    .glow {
+      font-size: 2.5rem;
+      font-weight: bold;
+      color: #00bfff;
+      text-shadow: 0 0 10px #00bfff, 0 0 20px #00bfff, 0 0 30px #00bfff;
+      animation: flicker 1.5s infinite alternate;
+    }
+    @keyframes flicker {
+      from { opacity: 1; text-shadow: 0 0 10px #00bfff, 0 0 20px #00bfff, 0 0 30px #00bfff; }
+      to { opacity: 0.7; text-shadow: 0 0 5px #00bfff, 0 0 10px #00bfff, 0 0 15px #00bfff; }
+    }
+    @keyframes slideIn {
+      0% { transform: translateX(-100%); opacity: 0; }
+      100% { transform: translateX(0); opacity: 1; }
+    }
+    .card {
+      background: rgba(255, 255, 255, 0.05);
+      padding: 20px;
+      margin-bottom: 20px;
+      border-left: 5px solid #00bfff;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0, 191, 255, 0.2);
+      animation: slideIn 1s ease forwards;
+      transition: all 0.3s ease-in-out;
+    }
+    .card:hover {
+      background: rgba(0, 191, 255, 0.1);
+      box-shadow: 0 0 20px #00bfff, 0 0 30px #00bfff;
+      transform: scale(1.02);
+    }
+    .section-divider {
+      border: none;
+      border-top: 2px solid #00bfff;
+      margin: 40px 0;
+    }
+    a {
+      color: #00bfff;
+      text-decoration: none;
+    }
+    a:hover {
+      text-decoration: underline;
+    }
+    .typed-cursor {
+      font-size: 2rem;
+      color: #00bfff;
+    }
+  </style>
+</head>
+<body>
+  <h1 class="glow"><span id="typewriter"></span></h1>
+  <script>
+    var typed = new Typed("#typewriter", {
+      strings: [
+        "Hi, I'm Willie McClain!",
+        "Cybersecurity Graduate",
+        "AI/ML Master's Student",
+        "Freelancer & Ethical Hacker"
+      ],
+      typeSpeed: 40,
+      backSpeed: 25,
+      backDelay: 2000,
+      loop: true
+    });
+  </script>
+
+  <p>
+    <a href="https://github.com/Will22745">GitHub</a> |
+    <a href="https://www.linkedin.com/in/williemcclain922/">LinkedIn</a> |
+    <a href="https://www.upwork.com/freelancers/~013eca3ce95c0a28db">Upwork</a>
+  </p>
+
+  <hr class="section-divider" />
+
+  <h2>👋 About Me</h2>
+  <div class="card">
+    I'm a career-changer with a background in finance, now diving deep into cybersecurity and AI/ML. 
+    I build hands-on projects, automate everything I can, and always look for ways to solve real-world problems with tech. 
+    Currently pursuing my Master's degree in AI, and open to freelance work or full-time roles in machine learning, cybersecurity, or tech sales.
+  </div>
+
+  <hr class="section-divider" />
+
+  <h2>👨‍💻 Projects & Labs:</h2>
+  <p>Currently working on new projects in cybersecurity, AI, and machine learning. Stay tuned!</p>
+
+  <h3>🔐 Cybersecurity Projects:</h3>
+  <div class="card">
+    <strong>[Coming Soon]</strong><br/>
+    Projects involving PowerShell scripting, penetration testing, and log analysis tools.
+  </div>
+
+  <h3>🧠 AI & Machine Learning Projects:</h3>
+  <div class="card">
+    <strong>[Coming Soon]</strong><br/>
+    Deep learning experiments, NLP applications, and voice-enabled chatbots.
+  </div>
+
+  <hr class="section-divider" />
+
+  <h2>📚 Education</h2>
+  <ul>
+    <li>🎓 Bachelor of Science in Information Technology (Information Assurance & Cybersecurity), Capella University</li>
+    <li>🎓 Master of Science in Computer Science (Artificial Intelligence & Machine Learning), WGU <em>(in progress)</em></li>
+  </ul>
+
+  <hr class="section-divider" />
+
+  <h2>📺 Featured Content</h2>
+  <div class="card">
+    <a href="https://github.com/Will22745/Project-Will">🧠 AI Chatbot from Scratch using DeepSeek</a>
+  </div>
+  <div class="card">
+    <a href="https://github.com/Will22745/PS-Scripts">⚙️ PowerShell Tools for Cybersecurity Beginners</a>
+  </div>
+  <div class="card">
+    <a href="https://github.com/Will22745/Virtual-Home-Lab">🖥️ Real Home Lab Setup – Linux, Windows, PenTesting</a>
+  </div>
+
+  <hr class="section-divider" />
+
+  <h2>🛠️ Skills</h2>
+  <p>Python, PowerShell, TensorFlow, Keras, Kali Linux, Git, Azure, Active Directory, VS Code, Machine Learning, Cybersecurity, Automation</p>
+
+  <hr class="section-divider" />
+
+  <h2>📊 GitHub Stats</h2>
+  <div>
+    <img src="https://github-readme-stats.vercel.app/api?username=Will22745&show_icons=true&theme=tokyonight" alt="GitHub Stats" />
+  </div>
+
+  <hr class="section-divider" />
+
+  <h2>🤝 Connect with Me:</h2>
+  <div style="display: flex; gap: 15px; align-items: center;">
+    <a href="https://www.linkedin.com/in/williemcclain922/" target="_blank" rel="noopener noreferrer"><img alt="LinkedIn" width="24px" src="https://cdn.jsdelivr.net/npm/simple-icons@v3/icons/linkedin.svg" /></a>
+    <a href="https://www.upwork.com/freelancers/~013eca3ce95c0a28db" target="_blank" rel="noopener noreferrer"><img alt="Upwork" width="24px" src="https://cdn.jsdelivr.net/npm/simple-icons@v3/icons/upwork.svg" /></a>
+  </div>
+</body>
+</html>

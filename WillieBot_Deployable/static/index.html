@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>WillBot – AI Assistant</title>
+  <link rel="stylesheet" href="/style.css" />
+</head>
+<body>
+  <div id="particles-js"></div>
+  <div class="overlay">
+    <h1 class="glow-name">WILLIE - WillBot Chat</h1>
+    <div class="chat-container">
+      <div id="chat-box" class="chat-box"></div>
+      <div class="input-area">
+        <input type="text" id="user-input" placeholder="Say something..." autofocus />
+        <button onclick="sendMessage()">Send</button>
+        <button onclick="startVoice()">🎤</button>
+        <button onclick="readResponse()">🔊</button>
+        <button onclick="clearChat()">🧹</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Load particles.js library -->
+  <script src="https://cdn.jsdelivr.net/npm/particles.js@2.0.0/particles.min.js"></script>
+  <!-- particles config -->
+  <script src="/particles.min.js"></script>
+  <!-- chat logic -->
+  <script src="/script.js"></script>
+</body>
+</html>

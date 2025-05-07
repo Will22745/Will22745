@@ -1,0 +1,83 @@
+<h1>Hi, I'm Willie! <br/>
+<b>Cybersecurity Grad</b>, <b>AI/ML Master’s Student</b>, <b>Tech Enthusiast</b>
+</h1>
+
+<h2>🧠 Bio</h2>
+<p>
+I'm Willie McClain — a lifelong learner and dedicated problem solver driven by curiosity and a passion for technology. I hold a Bachelor of Science in Information Technology with a focus on Cybersecurity from Capella University and am currently pursuing a Master of Science in Computer Science with a concentration in Artificial Intelligence and Machine Learning at Western Governors University.
+</p>
+<p>
+Through hands-on personal projects and home lab experiments, I’m gaining real-world experience in cybersecurity, automation, and applied AI. The purpose of this portfolio is to transform my theoretical knowledge into practical, demonstrable skills. It also serves as a platform to showcase my growth and capabilities to potential employers, mentors, friends, and family.
+</p>
+<p>
+I'm actively seeking an internship or rotational role where I can apply my skills, contribute to meaningful projects, and grow as a professional in the tech industry.
+</p>
+<p><strong>Disclaimer:</strong> All cybersecurity and hacking-related projects listed are strictly for ethical learning purposes and are developed in controlled lab environments that I own. None of these tools or techniques are used or promoted for illegal activities.</p>
+
+<h2>🎓 Education & Projects</h2>
+
+<h3>Bachelor of Science in Information Technology<br/>
+<small>Specialization: Information Assurance and Cybersecurity - Capella University</small></h3>
+<ul>
+  <li><a href="https://github.com/WillieLabs/Windows-Hardening-Script"><b>Windows Hardening Script</b></a> <i>(In Progress)</i><br/>
+    PowerShell script that secures Windows systems by disabling risky services, enabling logging, and enforcing strong policies.
+  </li>
+  <li><a href="https://github.com/WillieLabs/Phishing-Simulator"><b>Phishing Email Detection Simulator</b></a> <i>(Planned)</i><br/>
+    Interactive project that mimics a fake inbox to teach users how to identify red flags in phishing emails.
+  </li>
+  <li><a href="https://github.com/WillieLabs/SIEM-Log-Monitor"><b>Simple SIEM Log Monitor</b></a> <i>(Planned)</i><br/>
+    Python-based monitor that watches system logs and flags suspicious behavior like brute force attacks.
+  </li>
+  <li><a href="https://github.com/WillieLabs/Pentest-Homelab"><b>Home Lab for Penetration Testing</b></a> <i>(In Progress)</i><br/>
+    Set up a virtual lab using VirtualBox and Kali Linux to simulate attacks and test network defenses with tools like Nmap, Metasploit, and Wireshark.
+  </li>
+</ul>
+
+<h3>Master of Science in Computer Science<br/>
+<small>Specialization: Artificial Intelligence and Machine Learning - Western Governors University</small></h3>
+<ul>
+  <li><a href="https://github.com/WillieLabs/Beginner-AI-Chatbot"><b>Beginner AI Chatbot</b></a> <i>(In Progress)</i><br/>
+    Python chatbot that responds to user input and stores simple memory using JSON.
+  </li>
+  <li><a href="https://github.com/WillieLabs/Live-Translator-App"><b>Live Translator App</b></a> <i>(Planned)</i><br/>
+    Real-time language translator using Google Translate API with optional voice input/output.
+  </li>
+  <li><a href="https://github.com/WillieLabs/Text-to-Speech-Reader"><b>Text-to-Speech Reader</b></a> <i>(Planned)</i><br/>
+    Converts text to speech using Python with the option to upload files and export audio.
+  </li>
+</ul>
+
+<h2>📺 Popular YouTube Videos</h2>
+<ul>
+  <li>Visit my channel: <a href="https://youtube.com/@techtalksbywillie?si=BgKTyvWvrELFLZZa" target="_blank">Tech Talks by Willie</a></li>
+  <li>On this channel, I walk through the projects featured in my portfolio — explaining my thought process, demonstrating functionality, and helping others learn as I build.</li>
+  <li>More videos and tutorials coming soon!</li>
+</ul>
+
+<h2>🤝 Connect with me:</h2>
+<div style="margin-top: 20px; display: flex; flex-direction: column; align-items: center;">
+  <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=https://www.linkedin.com/in/williemcclain922/" alt="QR Code to Resume" style="margin-bottom: 10px;" />
+  <a href="https://your-resume-link.com" download style="display: inline-block; background-color: #1e90ff; color: white; padding: 14px 28px; border-radius: 10px; text-decoration: none; font-weight: bold; font-size: 16px; box-shadow: 0 4px 8px rgba(0,0,0,0.2);">
+  ⬇️ Download My Resume
+</a>
+</div>
+<div style="display: flex; gap: 16px; align-items: center;">
+  <a href="https://www.linkedin.com/in/williemcclain922/">
+    <img alt="Willie | LinkedIn" width="22px" src="https://cdn.jsdelivr.net/npm/simple-icons@v3/icons/linkedin.svg" style="color: #0077B5;" />
+  </a>
+  <a href="https://www.instagram.com/will22cool/">
+    <img alt="Willie | Instagram" width="22px" src="https://cdn.jsdelivr.net/npm/simple-icons@v3/icons/instagram.svg" style="color: #E1306C;" />
+  </a>
+  <a href="https://www.tiktok.com/@will22cool">
+    <img alt="Willie | TikTok" width="22px" src="https://cdn.jsdelivr.net/npm/simple-icons@v3/icons/tiktok.svg" style="color: #000000;" />
+  </a>
+  <a href="https://www.facebook.com/profile.php?id=100072569739964">
+    <img alt="Willie | Facebook" width="22px" src="https://cdn.jsdelivr.net/npm/simple-icons@v3/icons/facebook.svg" style="color: #1877F2;" />
+  </a>
+  <a href="https://www.upwork.com/freelancers/~013eca3ce95c0a28db?mp_source=share">
+    <img alt="Willie | Upwork" width="22px" src="https://cdn.jsdelivr.net/npm/simple-icons@v3/icons/upwork.svg" style="color: #6fda44;" />
+  </a>
+  <a href="https://youtube.com/@techtalksbywillie?si=BgKTyvWvrELFLZZa">
+    <img alt="Willie | YouTube" width="22px" src="https://cdn.jsdelivr.net/npm/simple-icons@v3/icons/youtube.svg" style="color: #FF0000;" />
+  </a>
+</div>
