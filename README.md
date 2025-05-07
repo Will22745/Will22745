@@ -1,18 +1,16 @@
 <h1>Hi, I'm Willie! <br/>
-<a href="https://github.com/WillieLabs">Cybersecurity Grad</a>, 
-<a href="https://www.linkedin.com/in/williemcclain922/">AI/ML Master’s Student</a>, 
-<a href="https://github.com/WillieLabs">Tech Enthusiast</a>
+<b>Cybersecurity Grad</b>, <b>AI/ML Master’s Student</b>, <b>Tech Enthusiast</b>
 </h1>
 
 <h2>🧠 Bio</h2>
 <p>
-I'm Willie McClain — a lifelong learner and dedicated problem solver driven by curiosity and a passion for technology. I hold a Bachelor of Science in Information Technology with a focus in Cybersecurity from Capella University and am currently pursuing my Master of Science in Computer Science with a concentration in Artificial Intelligence and Machine Learning at Western Governors University. 
+I'm Willie McClain — a lifelong learner and dedicated problem solver driven by curiosity and a passion for technology. I hold a Bachelor of Science in Information Technology with a focus on Cybersecurity from Capella University and am currently pursuing a Master of Science in Computer Science with a concentration in Artificial Intelligence and Machine Learning at Western Governors University.
 </p>
 <p>
-Through hands-on personal projects and home lab experiments, I’m building real-world experience in areas like cybersecurity, automation, and applied AI. The purpose of this portfolio is to take my theoretical knowledge and transform it into practical, demonstrable skills. It’s also a way for me to showcase my growth and capabilities to potential employers, mentors, friends, and family.
+Through hands-on personal projects and home lab experiments, I’m gaining real-world experience in cybersecurity, automation, and applied AI. The purpose of this portfolio is to transform my theoretical knowledge into practical, demonstrable skills. It also serves as a platform to showcase my growth and capabilities to potential employers, mentors, friends, and family.
 </p>
 <p>
-I'm currently seeking an internship or rotational role where I can apply my knowledge, contribute to meaningful projects, and grow as a professional in the tech industry.
+I'm actively seeking an internship or rotational role where I can apply my skills, contribute to meaningful projects, and grow as a professional in the tech industry.
 </p>
 <p><strong>Disclaimer:</strong> All cybersecurity and hacking-related projects listed are strictly for ethical learning purposes and are developed in controlled lab environments that I own. None of these tools or techniques are used or promoted for illegal activities.</p>
 
@@ -57,6 +55,12 @@ I'm currently seeking an internship or rotational role where I can apply my know
 </ul>
 
 <h2>🤝 Connect with me:</h2>
+<div style="margin-top: 20px; display: flex; flex-direction: column; align-items: center;">
+  <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=https://www.linkedin.com/in/williemcclain922/" alt="QR Code to Resume" style="margin-bottom: 10px;" />
+  <a href="https://your-resume-link.com" download style="display: inline-block; background-color: #1e90ff; color: white; padding: 14px 28px; border-radius: 10px; text-decoration: none; font-weight: bold; font-size: 16px; box-shadow: 0 4px 8px rgba(0,0,0,0.2);">
+  ⬇️ Download My Resume
+</a>
+</div>
 <div style="display: flex; gap: 16px; align-items: center;">
   <a href="https://www.linkedin.com/in/williemcclain922/">
     <img alt="Willie | LinkedIn" width="22px" src="https://cdn.jsdelivr.net/npm/simple-icons@v3/icons/linkedin.svg" style="color: #0077B5;" />
@@ -77,6 +81,3 @@ I'm currently seeking an internship or rotational role where I can apply my know
     <img alt="Willie | YouTube" width="22px" src="https://cdn.jsdelivr.net/npm/simple-icons@v3/icons/youtube.svg" style="color: #FF0000;" />
   </a>
 </div>
-
-
-
