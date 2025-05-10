@@ -56,11 +56,13 @@ I'm actively seeking an internship or rotational role where I can apply my skill
 
 <h2>🤝 Connect with me:</h2>
 <div style="margin-top: 20px; display: flex; flex-direction: column; align-items: center;">
-  <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=https://www.linkedin.com/in/williemcclain922/" alt="QR Code to Resume" style="margin-bottom: 10px;" />
-  <a href="https://your-resume-link.com" download style="display: inline-block; background-color: #1e90ff; color: white; padding: 14px 28px; border-radius: 10px; text-decoration: none; font-weight: bold; font-size: 16px; box-shadow: 0 4px 8px rgba(0,0,0,0.2);">
-  ⬇️ Download My Resume
-</a>
+
+  <!-- ✅ Resume Download Button Only -->
+  <a href="Willie%20McClain%20Resume%202025%20PDF.pdf" download style="display: inline-block; background-color: #1e90ff; color: white; padding: 14px 28px; border-radius: 10px; text-decoration: none; font-weight: bold; font-size: 16px; box-shadow: 0 4px 8px rgba(0,0,0,0.2);">
+    ⬇️ Download My Resume
+  </a>
 </div>
+
 <div style="display: flex; gap: 16px; align-items: center;">
   <a href="https://www.linkedin.com/in/williemcclain922/">
     <img alt="Willie | LinkedIn" width="22px" src="https://cdn.jsdelivr.net/npm/simple-icons@v3/icons/linkedin.svg" style="color: #0077B5;" />
