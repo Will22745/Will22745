@@ -45,7 +45,7 @@ I'm actively seeking an internship or rotational role where I can apply my skill
 <h3>Master of Science in Computer Science<br/>
 <small>Specialization: Artificial Intelligence and Machine Learning - Western Governors University</small></h3>
 <ul>
-  <li><a href="https://nextjs-ai-chatbot-nine-ruby-16.vercel.app" target="_blank"><b>Beginner AI Chatbot</b></a> <i>(In Progress)</i><br/>
+  <li><a href="https://nextjs-ai-chatbot-nine-ruby-16.vercel.app" target="_blank"><b>Beginner AI Chatbot</b></a> <i>(Completed)</i><br/>
     Python chatbot that responds to user input and stores simple memory using JSON.  
     <br><strong>Click the link to test it live.</strong>
   </li>
