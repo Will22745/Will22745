@@ -45,8 +45,9 @@ I'm actively seeking an internship or rotational role where I can apply my skill
 <h3>Master of Science in Computer Science<br/>
 <small>Specialization: Artificial Intelligence and Machine Learning - Western Governors University</small></h3>
 <ul>
-  <li><a href="https://github.com/WillieLabs/Beginner-AI-Chatbot"><b>Beginner AI Chatbot</b></a> <i>(In Progress)</i><br/>
-    Python chatbot that responds to user input and stores simple memory using JSON.
+  <li><a href="https://nextjs-ai-chatbot-nine-ruby-16.vercel.app" target="_blank"><b>Beginner AI Chatbot</b></a> <i>(In Progress)</i><br/>
+    Python chatbot that responds to user input and stores simple memory using JSON.  
+    <br><strong>Click the link to test it live.</strong>
   </li>
   <li><a href="https://github.com/WillieLabs/Live-Translator-App"><b>Live Translator App</b></a> <i>(Planned)</i><br/>
     Real-time language translator using Google Translate API with optional voice input/output.
@@ -63,13 +64,6 @@ I'm actively seeking an internship or rotational role where I can apply my skill
   <li>More videos and tutorials coming soon!</li>
 </ul>
 
-<!-- ✅ BEGINNER AI CHATBOX BUTTON ADDED HERE -->
-<h2>🚀 Beginner AI Chatbox</h2>
-<p>Click below to launch WillieBot AI Chatbox live:</p>
-<a href="https://nextjs-ai-chatbot-nine-ruby-16.vercel.app" target="_blank" style="background-color: #1e90ff; padding: 14px 28px; color: white; font-weight: bold; border-radius: 10px; text-decoration: none; font-size: 16px; box-shadow: 0 4px 8px rgba(0,0,0,0.2);">
-  🗨️ Launch WillieBot Chatbox
-</a>
-<!-- ✅ END CHATBOX LINK -->
 
 <h2>🤝 Connect with me:</h2>
 <div style="margin-top: 20px; display: flex; flex-direction: column; align-items: center;">
