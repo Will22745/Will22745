@@ -1,3 +1,12 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Willie McClain Portfolio</title>
+</head>
+<body style="font-family: Arial, sans-serif; padding: 20px; background-color: #f4f4f4; color: #333;">
+
 <h1>Hi, I'm Willie! <br/>
 <b>Cybersecurity Grad</b>, <b>AI/ML Master’s Student</b>, <b>Tech Enthusiast</b>
 </h1>
@@ -54,10 +63,17 @@ I'm actively seeking an internship or rotational role where I can apply my skill
   <li>More videos and tutorials coming soon!</li>
 </ul>
 
+<!-- ✅ BEGINNER AI CHATBOX BUTTON ADDED HERE -->
+<h2>🚀 Beginner AI Chatbox</h2>
+<p>Click below to launch WillieBot AI Chatbox live:</p>
+<a href="https://nextjs-ai-chatbot-nine-ruby-16.vercel.app" target="_blank" style="background-color: #1e90ff; padding: 14px 28px; color: white; font-weight: bold; border-radius: 10px; text-decoration: none; font-size: 16px; box-shadow: 0 4px 8px rgba(0,0,0,0.2);">
+  🗨️ Launch WillieBot Chatbox
+</a>
+<!-- ✅ END CHATBOX LINK -->
+
 <h2>🤝 Connect with me:</h2>
 <div style="margin-top: 20px; display: flex; flex-direction: column; align-items: center;">
 
-  <!-- ✅ Resume Download Button Only -->
   <a href="Willie%20McClain%20Resume%202025%20PDF.pdf" download style="display: inline-block; background-color: #1e90ff; color: white; padding: 14px 28px; border-radius: 10px; text-decoration: none; font-weight: bold; font-size: 16px; box-shadow: 0 4px 8px rgba(0,0,0,0.2);">
     ⬇️ Download My Resume
   </a>
@@ -83,3 +99,6 @@ I'm actively seeking an internship or rotational role where I can apply my skill
     <img alt="Willie | YouTube" width="22px" src="https://cdn.jsdelivr.net/npm/simple-icons@v3/icons/youtube.svg" style="color: #FF0000;" />
   </a>
 </div>
+
+</body>
+</html>
