@@ -3,7 +3,6 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Willie McClain Portfolio</title>
 </head>
 <body style="font-family: Arial, sans-serif; padding: 20px; background-color: #f4f4f4; color: #333;">
 
