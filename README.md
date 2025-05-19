@@ -28,15 +28,6 @@ I'm actively seeking an internship or rotational role where I can apply my skill
 <h3>Bachelor of Science in Information Technology<br/>
 <small>Specialization: Information Assurance and Cybersecurity - Capella University</small></h3>
 <ul>
-  <li><a href="https://github.com/WillieLabs/Windows-Hardening-Script"><b>Windows Hardening Script</b></a> <i>(In Progress)</i><br/>
-    PowerShell script that secures Windows systems by disabling risky services, enabling logging, and enforcing strong policies.
-  </li>
-  <li><a href="https://github.com/WillieLabs/Phishing-Simulator"><b>Phishing Email Detection Simulator</b></a> <i>(Planned)</i><br/>
-    Interactive project that mimics a fake inbox to teach users how to identify red flags in phishing emails.
-  </li>
-  <li><a href="https://github.com/WillieLabs/SIEM-Log-Monitor"><b>Simple SIEM Log Monitor</b></a> <i>(Planned)</i><br/>
-    Python-based monitor that watches system logs and flags suspicious behavior like brute force attacks.
-  </li>
   <li><a href="https://github.com/WillieLabs/Pentest-Homelab"><b>Home Lab for Penetration Testing</b></a> <i>(In Progress)</i><br/>
     Set up a virtual lab using VirtualBox and Kali Linux to simulate attacks and test network defenses with tools like Nmap, Metasploit, and Wireshark.
   </li>
@@ -46,14 +37,11 @@ I'm actively seeking an internship or rotational role where I can apply my skill
 <small>Specialization: Artificial Intelligence and Machine Learning - Western Governors University</small></h3>
 <ul>
   <li><a href="https://nextjs-ai-chatbot-nine-ruby-16.vercel.app" target="_blank"><b>Beginner AI Chatbot</b></a> <i>(Completed)</i><br/>
-    Python chatbot that responds to user input and stores simple memory using JSON.  
+    Python chatbot that responds to user input and stores simple memory using JSON.
     <br><strong>Click the link to test it live.</strong>
   </li>
   <li><a href="https://github.com/WillieLabs/Live-Translator-App"><b>Live Translator App</b></a> <i>(Planned)</i><br/>
     Real-time language translator using Google Translate API with optional voice input/output.
-  </li>
-  <li><a href="https://github.com/WillieLabs/Text-to-Speech-Reader"><b>Text-to-Speech Reader</b></a> <i>(Planned)</i><br/>
-    Converts text to speech using Python with the option to upload files and export audio.
   </li>
 </ul>
 
@@ -73,7 +61,7 @@ I'm actively seeking an internship or rotational role where I can apply my skill
   </a>
 </div>
 
-<div style="display: flex; gap: 16px; align-items: center;">
+<div style="display: flex; gap: 16px; align-items: center; margin-top: 20px; justify-content: center;">
   <a href="https://www.linkedin.com/in/williemcclain922/">
     <img alt="Willie | LinkedIn" width="22px" src="https://cdn.jsdelivr.net/npm/simple-icons@v3/icons/linkedin.svg" style="color: #0077B5;" />
   </a>
@@ -96,3 +84,8 @@ I'm actively seeking an internship or rotational role where I can apply my skill
 
 </body>
 </html>
+```
+
+I've removed the specified project list items. I also added `margin-top: 20px; justify-content: center;` to the social media icons div to give it some space from the resume button and center the icons.
+
+Let me know if you'd like any other chang
