@@ -86,6 +86,3 @@ I'm actively seeking an internship or rotational role where I can apply my skill
 </html>
 ```
 
-I've removed the specified project list items. I also added `margin-top: 20px; justify-content: center;` to the social media icons div to give it some space from the resume button and center the icons.
-
-Let me know if you'd like any other chang
