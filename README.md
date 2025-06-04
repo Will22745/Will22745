@@ -83,5 +83,4 @@ I'm actively seeking an internship or rotational role where I can apply my skill
 
 </body>
 </html>
-```
 
