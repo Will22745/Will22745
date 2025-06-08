@@ -14,6 +14,14 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&family=Roboto+Mono:wght@400;700&display=swap" rel="stylesheet">
   <style>
+    :root {
+      --accent: #00FFFF;
+      --background-dark: #0a192f;
+      --container-bg: rgba(15, 23, 42, 0.95);
+      --container-bg-alt: rgba(20, 33, 64, 0.95);
+      --text-light: #E0E0E0;
+    }
+
     /* Basic reset and styles for the matrix effect */
     body {
       margin: 0;
@@ -21,7 +29,7 @@
       background-color: #000; /* Black background for the matrix effect */
       overflow-x: hidden; /* Prevent horizontal scrollbars */
       font-family: 'Inter', sans-serif; /* Default font for content */
-      color: #E0E0E0; /* Light default text color for dark theme */
+      color: var(--text-light); /* Light default text color for dark theme */
     }
 
     /* Preloader Styles */
@@ -44,7 +52,7 @@
     }
     .loader-text {
         font-family: 'Roboto Mono', monospace;
-        color: #00FFFF;
+        color: var(--accent);
         font-size: 1.5em;
         text-align: center;
     }
@@ -71,7 +79,7 @@
     #portfolio-content {
       position: relative;
       z-index: 1;
-      background-color: rgba(15, 23, 42, 0.95); 
+      background: linear-gradient(135deg, var(--container-bg) 0%, var(--container-bg-alt) 100%);
       padding: 30px;
       margin: 20px auto;
       max-width: 900px;
@@ -92,9 +100,9 @@
         background: #0a192f; /* Dark blue track */
     }
     body::-webkit-scrollbar-thumb {
-        background-color: #00FFFF; /* Cyan thumb */
+        background-color: var(--accent); /* Cyan thumb */
         border-radius: 20px;
-        border: 2px solid #0a192f; /* Padding around thumb */
+        border: 2px solid var(--background-dark); /* Padding around thumb */
     }
 
 
@@ -107,9 +115,9 @@
     }
 
     #animated-title {
-      font-size: 2.2em; 
+      font-size: 2.2em;
       font-weight: 700;
-      color: #00FFFF; 
+      color: var(--accent);
       margin-top:0;
       margin-bottom: 0.7em; 
       min-height: 1.2em; 
@@ -128,7 +136,7 @@
 
     @keyframes blink-caret {
       from, to { border-color: transparent }
-      50% { border-color: #00FFFF; }
+      50% { border-color: var(--accent); }
     }
     
     .top-social-icons {
@@ -219,7 +227,7 @@
      }
 
     #portfolio-content a {
-      color: #00FFFF;
+      color: var(--accent);
       text-decoration: none;
       transition: color 0.3s ease, text-shadow 0.3s ease;
     }
@@ -238,6 +246,18 @@
 
     #portfolio-content li {
       margin-bottom: 1.5em;
+    }
+
+    .project-list {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 20px;
+      padding-left: 0;
+      list-style: none;
+    }
+
+    .project-list li {
+      margin-bottom: 0;
     }
 
     .project-card {
@@ -265,10 +285,10 @@
     }
 
 
-    .download-resume-button { 
+    .download-resume-button {
       display: inline-block;
-      background-color: #00FFFF;
-      color: #0A192F !important; 
+      background-color: var(--accent);
+      color: var(--background-dark) !important;
       padding: 14px 28px;
       border-radius: 8px;
       text-decoration: none;
@@ -283,8 +303,8 @@
     .download-resume-button:hover,
     .download-resume-button:focus {
       background-color: transparent;
-      color: #00FFFF !important;
-      border-color: #00FFFF;
+      color: var(--accent) !important;
+      border-color: var(--accent);
       transform: translateY(-3px);
       text-shadow: none; 
     }
@@ -298,8 +318,8 @@
         margin-top: 1em;
     }
     .skill-tag {
-        background-color: rgba(0, 255, 255, 0.1); 
-        color: #00FFFF; 
+        background-color: rgba(0, 255, 255, 0.1);
+        color: var(--accent);
         padding: 8px 15px;
         border-radius: 20px; 
         font-size: 0.95em;
@@ -467,7 +487,7 @@
 
       <h3>Bachelor of Science in Information Technology<br/>
       <small>Specialization: Information Assurance and Cybersecurity - Capella University</small></h3>
-      <ul>
+      <ul class="project-list">
         <li>
           <div class="project-card">
             <img src="https://placehold.co/600x400/2d3748/E0E0E0?text=Project+Thumbnail" alt="Home Lab Project Thumbnail" class="project-thumbnail" onerror="this.style.display='none'">
@@ -479,7 +499,7 @@
 
       <h3>Master of Science in Computer Science<br/>
       <small>Specialization: Artificial Intelligence and Machine Learning - Western Governors University</small></h3>
-      <ul>
+      <ul class="project-list">
         <li>
           <div class="project-card">
             <img src="https://placehold.co/600x400/2d3748/E0E0E0?text=AI+Chatbot" alt="AI Chatbot Project Thumbnail" class="project-thumbnail" onerror="this.style.display='none'">
@@ -542,7 +562,7 @@
         currentTypedCharIndex++;
         setTimeout(typeCharacter, typingSpeedMs);
       } else {
-        animatedTitleElement.style.borderRightColor = '#00FFFF'; 
+        animatedTitleElement.style.borderRightColor = 'var(--accent)';
         setTimeout(resetAndStartNextTitle, pauseAfterTypingMs);
       }
     }
@@ -604,7 +624,7 @@
     function drawMatrix() {
       ctx.fillStyle = 'rgba(0, 0, 0, 0.05)';
       ctx.fillRect(0, 0, canvas.width, canvas.height);
-      ctx.fillStyle = '#00FFFF'; 
+      ctx.fillStyle = getComputedStyle(document.documentElement).getPropertyValue('--accent');
       ctx.font = fontSize + 'px "Roboto Mono", monospace';
       for (let i = 0; i < drops.length; i++) {
         const text = characters.charAt(Math.floor(Math.random() * characters.length));
