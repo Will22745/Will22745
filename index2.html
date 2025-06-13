@@ -3,703 +3,218 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Willie McClain's Portfolio - Cybersecurity Graduate & AI/ML Master’s Student.">
-  <meta name="keywords" content="Willie McClain, Cybersecurity, AI, Machine Learning, Portfolio, Tech Enthusiast">
-  <meta property="og:title" content="Willie McClain - Portfolio">
-  <meta property="og:description" content="Explore the projects and bio of Willie McClain, a Cybersecurity Graduate and AI/ML Master’s Student.">
-  <link rel="icon" href="favicon.ico" type="image/x-icon">
-
-  <title>Willie McClain Portfolio - Animated Title</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&family=Roboto+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <title>Willie McClain | Cybersecurity Portfolio</title>
+  <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet">
   <style>
-    :root {
-      --accent: #00FFFF;
-      --background-dark: #0a192f;
-      --container-bg: rgba(15, 23, 42, 0.95);
-      --container-bg-alt: rgba(20, 33, 64, 0.95);
-      --text-light: #E0E0E0;
-    }
-
-    /* Basic reset and styles for the matrix effect */
     body {
-      margin: 0;
+      font-family: 'Share Tech Mono', monospace, Arial, sans-serif;
+      background: linear-gradient(120deg, #171923 0%, #222c36 100%);
+      color: #e0e0e0;
       padding: 0;
-      background-color: #000; /* Black background for the matrix effect */
-      overflow-x: hidden; /* Prevent horizontal scrollbars */
-      font-family: 'Inter', sans-serif; /* Default font for content */
-      color: var(--text-light); /* Light default text color for dark theme */
+      margin: 0;
+      min-height: 100vh;
     }
-
-    /* Preloader Styles */
-    #preloader {
-        position: fixed;
-        left: 0;
-        top: 0;
-        width: 100%;
-        height: 100%;
-        z-index: 9999;
-        background-color: #000;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        transition: opacity 0.75s ease, visibility 0.75s ease;
-    }
-    #preloader.loaded {
-        opacity: 0;
-        visibility: hidden;
-    }
-    .loader-text {
-        font-family: 'Roboto Mono', monospace;
-        color: var(--accent);
-        font-size: 1.5em;
-        text-align: center;
-    }
-    .loader-text span { /* Blinking part of loader text */
-        animation: blink-loader-text 1s infinite;
-    }
-    @keyframes blink-loader-text {
-        0%, 100% { opacity: 1; }
-        50% { opacity: 0.3; }
-    }
-
-
-    #matrixCanvas {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      z-index: -1; 
-      display: block;
-      /* Parallax will be handled by JS */
-    }
-
-    #portfolio-content {
-      position: relative;
-      z-index: 1;
-      background: linear-gradient(135deg, var(--container-bg) 0%, var(--container-bg-alt) 100%);
-      padding: 30px;
-      margin: 20px auto;
+    .container {
       max-width: 900px;
-      height: auto;
-      min-height: calc(100vh - 40px);
-      overflow-y: auto; 
-      box-sizing: border-box;
-      border-radius: 12px;
-      box-shadow: 0 8px 25px rgba(0, 255, 255, 0.1);
-      line-height: 1.7;
+      margin: 0 auto;
+      padding: 32px 16px 64px 16px;
     }
-
-    /* Custom Scrollbar */
-    body::-webkit-scrollbar {
-        width: 10px;
-    }
-    body::-webkit-scrollbar-track {
-        background: #0a192f; /* Dark blue track */
-    }
-    body::-webkit-scrollbar-thumb {
-        background-color: var(--accent); /* Cyan thumb */
-        border-radius: 20px;
-        border: 2px solid var(--background-dark); /* Padding around thumb */
-    }
-
-
-    /* Hero Header Section (Animated Title, Top Social Icons) */
-    .hero-header {
+    header {
+      padding-top: 44px;
+      padding-bottom: 30px;
       text-align: center;
-      margin-bottom: 2.5em; 
-      margin-top: 1.5em; 
-      padding: 20px 0; 
     }
-
-    #animated-title {
-      font-size: 2.2em;
-      font-weight: 700;
-      color: var(--accent);
-      margin-top:0;
-      margin-bottom: 0.7em; 
-      min-height: 1.2em; 
-      display: inline-block; 
-      font-family: 'Roboto Mono', monospace; 
-      border-right: 0.1em solid transparent; 
-      white-space: nowrap; 
-      overflow: hidden; 
-      width: 0; 
+    h1 {
+      font-size: 2.6rem;
+      letter-spacing: 1px;
+      margin-bottom: 16px;
+      color: #6ef1a6;
+      text-shadow: 0 0 12px #214d39, 0 0 2px #6ef1a6;
     }
-    
-    @keyframes typing {
-      from { width: 0 }
-      to { width: 100% } 
+    h2 {
+      font-size: 1.45rem;
+      margin-top: 44px;
+      color: #61d2ff;
+      text-shadow: 0 0 4px #214d39;
     }
-
-    @keyframes blink-caret {
-      from, to { border-color: transparent }
-      50% { border-color: var(--accent); }
+    h3 {
+      color: #e082ff;
+      font-size: 1.1rem;
+      margin-top: 32px;
+      margin-bottom: 8px;
     }
-    
-    .top-social-icons {
-      margin-top: 1em; 
-      margin-bottom: 0.8em; 
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      flex-wrap: wrap; 
-      gap: 18px; 
-    }
-
-    .top-social-icons a {
-      display: inline-block; 
-      transition: transform 0.3s ease;
-    }
-    
-    .top-social-icons a img {
-      width: 28px; 
-      height: 28px;
-      display: block; 
-    }
-
-    .top-social-icons a:hover {
-      transform: scale(1.15); 
-    }
-
-    /* REMOVED Profile Image Styling */
-    /* .profile-image-container { ... } */
-    /* .profile-image { ... } */
-
-
-    #disclaimer-text {
-        color: #000000; 
-        font-weight: bold;
-        animation: neonRedFireEffect 1s infinite linear; 
-        text-align: center; 
-        padding: 5px; 
-    }
-
-    @keyframes neonRedFireEffect {
-        0%, 100% {
-            text-shadow: 
-                0 0 5px #ff0000, 0 0 10px #ff0000, 0 0 15px #ff0000,
-                0 0 20px #ff4500, 0 0 25px #ff4500,
-                0 0 30px #ff8c00, 0 0 35px #ff8c00;
-            opacity: 1;
-        }
-        50% {
-            text-shadow: 
-                0 0 3px #ff0000, 0 0 7px #ff0000, 0 0 12px #ff0000,
-                0 0 17px #ff4500, 0 0 22px #ff4500,
-                0 0 27px #ff8c00, 0 0 32px #ff8c00;
-            opacity: 0.85;
-        }
-    }
-
-    #portfolio-content h2,
-    #portfolio-content h3 {
-      font-family: 'Inter', sans-serif;
-      font-weight: 700;
-      color: #FFFFFF;
-      margin-top: 1.5em;
-      margin-bottom: 0.8em;
-    }
-
-    #portfolio-content h2 { 
-      font-size: 2em;
-      border-bottom: 2px solid rgba(0, 255, 255, 0.3);
-      padding-bottom: 0.4em;
-      margin-bottom: 1em;
-    }
-
-    #portfolio-content h3 {
-      font-size: 1.5em;
-      color: #99f3ff;
-    }
-
-    #portfolio-content p {
-      margin-bottom: 1.2em;
-      color: #B0C4DE;
-    }
-     #disclaimer-text strong {
-        color: inherit; 
-     }
-     #portfolio-content p strong:not(#disclaimer-text strong) { 
-        color: #E0E0E0;
-     }
-
-    #portfolio-content a {
-      color: var(--accent);
-      text-decoration: none;
-      transition: color 0.3s ease, text-shadow 0.3s ease;
-    }
-
-    #portfolio-content a:not(.download-resume-button):hover, 
-    #portfolio-content a:not(.download-resume-button):focus {
-      color: #99FFFF;
-      text-decoration: none;
-      text-shadow: 0 0 5px rgba(0, 255, 255, 0.7);
-    }
-
-    #portfolio-content ul {
-      list-style: none;
-      padding-left: 0;
-    }
-
-    #portfolio-content li {
-      margin-bottom: 1.5em;
-    }
-
-    .project-list {
+    .card-list {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-      gap: 20px;
-      padding-left: 0;
-      list-style: none;
+      gap: 28px;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      margin-top: 16px;
     }
-
-    .project-list li {
-      margin-bottom: 0;
+    .card {
+      background: rgba(36, 41, 61, 0.92);
+      border-radius: 1.1rem;
+      box-shadow: 0 2px 18px 0 #000a  ;
+      padding: 24px 20px 20px 20px;
+      border-left: 4px solid #47ffa8;
+      transition: transform 0.12s, box-shadow 0.12s;
+      min-height: 120px;
+      position: relative;
     }
-
-    .project-card {
-      background-color: rgba(30, 41, 59, 0.8);
-      padding: 20px;
-      border-radius: 8px;
-      margin-bottom: 20px;
-      border: 1px solid rgba(0, 255, 255, 0.2);
-      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-      transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+    .card:hover {
+      transform: translateY(-6px) scale(1.04);
+      box-shadow: 0 8px 32px 2px #3eebbb77;
+      border-left-color: #61d2ff;
     }
-
-    .project-card:hover {
-      transform: translateY(-5px) scale(1.02); 
-      box-shadow: 0 10px 30px rgba(0, 255, 255, 0.2); 
-      border-color: rgba(0, 255, 255, 0.5); 
+    .card-title {
+      font-size: 1.16rem;
+      font-weight: bold;
+      margin-bottom: 4px;
+      color: #6ef1a6;
+      text-decoration: none;
+      transition: color 0.1s;
     }
-    .project-card img.project-thumbnail {
-        width: 100%;
-        height: 180px; 
-        object-fit: cover;
-        border-radius: 6px;
-        margin-bottom: 15px;
-        background-color: #2d3748; 
+    .card-title:hover {
+      color: #61d2ff;
+      text-decoration: underline;
     }
-
-
-    .download-resume-button {
+    .card-desc {
+      font-size: 1rem;
+      color: #e0e0e0;
+    }
+    .card-label {
+      background: #181d2a;
+      color: #7ce2a0;
+      font-size: 0.88rem;
+      padding: 1px 9px 1px 9px;
+      border-radius: 10px;
       display: inline-block;
-      background-color: var(--accent);
-      color: var(--background-dark) !important;
-      padding: 14px 28px;
-      border-radius: 8px;
+      margin-bottom: 6px;
+      margin-right: 6px;
+    }
+    .links {
+      margin-top: 32px;
+      text-align: center;
+    }
+    .links a {
+      display: inline-block;
+      margin: 0 10px 18px 10px;
+      background: #181d2a;
+      border-radius: 6px;
+      padding: 12px 16px;
+      color: #6ef1a6;
       text-decoration: none;
       font-weight: bold;
-      font-size: 1.1em;
-      border: 2px solid transparent;
-      box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-      transition: background-color 0.3s ease, color 0.3s ease, transform 0.3s ease, border-color 0.3s ease;
+      font-size: 1rem;
+      box-shadow: 0 2px 8px #213b2c66;
+      transition: background 0.1s, color 0.1s;
+    }
+    .links a:hover {
+      background: #6ef1a6;
+      color: #212b24;
+    }
+    .social {
+      margin-top: 20px;
       text-align: center;
     }
-
-    .download-resume-button:hover,
-    .download-resume-button:focus {
-      background-color: transparent;
-      color: var(--accent) !important;
-      border-color: var(--accent);
-      transform: translateY(-3px);
-      text-shadow: none; 
+    .social a {
+      margin: 0 6px;
+      display: inline-block;
     }
-
-    /* Skills Section */
-    .skills-container {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 12px;
-        justify-content: center; 
-        margin-top: 1em;
+    .social img {
+      width: 26px;
+      filter: drop-shadow(0 0 5px #61d2ff88);
     }
-    .skill-tag {
-        background-color: rgba(0, 255, 255, 0.1);
-        color: var(--accent);
-        padding: 8px 15px;
-        border-radius: 20px; 
-        font-size: 0.95em;
-        font-family: 'Roboto Mono', monospace;
-        border: 1px solid rgba(0, 255, 255, 0.3);
-        transition: background-color 0.3s ease, transform 0.3s ease;
+    .about, .videos {
+      margin-top: 42px;
+      padding: 18px 26px 18px 26px;
+      background: rgba(34,40,58,0.77);
+      border-radius: 1rem;
+      box-shadow: 0 2px 14px 0 #0006;
+      color: #e0e0e0;
+      font-size: 1.03rem;
+      line-height: 1.7;
     }
-    .skill-tag:hover {
-        background-color: rgba(0, 255, 255, 0.2);
-        transform: translateY(-2px);
-    }
-
-    /* Scroll Animation - Fade In */
-    .scroll-fade-in {
-        opacity: 0;
-        transform: translateY(30px);
-        transition: opacity 0.8s ease-out, transform 0.8s ease-out;
-    }
-    .scroll-fade-in.visible {
-        opacity: 1;
-        transform: translateY(0);
-    }
-    
-    /* Responsive adjustments */
-    @media (max-width: 768px) {
-      #portfolio-content {
-        padding: 20px;
-        margin: 10px;
-        border-radius: 8px;
-      }
-      #animated-title {
-        font-size: 1.7em; 
-        white-space: normal; 
-        overflow: visible; 
-        border-right: none; 
-        animation: none !important; 
-        width: auto !important; 
-      }
-      /* .profile-image rules removed */
-      .top-social-icons a img {
-        width: 26px; 
-        height: 26px;
-      }
-      #portfolio-content h2 { 
-        font-size: 1.7em;
-      }
-      #portfolio-content h3 {
-        font-size: 1.3em;
-      }
-      .project-card {
-        padding: 15px;
-      }
-      .project-card img.project-thumbnail {
-        height: 150px;
-      }
-      #disclaimer-text {
-        font-size: 0.9em; 
-      }
-      .skill-tag {
-        font-size: 0.9em;
-        padding: 6px 12px;
-      }
-    }
-
-    @media (max-width: 480px) {
-      #animated-title {
-        font-size: 1.4em; 
-      }
-      /* .profile-image rules removed */
-      .top-social-icons {
-        gap: 12px;
-      }
-      .top-social-icons a img {
-        width: 24px; 
-        height: 24px;
-      }
-      #portfolio-content h2 { 
-        font-size: 1.5em;
-      }
-      #portfolio-content h3 {
-        font-size: 1.2em;
-      }
-      .download-resume-button {
-        font-size: 1em;
-        padding: 12px 24px;
-      }
-      .project-card img.project-thumbnail {
-        height: 120px;
-      }
-       .skill-tag {
-        font-size: 0.85em;
-      }
+    @media (max-width: 700px) {
+      .container { padding: 12px 1vw 36px 1vw; }
+      h1 { font-size: 2.1rem; }
+      h2 { font-size: 1.08rem; }
+      .card-list { grid-template-columns: 1fr; }
     }
   </style>
 </head>
 <body>
-
-  <div id="preloader">
-    <div class="loader-text">Loading Portfolio<span>...</span></div>
-  </div>
-
-  <canvas id="matrixCanvas"></canvas>
-
-  <div id="portfolio-content">
-    <div class="hero-header scroll-fade-in"> <h1 id="animated-title" class="main-title"></h1> 
-        <div class="top-social-icons">
-            <a href="https://www.linkedin.com/in/williemcclain922/" title="LinkedIn" target="_blank" rel="noopener noreferrer">
-                <img alt="Willie | LinkedIn" src="https://cdn.jsdelivr.net/npm/simple-icons@v3/icons/linkedin.svg" style="color: #0077B5;" />
-            </a>
-            <a href="https://github.com/WillieLabs" title="GitHub (WillieLabs)" target="_blank" rel="noopener noreferrer">
-                <img alt="Willie | GitHub" src="https://cdn.jsdelivr.net/npm/simple-icons@v3/icons/github.svg" style="color: #FFFFFF;" />
-            </a>
-            <a href="https://www.instagram.com/will22cool/" title="Instagram" target="_blank" rel="noopener noreferrer">
-                <img alt="Willie | Instagram" src="https://cdn.jsdelivr.net/npm/simple-icons@v3/icons/instagram.svg" style="color: #E1306C;" />
-            </a>
-            <a href="https://www.tiktok.com/@will22cool" title="TikTok" target="_blank" rel="noopener noreferrer">
-                <img alt="Willie | TikTok" src="https://cdn.jsdelivr.net/npm/simple-icons@v3/icons/tiktok.svg" style="color: #EE1D52;" />
-            </a>
-            <a href="https://www.facebook.com/profile.php?id=100072569739964" title="Facebook" target="_blank" rel="noopener noreferrer">
-                <img alt="Willie | Facebook" src="https://cdn.jsdelivr.net/npm/simple-icons@v3/icons/facebook.svg" style="color: #1877F2;" />
-            </a>
-            <a href="https://www.upwork.com/freelancers/~013eca3ce95c0a28db?mp_source=share" title="Upwork" target="_blank" rel="noopener noreferrer">
-                <img alt="Willie | Upwork" src="https://cdn.jsdelivr.net/npm/simple-icons@v3/icons/upwork.svg" style="color: #6FDA44;" />
-            </a>
-            <a href="https://www.youtube.com/@YOUR_YOUTUBE_CHANNEL_NAME_OR_ID" title="YouTube" target="_blank" rel="noopener noreferrer">
-                <img alt="Willie | YouTube" src="https://cdn.jsdelivr.net/npm/simple-icons@v3/icons/youtube.svg" style="color: #FF0000;" />
-            </a>
-        </div>
-    </div>
-
-    <div class="scroll-fade-in"> 
+  <div class="container">
+    <header>
+      <h1>Hi, I'm Willie!<br><b>Cybersecurity Grad</b>, <b>AI/ML Master’s Student</b>, <b>Tech Enthusiast</b></h1>
+    </header>
+    <section class="about">
       <h2>🧠 Bio</h2>
-      <p>
-      I'm Willie McClain, a tech enthusiast fueled by a commitment to continuous learning and a drive to solve complex challenges. My foundation includes a Bachelor of Science in Information Technology with a Cybersecurity focus from Capella University, and I'm currently advancing my expertise with a Master of Science in Computer Science, specializing in Artificial Intelligence and Machine Learning at Western Governors University.
-      </p>
-      <p>
-      I believe in learning by doing. Through dedicated personal projects and home lab experiments, I'm actively translating theoretical knowledge in cybersecurity, automation, and applied AI into demonstrable skills. This portfolio is a living testament to this process, designed to showcase my evolving capabilities to potential employers, mentors, and fellow tech explorers.
-      </p>
-      <p>
-      I'm actively seeking an internship or rotational role where I can apply my skills, contribute to meaningful projects, and grow as a professional in the tech industry.
-      </p>
-      <p id="disclaimer-text"><strong>Disclaimer:</strong> All cybersecurity and hacking-related projects listed are strictly for ethical learning purposes and are developed in controlled lab environments that I own. None of these tools or techniques are used or promoted for illegal activities.</p>
+      <p>I'm Willie McClain — a lifelong learner and dedicated problem solver driven by curiosity and a passion for technology. I hold a Bachelor of Science in Information Technology with a focus on Cybersecurity from Capella University and am currently pursuing a Master of Science in Computer Science with a concentration in Artificial Intelligence and Machine Learning at Western Governors University.</p>
+      <p>Through hands-on personal projects and home lab experiments, I’m gaining real-world experience in cybersecurity, automation, and applied AI. The purpose of this portfolio is to transform my theoretical knowledge into practical, demonstrable skills. It also serves as a platform to showcase my growth and capabilities to potential employers, mentors, friends, and family.</p>
+      <p>I'm actively seeking an internship or rotational role where I can apply my skills, contribute to meaningful projects, and grow as a professional in the tech industry.</p>
+      <p><b>Disclaimer:</b> All cybersecurity and hacking-related projects listed are strictly for ethical learning purposes and are developed in controlled lab environments that I own. None of these tools or techniques are used or promoted for illegal activities.</p>
+    </section>
+
+    <h2>🎓 Education & Projects</h2>
+
+    <h3>Bachelor of Science in Information Technology</h3>
+    <div class="card-list">
+      <div class="card">
+        <span class="card-label">Planned</span>
+        <a class="card-title" href="https://github.com/WillieLabs/Pentest-Homelab" target="_blank">Home Lab for Penetration Testing</a>
+        <div class="card-desc">Set up a virtual lab using VirtualBox and Kali Linux to simulate attacks and test network defenses with tools like Nmap, Metasploit, and Wireshark.</div>
+      </div>
+      <div class="card">
+        <span class="card-label">In Progress</span>
+        <a class="card-title" href="https://github.com/Cyb3rWard0g/Incident-Response-Projects-for-Beginners" target="_blank">Incident-Response-Projects-for-Beginners</a>
+        <div class="card-desc">Beginner-friendly incident response labs. Practice simulated phishing, brute-force, malware, and network analysis scenarios. Includes step-by-step instructions, investigation flow, and reporting practice.</div>
+      </div>
+      <div class="card">
+        <span class="card-label">In Progress</span>
+        <a class="card-title" href="https://github.com/TheresAFewConors/Sooty" target="_blank">Sooty</a>
+        <div class="card-desc">Python automation tool for SOC analysts. Quickly perform IOC lookups, URL analysis, DNS queries, and automate repetitive SOC tasks. Great for learning scripting and automation.</div>
+      </div>
+      <div class="card">
+        <span class="card-label">In Progress</span>
+        <a class="card-title" href="https://github.com/PhantomInsights/awesome-soc-analyst" target="_blank">awesome-soc-analyst</a>
+        <div class="card-desc">Curated resource list for SOC analysts. Explore tools, labs, courses, and articles to jumpstart your SOC learning journey.</div>
+      </div>
     </div>
 
-    <div class="scroll-fade-in">
-        <h2>🛠️ Skills & Technologies</h2>
-        <div class="skills-container">
-            <span class="skill-tag">Cybersecurity Principles</span>
-            <span class="skill-tag">Network Security</span>
-            <span class="skill-tag">Ethical Hacking (Lab)</span>
-            <span class="skill-tag">Python</span>
-            <span class="skill-tag">JavaScript</span>
-            <span class="skill-tag">AI/ML Concepts</span>
-            <span class="skill-tag">Data Analysis</span>
-            <span class="skill-tag">Linux</span>
-            <span class="skill-tag">Virtualization (VirtualBox)</span>
-            <span class="skill-tag">PowerShell</span>
-            <span class="skill-tag">Problem Solving</span>
-            <span class="skill-tag">Lifelong Learner</span>
-            </div>
+    <h3>Master of Science in Computer Science</h3>
+    <div class="card-list">
+      <div class="card">
+        <span class="card-label">Completed</span>
+        <a class="card-title" href="https://nextjs-ai-chatbot-nine-ruby-16.vercel.app" target="_blank">Beginner AI Chatbot</a>
+        <div class="card-desc">Python chatbot that responds to user input and stores simple memory using JSON.<br><b>Click the link to test it live.</b></div>
+      </div>
+      <div class="card">
+        <span class="card-label">Planned</span>
+        <a class="card-title" href="https://github.com/WillieLabs/Live-Translator-App" target="_blank">Live Translator App</a>
+        <div class="card-desc">Real-time language translator using Google Translate API with optional voice input/output.</div>
+      </div>
     </div>
 
-
-    <div class="scroll-fade-in"> <h2>🎓 Education & Projects</h2>
-
-      <h3>Bachelor of Science in Information Technology<br/>
-      <small>Specialization: Information Assurance and Cybersecurity - Capella University</small></h3>
-      <ul class="project-list">
-        <li>
-          <div class="project-card">
-            <img src="https://placehold.co/600x400/2d3748/E0E0E0?text=Project+Thumbnail" alt="Home Lab Project Thumbnail" class="project-thumbnail" onerror="this.style.display='none'">
-            <a href="https://github.com/WillieLabs/Pentest-Homelab" target="_blank" rel="noopener noreferrer"><b>Home Lab for Penetration Testing</b></a> <i>(In Progress)</i><br/>
-            <p>Set up a virtual lab using VirtualBox and Kali Linux to simulate attacks and test network defenses with tools like Nmap, Metasploit, and Wireshark.</p>
-          </div>
-        </li>
-      </ul>
-
-      <h3>Master of Science in Computer Science<br/>
-      <small>Specialization: Artificial Intelligence and Machine Learning - Western Governors University</small></h3>
-      <ul class="project-list">
-        <li>
-          <div class="project-card">
-            <img src="https://placehold.co/600x400/2d3748/E0E0E0?text=AI+Chatbot" alt="AI Chatbot Project Thumbnail" class="project-thumbnail" onerror="this.style.display='none'">
-            <a href="https://nextjs-ai-chatbot-nine-ruby-16.vercel.app" target="_blank" rel="noopener noreferrer"><b>Beginner AI Chatbot</b></a> <i>(Completed)</i><br/>
-            <p>Python chatbot that responds to user input and stores simple memory using JSON.
-            <br><strong>Click the link to test it live.</strong></p>
-          </div>
-        </li>
-        <li>
-          <div class="project-card">
-             <img src="https://placehold.co/600x400/2d3748/E0E0E0?text=Translator+App" alt="Translator App Project Thumbnail" class="project-thumbnail" onerror="this.style.display='none'">
-            <a href="https://github.com/WillieLabs/Live-Translator-App" target="_blank" rel="noopener noreferrer"><b>Live Translator App</b></a> <i>(Planned)</i><br/>
-            <p>Real-time language translator using Google Translate API with optional voice input/output.</p>
-          </div>
-        </li>
-      </ul>
-    </div>
-
-    <div class="scroll-fade-in"> <h2>📺 Popular YouTube Videos</h2>
+    <section class="videos">
+      <h2>📺 Popular YouTube Videos</h2>
       <ul>
-        <li>Visit my channel: <a href="https://www.youtube.com/@YOUR_YOUTUBE_CHANNEL_NAME_OR_ID" title="Tech Talks by Willie - YouTube Channel" target="_blank" rel="noopener noreferrer">Tech Talks by Willie</a></li>
+        <li>Visit my channel: <a href="https://youtube.com/@techtalksbywillie?si=BgKTyvWvrELFLZZa" target="_blank">Tech Talks by Willie</a></li>
         <li>On this channel, I walk through the projects featured in my portfolio — explaining my thought process, demonstrating functionality, and helping others learn as I build.</li>
-        </ul>
+        <li>More videos and tutorials coming soon!</li>
+      </ul>
+    </section>
+
+    <div class="links">
+      <a href="Willie%20McClain%20Resume%202025%20PDF.pdf" download>⬇️ Download My Resume</a>
     </div>
 
-    <div class="scroll-fade-in" style="text-align: center; margin-top: 40px; margin-bottom: 20px;"> <a href="Willie%20McClain%20Resume%202025%20PDF.pdf" download class="download-resume-button">
-            ⬇️ Download My Resume
-        </a>
+    <div class="social">
+      <a href="https://www.linkedin.com/in/williemcclain922/" target="_blank"><img alt="Willie | LinkedIn" src="https://cdn.jsdelivr.net/npm/simple-icons@v3/icons/linkedin.svg"></a>
+      <a href="https://www.instagram.com/will22cool/" target="_blank"><img alt="Willie | Instagram" src="https://cdn.jsdelivr.net/npm/simple-icons@v3/icons/instagram.svg"></a>
+      <a href="https://www.tiktok.com/@will22cool" target="_blank"><img alt="Willie | TikTok" src="https://cdn.jsdelivr.net/npm/simple-icons@v3/icons/tiktok.svg"></a>
+      <a href="https://www.facebook.com/profile.php?id=100072569739964" target="_blank"><img alt="Willie | Facebook" src="https://cdn.jsdelivr.net/npm/simple-icons@v3/icons/facebook.svg"></a>
+      <a href="https://www.upwork.com/freelancers/~013eca3ce95c0a28db?mp_source=share" target="_blank"><img alt="Willie | Upwork" src="https://cdn.jsdelivr.net/npm/simple-icons@v3/icons/upwork.svg"></a>
+      <a href="https://youtube.com/@techtalksbywillie?si=BgKTyvWvrELFLZZa" target="_blank"><img alt="Willie | YouTube" src="https://cdn.jsdelivr.net/npm/simple-icons@v3/icons/youtube.svg"></a>
     </div>
   </div>
-
-  <script>
-    // --- Preloader ---
-    window.addEventListener('load', () => {
-        const preloader = document.getElementById('preloader');
-        if (preloader) {
-            preloader.classList.add('loaded');
-        }
-    });
-
-    // --- Typing Animation Script ---
-    const animatedTitleElement = document.getElementById('animated-title');
-    const titlesToCycle = [
-        "Willie McClain: Theory to Practice", "Willie McClain: Learning in Action",
-        "Willie McClain: Knowledge Applied", "Willie McClain: Bridging Skills",
-        "Willie McClain: From Study to Skill", "Willie McClain: Applied Learning",
-        "Willie McClain: Real-World Ready", "Willie McClain: Skills Forged",
-        "Willie McClain: Learning to Achieve", "Willie McClain: Beyond the Books"
-    ];
-    let currentTitleIndex = 0; 
-    let currentTypedCharIndex = 0; 
-    const typingSpeedMs = 70; 
-    const pauseAfterTypingMs = 1200; 
-    
-    function typeCharacter() {
-      const currentTitle = titlesToCycle[currentTitleIndex];
-      const currentTitleLength = currentTitle.length;
-      if (currentTypedCharIndex < currentTitleLength) {
-        animatedTitleElement.textContent += currentTitle.charAt(currentTypedCharIndex);
-        currentTypedCharIndex++;
-        setTimeout(typeCharacter, typingSpeedMs);
-      } else {
-        animatedTitleElement.style.borderRightColor = 'var(--accent)';
-        setTimeout(resetAndStartNextTitle, pauseAfterTypingMs);
-      }
-    }
-
-    function applyTypingStyles(title) {
-        const titleLength = title.length;
-        const typingAnimationDurationSeconds = (titleLength * typingSpeedMs) / 1000;
-        animatedTitleElement.style.width = '0px'; 
-        animatedTitleElement.style.animation = 
-            `typing ${typingAnimationDurationSeconds}s steps(${titleLength}, end) 0s forwards, blink-caret .75s step-end infinite`;
-    }
-
-    function startTypingProcess() {
-        const titleToType = titlesToCycle[currentTitleIndex];
-        animatedTitleElement.textContent = ''; 
-        currentTypedCharIndex = 0; 
-        applyTypingStyles(titleToType); 
-        setTimeout(typeCharacter, 50); 
-    }
-
-    function resetAndStartNextTitle() {
-        currentTitleIndex = (currentTitleIndex + 1) % titlesToCycle.length; 
-        if (window.innerWidth > 768 && document.visibilityState === 'visible') { 
-            startTypingProcess();
-        }
-    }
-
-    document.addEventListener('DOMContentLoaded', () => {
-        if (window.innerWidth <= 768) {
-            animatedTitleElement.textContent = titlesToCycle[0];
-            animatedTitleElement.style.width = 'auto'; 
-            animatedTitleElement.style.borderRight = 'none'; 
-            animatedTitleElement.style.animation = 'none'; 
-        } else {
-            setTimeout(startTypingProcess, 1000); 
-        }
-        initializeScrollAnimations();
-    });
-
-    // --- Matrix Rain Script ---
-    const canvas = document.getElementById('matrixCanvas');
-    const ctx = canvas.getContext('2d');
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
-    const customMessage = "WILLIE "; 
-    const characters = customMessage;
-    const fontSize = 16;
-    let columns = Math.floor(canvas.width / fontSize);
-    const drops = [];
-
-    function initializeDrops() {
-        drops.length = 0; 
-        for (let x = 0; x < columns; x++) {
-            drops[x] = 1 - Math.floor(Math.random() * (canvas.height / fontSize));
-        }
-    }
-    initializeDrops();
-
-    function drawMatrix() {
-      ctx.fillStyle = 'rgba(0, 0, 0, 0.05)';
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
-      ctx.fillStyle = getComputedStyle(document.documentElement).getPropertyValue('--accent');
-      ctx.font = fontSize + 'px "Roboto Mono", monospace';
-      for (let i = 0; i < drops.length; i++) {
-        const text = characters.charAt(Math.floor(Math.random() * characters.length));
-        ctx.fillText(text, i * fontSize, drops[i] * fontSize);
-        if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) {
-          drops[i] = 0;
-        }
-        drops[i]++;
-      }
-    }
-
-    let matrixAnimationFrameId; 
-    function animateMatrix() { 
-      drawMatrix();
-      matrixAnimationFrameId = requestAnimationFrame(animateMatrix); 
-    }
-
-    // --- Parallax for Matrix Background ---
-    function handleParallax() {
-        const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
-        canvas.style.transform = `translateY(${scrollTop * 0.3}px)`; 
-    }
-
-
-    // --- Scroll-based Fade-in Animations ---
-    const scrollFadeElements = document.querySelectorAll('.scroll-fade-in');
-    const observerOptions = {
-        root: null, 
-        rootMargin: '0px',
-        threshold: 0.1 
-    };
-
-    function intersectionCallback(entries, observer) {
-        entries.forEach(entry => {
-            if (entry.isIntersecting) {
-                entry.target.classList.add('visible');
-                observer.unobserve(entry.target); 
-            }
-        });
-    }
-    const scrollObserver = new IntersectionObserver(intersectionCallback, observerOptions);
-
-    function initializeScrollAnimations() {
-        scrollFadeElements.forEach(el => {
-            scrollObserver.observe(el);
-        });
-    }
-
-    window.addEventListener('resize', () => {
-      canvas.width = window.innerWidth;
-      canvas.height = window.innerHeight;
-      columns = Math.floor(canvas.width / fontSize);
-      initializeDrops(); 
-      if (matrixAnimationFrameId) {
-          cancelAnimationFrame(matrixAnimationFrameId);
-      }
-      animateMatrix(); 
-
-      if (window.innerWidth <= 768) {
-            animatedTitleElement.textContent = titlesToCycle[currentTitleIndex]; 
-            animatedTitleElement.style.width = 'auto';
-            animatedTitleElement.style.borderRight = 'none'; 
-            animatedTitleElement.style.animation = 'none'; 
-        } else {
-            if (animatedTitleElement.textContent !== titlesToCycle[currentTitleIndex] || animatedTitleElement.style.animation === 'none') {
-                 animatedTitleElement.textContent = ''; 
-                 startTypingProcess(); 
-            }
-        }
-    });
-    
-    window.addEventListener('scroll', handleParallax);
-
-    animateMatrix(); 
-  </script>
-
 </body>
 </html>
