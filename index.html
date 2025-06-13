@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Willie McClain | Cybersecurity Portfolio</title>
+  <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Share Tech Mono', monospace, Arial, sans-serif;
+      background: linear-gradient(120deg, #171923 0%, #222c36 100%);
+      color: #e0e0e0;
+      padding: 0;
+      margin: 0;
+      min-height: 100vh;
+    }
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 32px 16px 64px 16px;
+    }
+    header {
+      padding-top: 44px;
+      padding-bottom: 30px;
+      text-align: center;
+    }
+    h1 {
+      font-size: 2.6rem;
+      letter-spacing: 1px;
+      margin-bottom: 16px;
+      color: #6ef1a6;
+      text-shadow: 0 0 12px #214d39, 0 0 2px #6ef1a6;
+    }
+    h2 {
+      font-size: 1.45rem;
+      margin-top: 44px;
+      color: #61d2ff;
+      text-shadow: 0 0 4px #214d39;
+    }
+    h3 {
+      color: #e082ff;
+      font-size: 1.1rem;
+      margin-top: 32px;
+      margin-bottom: 8px;
+    }
+    .card-list {
+      display: grid;
+      gap: 28px;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      margin-top: 16px;
+    }
+    .card {
+      background: rgba(36, 41, 61, 0.92);
+      border-radius: 1.1rem;
+      box-shadow: 0 2px 18px 0 #000a  ;
+      padding: 24px 20px 20px 20px;
+      border-left: 4px solid #47ffa8;
+      transition: transform 0.12s, box-shadow 0.12s;
+      min-height: 120px;
+      position: relative;
+    }
+    .card:hover {
+      transform: translateY(-6px) scale(1.04);
+      box-shadow: 0 8px 32px 2px #3eebbb77;
+      border-left-color: #61d2ff;
+    }
+    .card-title {
+      font-size: 1.16rem;
+      font-weight: bold;
+      margin-bottom: 4px;
+      color: #6ef1a6;
+      text-decoration: none;
+      transition: color 0.1s;
+    }
+    .card-title:hover {
+      color: #61d2ff;
+      text-decoration: underline;
+    }
+    .card-desc {
+      font-size: 1rem;
+      color: #e0e0e0;
+    }
+    .card-label {
+      background: #181d2a;
+      color: #7ce2a0;
+      font-size: 0.88rem;
+      padding: 1px 9px 1px 9px;
+      border-radius: 10px;
+      display: inline-block;
+      margin-bottom: 6px;
+      margin-right: 6px;
+    }
+    .links {
+      margin-top: 32px;
+      text-align: center;
+    }
+    .links a {
+      display: inline-block;
+      margin: 0 10px 18px 10px;
+      background: #181d2a;
+      border-radius: 6px;
+      padding: 12px 16px;
+      color: #6ef1a6;
+      text-decoration: none;
+      font-weight: bold;
+      font-size: 1rem;
+      box-shadow: 0 2px 8px #213b2c66;
+      transition: background 0.1s, color 0.1s;
+    }
+    .links a:hover {
+      background: #6ef1a6;
+      color: #212b24;
+    }
+    .social {
+      margin-top: 20px;
+      text-align: center;
+    }
+    .social a {
+      margin: 0 6px;
+      display: inline-block;
+    }
+    .social img {
+      width: 26px;
+      filter: drop-shadow(0 0 5px #61d2ff88);
+    }
+    .about, .videos {
+      margin-top: 42px;
+      padding: 18px 26px 18px 26px;
+      background: rgba(34,40,58,0.77);
+      border-radius: 1rem;
+      box-shadow: 0 2px 14px 0 #0006;
+      color: #e0e0e0;
+      font-size: 1.03rem;
+      line-height: 1.7;
+    }
+    @media (max-width: 700px) {
+      .container { padding: 12px 1vw 36px 1vw; }
+      h1 { font-size: 2.1rem; }
+      h2 { font-size: 1.08rem; }
+      .card-list { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>Hi, I'm Willie!<br><b>Cybersecurity Grad</b>, <b>AI/ML Master’s Student</b>, <b>Tech Enthusiast</b></h1>
+    </header>
+    <section class="about">
+      <h2>🧠 Bio</h2>
+      <p>I'm Willie McClain — a lifelong learner and dedicated problem solver driven by curiosity and a passion for technology. I hold a Bachelor of Science in Information Technology with a focus on Cybersecurity from Capella University and am currently pursuing a Master of Science in Computer Science with a concentration in Artificial Intelligence and Machine Learning at Western Governors University.</p>
+      <p>Through hands-on personal projects and home lab experiments, I’m gaining real-world experience in cybersecurity, automation, and applied AI. The purpose of this portfolio is to transform my theoretical knowledge into practical, demonstrable skills. It also serves as a platform to showcase my growth and capabilities to potential employers, mentors, friends, and family.</p>
+      <p>I'm actively seeking an internship or rotational role where I can apply my skills, contribute to meaningful projects, and grow as a professional in the tech industry.</p>
+      <p><b>Disclaimer:</b> All cybersecurity and hacking-related projects listed are strictly for ethical learning purposes and are developed in controlled lab environments that I own. None of these tools or techniques are used or promoted for illegal activities.</p>
+    </section>
+
+    <h2>🎓 Education & Projects</h2>
+
+    <h3>Bachelor of Science in Information Technology</h3>
+    <div class="card-list">
+      <div class="card">
+        <span class="card-label">Planned</span>
+        <a class="card-title" href="https://github.com/WillieLabs/Pentest-Homelab" target="_blank">Home Lab for Penetration Testing</a>
+        <div class="card-desc">Set up a virtual lab using VirtualBox and Kali Linux to simulate attacks and test network defenses with tools like Nmap, Metasploit, and Wireshark.</div>
+      </div>
+      <div class="card">
+        <span class="card-label">In Progress</span>
+        <a class="card-title" href="https://github.com/Cyb3rWard0g/Incident-Response-Projects-for-Beginners" target="_blank">Incident-Response-Projects-for-Beginners</a>
+        <div class="card-desc">Beginner-friendly incident response labs. Practice simulated phishing, brute-force, malware, and network analysis scenarios. Includes step-by-step instructions, investigation flow, and reporting practice.</div>
+      </div>
+      <div class="card">
+        <span class="card-label">In Progress</span>
+        <a class="card-title" href="https://github.com/TheresAFewConors/Sooty" target="_blank">Sooty</a>
+        <div class="card-desc">Python automation tool for SOC analysts. Quickly perform IOC lookups, URL analysis, DNS queries, and automate repetitive SOC tasks. Great for learning scripting and automation.</div>
+      </div>
+      <div class="card">
+        <span class="card-label">In Progress</span>
+        <a class="card-title" href="https://github.com/PhantomInsights/awesome-soc-analyst" target="_blank">awesome-soc-analyst</a>
+        <div class="card-desc">Curated resource list for SOC analysts. Explore tools, labs, courses, and articles to jumpstart your SOC learning journey.</div>
+      </div>
+    </div>
+
+    <h3>Master of Science in Computer Science</h3>
+    <div class="card-list">
+      <div class="card">
+        <span class="card-label">Completed</span>
+        <a class="card-title" href="https://nextjs-ai-chatbot-nine-ruby-16.vercel.app" target="_blank">Beginner AI Chatbot</a>
+        <div class="card-desc">Python chatbot that responds to user input and stores simple memory using JSON.<br><b>Click the link to test it live.</b></div>
+      </div>
+      <div class="card">
+        <span class="card-label">Planned</span>
+        <a class="card-title" href="https://github.com/WillieLabs/Live-Translator-App" target="_blank">Live Translator App</a>
+        <div class="card-desc">Real-time language translator using Google Translate API with optional voice input/output.</div>
+      </div>
+    </div>
+
+    <section class="videos">
+      <h2>📺 Popular YouTube Videos</h2>
+      <ul>
+        <li>Visit my channel: <a href="https://youtube.com/@techtalksbywillie?si=BgKTyvWvrELFLZZa" target="_blank">Tech Talks by Willie</a></li>
+        <li>On this channel, I walk through the projects featured in my portfolio — explaining my thought process, demonstrating functionality, and helping others learn as I build.</li>
+        <li>More videos and tutorials coming soon!</li>
+      </ul>
+    </section>
+
+    <div class="links">
+      <a href="Willie%20McClain%20Resume%202025%20PDF.pdf" download>⬇️ Download My Resume</a>
+    </div>
+
+    <div class="social">
+      <a href="https://www.linkedin.com/in/williemcclain922/" target="_blank"><img alt="Willie | LinkedIn" src="https://cdn.jsdelivr.net/npm/simple-icons@v3/icons/linkedin.svg"></a>
+      <a href="https://www.instagram.com/will22cool/" target="_blank"><img alt="Willie | Instagram" src="https://cdn.jsdelivr.net/npm/simple-icons@v3/icons/instagram.svg"></a>
+      <a href="https://www.tiktok.com/@will22cool" target="_blank"><img alt="Willie | TikTok" src="https://cdn.jsdelivr.net/npm/simple-icons@v3/icons/tiktok.svg"></a>
+      <a href="https://www.facebook.com/profile.php?id=100072569739964" target="_blank"><img alt="Willie | Facebook" src="https://cdn.jsdelivr.net/npm/simple-icons@v3/icons/facebook.svg"></a>
+      <a href="https://www.upwork.com/freelancers/~013eca3ce95c0a28db?mp_source=share" target="_blank"><img alt="Willie | Upwork" src="https://cdn.jsdelivr.net/npm/simple-icons@v3/icons/upwork.svg"></a>
+      <a href="https://youtube.com/@techtalksbywillie?si=BgKTyvWvrELFLZZa" target="_blank"><img alt="Willie | YouTube" src="https://cdn.jsdelivr.net/npm/simple-icons@v3/icons/youtube.svg"></a>
+    </div>
+  </div>
+</body>
+</html>
