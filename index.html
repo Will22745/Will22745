@@ -16,7 +16,6 @@
       min-height: 100vh;
       overflow: hidden; /* Hide scrollbars during loading */
     }
-    /* --- NEW: Matrix background canvas styles --- */
     #matrix-background {
         position: fixed;
         top: 0;
@@ -31,13 +30,35 @@
       margin: 0 auto;
       padding: 32px 16px 64px 16px;
       display: none; /* Initially hide main content */
-      position: relative; /* Ensure content is on top of background */
+      position: relative;
       z-index: 2;
     }
     header {
       padding-top: 44px;
       padding-bottom: 30px;
       text-align: center;
+      position: relative; /* For positioning the lock icon */
+    }
+    /* --- NEW: Lock button styles --- */
+    #lock-button {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background: transparent;
+      border: 1px solid #47ffa8;
+      color: #47ffa8;
+      padding: 8px;
+      border-radius: 50%;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s ease;
+    }
+    #lock-button:hover {
+      background: #47ffa8;
+      color: #10141a;
+      box-shadow: 0 0 15px #47ffa8;
     }
     h1 {
       font-size: 2.6rem;
@@ -143,6 +164,18 @@
       font-size: 1.03rem;
       line-height: 1.7;
     }
+    /* --- CHANGE: Disclaimer text is now red --- */
+    .disclaimer {
+        padding: 12px;
+        background: rgba(255, 0, 0, 0.1);
+        border-left: 4px solid #f00;
+        border-radius: 4px;
+        margin-top: 16px;
+        color: #ff6b6b;
+    }
+    .disclaimer b {
+        color: #ff8787;
+    }
     @media (max-width: 700px) {
       .container { padding: 12px 1vw 36px 1vw; }
       h1 { font-size: 2.1rem; }
@@ -168,7 +201,6 @@
         from { opacity: 0; }
         to { opacity: 1; }
     }
-    /* --- CHANGE: Replaced blinking cursor span with native caret styling --- */
     #login-input {
       background-color: transparent;
       border: none;
@@ -259,6 +291,10 @@
 
   <div class="container">
     <header>
+      <!-- NEW: Lock Button Added -->
+      <button id="lock-button" title="Lock Session">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+      </button>
       <h1>Hi, I'm Willie!<br><b>Cybersecurity Grad</b>, <b>AI/ML Master’s Student</b>, <b>Tech Enthusiast</b></h1>
     </header>
     <section class="about">
@@ -266,7 +302,8 @@
       <p>I'm Willie McClain — a lifelong learner and dedicated problem solver driven by curiosity and a passion for technology. I hold a Bachelor of Science in Information Technology with a focus on Cybersecurity from Capella University and am currently pursuing a Master of Science in Computer Science with a concentration in Artificial Intelligence and Machine Learning at Western Governors University.</p>
       <p>Through hands-on personal projects and home lab experiments, I’m gaining real-world experience in cybersecurity, automation, and applied AI. The purpose of this portfolio is to transform my theoretical knowledge into practical, demonstrable skills. It also serves as a platform to showcase my growth and capabilities to potential employers, mentors, friends, and family.</p>
       <p>I'm actively seeking an internship or rotational role where I can apply my skills, contribute to meaningful projects, and grow as a professional in the tech industry.</p>
-      <p><b>Disclaimer:</b> All cybersecurity and hacking-related projects listed are strictly for ethical learning purposes and are developed in controlled lab environments that I own. None of these tools or techniques are used or promoted for illegal activities.</p>
+      <!-- CHANGE: Added 'disclaimer' class and changed text color -->
+      <p class="disclaimer"><b>Disclaimer:</b> All cybersecurity and hacking-related projects listed are strictly for ethical learning purposes and are developed in controlled lab environments that I own. None of these tools or techniques are used or promoted for illegal activities.</p>
     </section>
 
     <h2>🎓 Education & Projects</h2>
@@ -346,7 +383,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const overlay = document.getElementById('loading-overlay');
     const mainContainer = document.querySelector('.container');
     const matrixCanvas = document.getElementById('matrix-background');
-
+    const lockButton = document.getElementById('lock-button');
 
     // --- AUDIO SETUP ---
     if (window.Tone) {
@@ -360,7 +397,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- RENDERING LOGIC ---
     function render() {
-        overlay.innerHTML = ''; // Clear previous content
+        if (!overlay) return;
+        overlay.innerHTML = '';
         
         switch (stage) {
             case 'motd':
@@ -388,7 +426,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 formHTML += '<div><span>user@willie.dev:~$ </span></div>';
 
                 if (currentInput === 'username') {
-                    // --- CHANGE: Removed the blinking cursor span ---
                     formHTML += `<div><span>login: </span><input type="text" id="login-input" autofocus /></div>`;
                 } else {
                     formHTML += `<div><span>password: </span><input type="password" id="login-input" autofocus /></div>`;
@@ -602,8 +639,42 @@ document.addEventListener('DOMContentLoaded', () => {
         };
     }
 
-    // --- INITIALIZE ---
-    render();
+    // --- INITIALIZE & EVENT LISTENERS ---
+    function initialize() {
+      // Reset state for re-runs
+      stage = 'motd';
+      loginAttempts = 0;
+      currentInput = 'username';
+      loginAttemptData = { username: '', password: '' };
+      
+      const existingOverlay = document.getElementById('loading-overlay');
+      if (!existingOverlay) {
+        const newOverlay = document.createElement('div');
+        newOverlay.id = 'loading-overlay';
+        document.body.prepend(newOverlay);
+      }
+      mainContainer.style.display = 'none';
+      matrixCanvas.style.display = 'none';
+      document.body.style.overflow = 'hidden';
+      
+      render();
+    }
+    
+    lockButton.addEventListener('click', () => {
+        const overlay = document.getElementById('loading-overlay');
+        if (overlay) return; // Prevent re-triggering if already loading
+        
+        mainContainer.style.transition = 'opacity 0.3s';
+        mainContainer.style.opacity = '0';
+        matrixCanvas.style.transition = 'opacity 0.3s';
+        matrixCanvas.style.opacity = '0';
+        
+        setTimeout(() => {
+          location.reload(); // Simple way to reset state and re-run script
+        }, 300);
+    });
+
+    initialize();
 });
 </script>
 
