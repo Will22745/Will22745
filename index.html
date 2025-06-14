@@ -61,19 +61,19 @@
       box-shadow: 0 0 15px #47ffa8;
     }
     h1 {
-      font-size: 4.2rem; /* Increased from 3.2rem */
+      font-size: 4.2rem;
       letter-spacing: 1px;
       margin-bottom: 8px;
       color: #6ef1a6;
       text-shadow: 0 0 12px #214d39, 0 0 2px #6ef1a6;
-      line-height: 1.1; /* Adjust line height for larger font */
+      line-height: 1.1;
     }
     h1 strong {
         font-size: 1.5rem;
         display: block;
-        margin-top: 12px; /* Increased margin for better spacing */
+        margin-top: 12px;
         color: #a0f0c3;
-        font-weight: normal; /* Keep sub-heading from being bold */
+        font-weight: normal;
     }
     h2 {
       font-size: 1.45rem;
@@ -185,7 +185,7 @@
     }
     @media (max-width: 700px) {
       .container { padding: 12px 1vw 36px 1vw; }
-      h1 { font-size: 3rem; } /* Adjusted for mobile */
+      h1 { font-size: 3rem; }
       h1 strong { font-size: 1.2rem; }
       h2 { font-size: 1.08rem; }
       .card-list { grid-template-columns: 1fr; }
@@ -342,22 +342,22 @@
         <div class="card">
           <span class="card-label">Completed</span>
           <a class="card-title" href="https://github.com/0xrajneesh/Incident-Response-Projects-for-Beginners" target="_blank">Incident Response Projects</a>
-          <div class="card-desc">Beginner-friendly SOC labs covering phishing, malware, brute-force, and network analysis.</div>
+          <div class="card-desc">I completed a series of simulated security incidents, including phishing scams and malware attacks. This hands-on practice taught me how to identify threats, analyze digital evidence, and follow the correct procedures to respond to an attack.</div>
         </div>
         <div class="card">
           <span class="card-label">Completed</span>
           <a class="card-title" href="https://github.com/TheresAFewConors/Sooty" target="_blank">Sooty – SOC Automation Tool</a>
-          <div class="card-desc">Python CLI tool to automate IOC lookups, URL checks, and DNS queries for SOC analysts.</div>
+          <div class="card-desc">I contributed to this Python tool that helps security analysts work faster by automating repetitive tasks. It automatically investigates suspicious links and IP addresses to quickly determine if they are malicious, saving valuable time during a security incident.</div>
         </div>
         <div class="card">
           <span class="card-label">Completed</span>
           <a class="card-title" href="https://github.com/LetsDefend/awesome-soc-analyst" target="_blank">awesome-soc-analyst</a>
-          <div class="card-desc">Curated SOC learning resources, labs, and cheat sheets from LetsDefend.</div>
+          <div class="card-desc">I helped organize and contribute to this popular collection of learning materials for security analysts. It's a go-to resource for anyone looking to sharpen their skills in threat detection and response.</div>
         </div>
         <div class="card">
           <span class="card-label">Completed</span>
           <a class="card-title" href="https://github.com/Uttamydv/Cybersecurity-Homelab-and-Penetration-Testing-Project" target="_blank">Cybersecurity Homelab & Penetration Testing</a>
-          <div class="card-desc">Enterprise-style pentesting lab with Active Directory, Kali, Metasploitable, and firewall.</div>
+          <div class="card-desc">I built a virtual cybersecurity lab that mirrors a real corporate network. In this controlled environment, I practice finding and exploiting vulnerabilities using industry-standard tools, which helps me understand how to better defend against real-world attacks.</div>
         </div>
     </div>
     <h3>Master of Science in Computer Science</h3>
@@ -415,7 +415,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const lockButton = document.getElementById('lock-button');
 
     // --- HELPER FUNCTIONS ---
-    // Uses the browser's built-in speech synthesis
     function speak(text) {
         if ('speechSynthesis' in window) {
             const utterance = new SpeechSynthesisUtterance(text);
@@ -427,7 +426,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     
     // --- AUDIO SETUP ---
-    // Sets up Tone.js for sound effects
     async function setupAudio() {
         if (window.Tone && !isToneReady) {
             await Tone.start();
@@ -442,7 +440,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // --- RENDERING LOGIC ---
-    // Manages the current view (motd, login, hacking, etc.)
     function render() {
         const overlay = document.getElementById('loading-overlay');
         if (!overlay) return;
@@ -485,7 +482,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 form.onsubmit = (e) => {
                     e.preventDefault();
-                    setupAudio(); // Initialize audio on first user interaction
+                    setupAudio();
                     if (currentInput === 'username') {
                         loginAttemptData.username = document.getElementById('login-input').value;
                         currentInput = 'password';
@@ -583,7 +580,6 @@ document.addEventListener('DOMContentLoaded', () => {
         let lineIndex = 0;
 
         function typeNextLine() {
-            // Remove caret from previous line
             if (lineIndex > 0) {
                  const prevP = terminalContent.lastChild;
                  if (prevP) {
@@ -591,7 +587,6 @@ document.addEventListener('DOMContentLoaded', () => {
                     if(caret) caret.remove();
                  }
             }
-            // End sequence and transition to main page
             if (lineIndex >= codeLines.length) {
                 setTimeout(() => {
                     const overlay = document.getElementById('loading-overlay');
@@ -767,4 +762,3 @@ document.addEventListener('DOMContentLoaded', () => {
 
 </body>
 </html>
-
