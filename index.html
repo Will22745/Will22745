@@ -576,10 +576,10 @@ document.addEventListener('DOMContentLoaded', () => {
             ctx.fillStyle = 'rgba(16, 20, 26, 0.05)';
             ctx.fillRect(0, 0, canvas.width, canvas.height);
             
-            const neonBlue = '#0052D4';
-            ctx.fillStyle = neonBlue;
-            ctx.shadowColor = '#4D4DFF';
-            ctx.shadowBlur = 7;
+            // --- CHANGE: Updated color to a neutral grey ---
+            ctx.fillStyle = '#AAAAAA';
+            ctx.shadowColor = 'transparent'; // Remove shadow for a non-neon look
+            ctx.shadowBlur = 0;
             ctx.font = fontSize + 'px monospace';
 
             for (let i = 0; i < rainDrops.length; i++) {
