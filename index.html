@@ -5,19 +5,34 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Willie McClain | Cybersecurity Portfolio</title>
   <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.7.77/Tone.js"></script>
   <style>
     body {
       font-family: 'Share Tech Mono', monospace, Arial, sans-serif;
-      background: linear-gradient(120deg, #171923 0%, #222c36 100%);
+      background: #10141a; /* Dark base color */
       color: #e0e0e0;
       padding: 0;
       margin: 0;
       min-height: 100vh;
+      overflow: hidden; /* Hide scrollbars during loading */
+    }
+    /* --- NEW: Matrix background canvas styles --- */
+    #matrix-background {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: -1;
+        display: none; /* Hidden until loaded */
     }
     .container {
       max-width: 900px;
       margin: 0 auto;
       padding: 32px 16px 64px 16px;
+      display: none; /* Initially hide main content */
+      position: relative; /* Ensure content is on top of background */
+      z-index: 2;
     }
     header {
       padding-top: 44px;
@@ -52,7 +67,7 @@
     .card {
       background: rgba(36, 41, 61, 0.92);
       border-radius: 1.1rem;
-      box-shadow: 0 2px 18px 0 #000a  ;
+      box-shadow: 0 2px 18px 0 #000a;
       padding: 24px 20px 20px 20px;
       border-left: 4px solid #47ffa8;
       transition: transform 0.12s, box-shadow 0.12s;
@@ -70,11 +85,6 @@
       margin-bottom: 4px;
       color: #6ef1a6;
       text-decoration: none;
-      transition: color 0.1s;
-    }
-    .card-title:hover {
-      color: #61d2ff;
-      text-decoration: underline;
     }
     .card-desc {
       font-size: 1rem;
@@ -139,9 +149,108 @@
       h2 { font-size: 1.08rem; }
       .card-list { grid-template-columns: 1fr; }
     }
+
+    /* --- LOADING SEQUENCE STYLES --- */
+    #loading-overlay {
+        position: fixed;
+        inset: 0;
+        background-color: #10141a;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 9999;
+        font-family: 'Share Tech Mono', monospace;
+    }
+    .motd-fade-in {
+        animation: motd-fade 2s ease-in-out;
+    }
+    @keyframes motd-fade {
+        from { opacity: 0; }
+        to { opacity: 1; }
+    }
+    .blinking-cursor {
+        animation: blink-caret .75s step-end infinite;
+        color: #0F0;
+    }
+    @keyframes blink-caret {
+        from, to { color: transparent }
+        50% { color: #0F0; }
+    }
+    body.screen-shake {
+        animation: shake 0.4s cubic-bezier(.36,.07,.19,.97) both;
+    }
+    @keyframes shake {
+      10%, 90% { transform: translate3d(-1px, 0, 0); }
+      20%, 80% { transform: translate3d(2px, 0, 0); }
+      30%, 50%, 70% { transform: translate3d(-4px, 0, 0); }
+      40%, 60% { transform: translate3d(4px, 0, 0); }
+    }
+    .access-denied-flash {
+        position: fixed;
+        top: 0; left: 0;
+        width: 100%; height: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background-color: rgba(0,0,0,0.8);
+        animation: fade-out 0.4s forwards;
+        z-index: 100;
+        font-size: 6rem;
+        color: #f00;
+    }
+    .hack-button {
+        animation: pulse-hack-button 2s infinite;
+        box-shadow: 0 0 10px #0F0, 0 0 20px #0F0, 0 0 30px #0F0;
+        font-size: 2rem;
+        color: #0F0;
+        border: 2px solid #0F0;
+        border-radius: 0.5rem;
+        padding: 1rem 2rem;
+        background-color: transparent;
+        cursor: pointer;
+    }
+    .hack-button:disabled {
+        opacity: 0.5;
+        cursor: wait;
+    }
+    @keyframes pulse-hack-button {
+        0% { box-shadow: 0 0 5px #39d353, 0 0 10px #39d353; transform: scale(1); }
+        50% { box-shadow: 0 0 20px #39d353, 0 0 30px #39d353; transform: scale(1.05); }
+        100% { box-shadow: 0 0 5px #39d353, 0 0 10px #39d353; transform: scale(1); }
+    }
+    .hack-button.shatter {
+        animation: shatter-anim 0.5s forwards;
+    }
+    @keyframes shatter-anim {
+        from { opacity: 1; transform: scale(1); }
+        to { opacity: 0; transform: scale(0.5); filter: blur(10px); }
+    }
+    @keyframes fade-out {
+        from { opacity: 1; }
+        to { opacity: 0; }
+    }
+    #hex-dump-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 1;
+    }
+    #terminal-content {
+      position: relative;
+      z-index: 2;
+    }
   </style>
 </head>
 <body>
+  
+  <div id="loading-overlay">
+    <!-- Loading sequence content will be generated here by JavaScript -->
+  </div>
+  
+  <canvas id="matrix-background"></canvas>
+
   <div class="container">
     <header>
       <h1>Hi, I'm Willie!<br><b>Cybersecurity Grad</b>, <b>AI/ML Master’s Student</b>, <b>Tech Enthusiast</b></h1>
@@ -208,13 +317,294 @@
     </div>
 
     <div class="social">
-      <a href="https://www.linkedin.com/in/williemcclain922/" target="_blank"><img alt="Willie | LinkedIn" src="https://cdn.jsdelivr.net/npm/simple-icons@v3/icons/linkedin.svg"></a>
-      <a href="https://www.instagram.com/will22cool/" target="_blank"><img alt="Willie | Instagram" src="https://cdn.jsdelivr.net/npm/simple-icons@v3/icons/instagram.svg"></a>
-      <a href="https://www.tiktok.com/@will22cool" target="_blank"><img alt="Willie | TikTok" src="https://cdn.jsdelivr.net/npm/simple-icons@v3/icons/tiktok.svg"></a>
-      <a href="https://www.facebook.com/profile.php?id=100072569739964" target="_blank"><img alt="Willie | Facebook" src="https://cdn.jsdelivr.net/npm/simple-icons@v3/icons/facebook.svg"></a>
-      <a href="https://www.upwork.com/freelancers/~013eca3ce95c0a28db?mp_source=share" target="_blank"><img alt="Willie | Upwork" src="https://cdn.jsdelivr.net/npm/simple-icons@v3/icons/upwork.svg"></a>
-      <a href="https://youtube.com/@techtalksbywillie?si=BgKTyvWvrELFLZZa" target="_blank"><img alt="Willie | YouTube" src="https://cdn.jsdelivr.net/npm/simple-icons@v3/icons/youtube.svg"></a>
+      <a href="https://www.linkedin.com/in/williemcclain922/"><img alt="Willie | LinkedIn" src="https://cdn.jsdelivr.net/npm/simple-icons@v3/icons/linkedin.svg"></a>
+      <a href="https://www.instagram.com/will22cool/"><img alt="Willie | Instagram" src="https://cdn.jsdelivr.net/npm/simple-icons@v3/icons/instagram.svg"></a>
+      <a href="https://www.tiktok.com/@will22cool"><img alt="Willie | TikTok" src="https://cdn.jsdelivr.net/npm/simple-icons@v3/icons/tiktok.svg"></a>
+      <a href="https://www.facebook.com/profile.php?id=100072569739964"><img alt="Willie | Facebook" src="https://cdn.jsdelivr.net/npm/simple-icons@v3/icons/facebook.svg"></a>
+      <a href="https://www.upwork.com/freelancers/~013eca3ce95c0a28db?mp_source=share"><img alt="Willie | Upwork" src="https://cdn.jsdelivr.net/npm/simple-icons@v3/icons/upwork.svg"></a>
+      <a href="https://youtube.com/@techtalksbywillie?si=BgKTyvWvrELFLZZa"><img alt="Willie | YouTube" src="https://cdn.jsdelivr.net/npm/simple-icons@v3/icons/youtube.svg"></a>
     </div>
   </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    // --- STATE MANAGEMENT ---
+    let stage = 'motd'; // motd -> login -> failed -> hackButton -> hacking
+    let loginAttempts = 0;
+    let currentInput = 'username';
+    let loginAttemptData = { username: '', password: '' };
+    let sounds = {};
+    let isToneReady = false;
+
+    // --- DOM REFERENCES ---
+    const overlay = document.getElementById('loading-overlay');
+    const mainContainer = document.querySelector('.container');
+    const matrixCanvas = document.getElementById('matrix-background');
+
+
+    // --- AUDIO SETUP ---
+    if (window.Tone) {
+        sounds = {
+            error: new Tone.NoiseSynth({ noise: { type: 'brown' }, envelope: { attack: 0.01, decay: 0.15, sustain: 0, release: 0.1 } }).toDestination(),
+            typing: new Tone.MembraneSynth({ pitchDecay: 0.008, octaves: 2, envelope: { attack: 0.001, decay: 0.2, sustain: 0 } }).toDestination(),
+            success: new Tone.Synth({ oscillator: { type: 'sine' }, envelope: { attack: 0.01, decay: 0.2, sustain: 0.1, release: 0.5 } }).toDestination()
+        };
+        isToneReady = true;
+    }
+
+    // --- RENDERING LOGIC ---
+    function render() {
+        overlay.innerHTML = ''; // Clear previous content
+        
+        switch (stage) {
+            case 'motd':
+                const motdDiv = document.createElement('div');
+                motdDiv.className = 'font-mono text-center text-xs md:text-sm text-yellow-400 p-4 border-2 border-yellow-500/50 motd-fade-in';
+                motdDiv.innerHTML = `<pre class="whitespace-pre-wrap">*****************************************************************
+** WARNING: THIS IS A PRIVATE AND SECURED SYSTEM.              **
+** All activities are monitored and logged. Unauthorized       **
+** access will be prosecuted to the full extent of the law.    **
+*****************************************************************</pre>`;
+                overlay.appendChild(motdDiv);
+                setTimeout(() => {
+                    stage = 'login';
+                    render();
+                }, 2500);
+                break;
+
+            case 'login':
+                const form = document.createElement('form');
+                form.className = 'font-mono text-green-400 text-sm md:text-base';
+                let formHTML = '';
+                if (loginAttempts > 0) {
+                    formHTML += `<p class="text-red-500">ACCESS DENIED (ATTEMPT ${loginAttempts})</p>`;
+                }
+                formHTML += '<div><span>user@willie.dev:~$ </span></div>';
+
+                if (currentInput === 'username') {
+                    formHTML += `<div><span>login: </span><input type="text" id="login-input" class="bg-transparent border-none outline-none text-green-400" autofocus /><span class="blinking-cursor">|</span></div>`;
+                } else {
+                    formHTML += `<div><span>password: </span><input type="password" id="login-input" class="bg-transparent border-none outline-none text-green-400" autofocus /><span class="blinking-cursor">|</span></div>`;
+                }
+                form.innerHTML = formHTML;
+                overlay.appendChild(form);
+
+                const input = document.getElementById('login-input');
+                input.focus();
+                
+                form.onsubmit = (e) => {
+                    e.preventDefault();
+                    if (currentInput === 'username') {
+                        loginAttemptData.username = input.value;
+                        currentInput = 'password';
+                    } else {
+                        loginAttemptData.password = input.value;
+                        loginAttempts++;
+                        stage = 'failed';
+                    }
+                    render();
+                };
+                break;
+
+            case 'failed':
+                const failedMsg = document.createElement('p');
+                failedMsg.className = 'text-red-500 text-xl animate-pulse';
+                failedMsg.textContent = 'ACCESS DENIED';
+                overlay.appendChild(failedMsg);
+
+                setTimeout(() => {
+                    if (loginAttempts >= 2) {
+                        stage = 'hackButton';
+                    } else {
+                        currentInput = 'username';
+                        stage = 'login';
+                    }
+                    render();
+                }, 1500);
+                break;
+
+            case 'hackButton':
+                const button = document.createElement('button');
+                button.className = 'hack-button';
+                button.textContent = 'HACK ME';
+                button.disabled = !isToneReady;
+                if (!isToneReady) button.textContent = 'LOADING...';
+                overlay.appendChild(button);
+
+                button.onclick = async () => {
+                    if (!isToneReady) return;
+                    await Tone.start();
+                    sounds.error.triggerAttackRelease('2n');
+                    document.body.classList.add('screen-shake');
+                    
+                    const deniedFlash = document.createElement('div');
+                    deniedFlash.className = 'access-denied-flash';
+                    deniedFlash.textContent = 'ACCESS DENIED';
+                    document.body.appendChild(deniedFlash);
+
+                    setTimeout(() => deniedFlash.remove(), 400);
+                    setTimeout(() => document.body.classList.remove('screen-shake'), 400);
+
+                    button.classList.add('shatter');
+                    setTimeout(() => {
+                        stage = 'hacking';
+                        render();
+                    }, 200);
+                };
+                break;
+            
+            case 'hacking':
+                const hackingContainer = document.createElement('div');
+                hackingContainer.className = 'relative w-full h-full flex items-center justify-center';
+                hackingContainer.innerHTML = `
+                    <canvas id="hex-dump-overlay"></canvas>
+                    <div id="terminal-content" class="relative z-10 font-mono text-green-400 text-sm md:text-base p-4 w-full max-w-2xl"></div>
+                `;
+                overlay.appendChild(hackingContainer);
+                runHexDump();
+                runHackingSequence();
+                break;
+        }
+    }
+    
+    // --- ANIMATION LOGIC ---
+    function runHackingSequence() {
+        const terminalContent = document.getElementById('terminal-content');
+        const codeLines = [
+            { text: "Initiating decryption protocol: 'AES-256-CBC'", delay: 500 },
+            { text: "Targeting encrypted data block at 0x5F1A... ", isCommand: true, delay: 1000 },
+            { text: "Generating decryption keys...", delay: 1500 },
+            { text: "Key generation complete. Beginning brute-force.", isCommand: true, delay: 1000 },
+            { text: "DECRYPTING BLOCK 1/5 [▓                    ] 5%", delay: 1000 },
+            { text: "DECRYPTING BLOCK 1/5 [▓▓▓▓                ] 20%", delay: 1000 },
+            { text: "DECRYPTING BLOCK 1/5 [▓▓▓▓▓▓▓▓            ] 40%", delay: 1000 },
+            { text: "DECRYPTING BLOCK 1/5 [▓▓▓▓▓▓▓▓▓▓▓▓        ] 60%", delay: 1000 },
+            { text: "DECRYPTING BLOCK 1/5 [▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓    ] 80%", delay: 1000 },
+            { text: "DECRYPTING BLOCK 1/5 [▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓] 100%", delay: 500 },
+            { text: "Block 1 decrypted. Hash mismatch detected.", isCommand: true, delay: 1000 },
+            { text: "Recalibrating... switching to quantum algorithm.", delay: 1500 },
+            { text: "DECRYPTING BLOCK 2/5 [Quantum Entanglement Active]", delay: 1500 },
+            { text: "DECRYPTING BLOCK 3/5 [Resolving Superposition...]", delay: 1500 },
+            { text: "DECRYPTING BLOCK 4/5 [Collapsing Wave Function...]", delay: 1500 },
+            { text: "DECRYPTING BLOCK 5/5 [Final Key Found!]", delay: 1000 },
+            { text: "Decryption successful. Recompiling source...", isCommand: true, delay: 1500 },
+            { text: "ACCESS GRANTED.", isCommand: true, isSuccess: true },
+        ];
+        
+        let lineIndex = 0;
+
+        function typeNextLine() {
+            if (lineIndex >= codeLines.length) {
+                setTimeout(() => {
+                    overlay.style.transition = 'opacity 0.5s';
+                    overlay.style.opacity = '0';
+                    mainContainer.style.display = 'block';
+                    matrixCanvas.style.display = 'block';
+                    runMatrixBackground();
+                    document.body.style.overflow = 'auto';
+                    setTimeout(() => overlay.remove(), 500);
+                }, 1000);
+                return;
+            }
+            const line = codeLines[lineIndex];
+            const p = document.createElement('p');
+            p.className = 'mb-2';
+            p.innerHTML = `${line.isCommand ? '<span class="text-cyan-400">&gt; </span>' : ''}<span>${line.text}</span><span class="blinking-cursor">|</span>`;
+            
+            if (lineIndex > 0) {
+                const prevLine = terminalContent.querySelector(`p:nth-child(${lineIndex})`);
+                if(prevLine) prevLine.querySelector('.blinking-cursor').remove();
+            }
+
+            terminalContent.appendChild(p);
+
+            if (isToneReady) sounds.typing.triggerAttackRelease('C1', '8n');
+            if (line.isSuccess && isToneReady) sounds.success.triggerAttackRelease('C5', '8n');
+
+            lineIndex++;
+            setTimeout(typeNextLine, line.delay || 500);
+        }
+        typeNextLine();
+    }
+
+    function runHexDump() {
+        const canvas = document.getElementById('hex-dump-overlay');
+        if (!canvas) return;
+        const ctx = canvas.getContext('2d');
+        let animationFrameId;
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        const hexChars = '0123456789ABCDEF';
+        const stream = Array.from({ length: 50 }).map(() => ({
+            x: Math.random() * canvas.width,
+            y: Math.random() * canvas.height,
+            speed: Math.random() * 0.5 + 0.2,
+        }));
+        function draw() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.fillStyle = 'rgba(14, 165, 233, 0.1)';
+            ctx.font = '12px monospace';
+            stream.forEach(s => {
+                const char = hexChars[Math.floor(Math.random() * hexChars.length)];
+                ctx.fillText(char, s.x, s.y);
+                s.y += s.speed;
+                if (s.y > canvas.height) { s.y = 0; s.x = Math.random() * canvas.width; }
+            });
+            animationFrameId = requestAnimationFrame(draw);
+        };
+        draw();
+    }
+    
+    function runMatrixBackground() {
+        const canvas = document.getElementById('matrix-background');
+        if (!canvas) return;
+        const ctx = canvas.getContext('2d');
+        
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        const nameChars = "WILLIE";
+        const fontSize = 16;
+        const columns = Math.floor(canvas.width / fontSize);
+        const rainDrops = [];
+        for (let i = 0; i < columns; i++) {
+            rainDrops[i] = 1;
+        }
+
+        function draw() {
+            ctx.fillStyle = 'rgba(16, 20, 26, 0.05)';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            const neonBlue = '#0052D4';
+            ctx.fillStyle = neonBlue;
+            ctx.shadowColor = '#4D4DFF';
+            ctx.shadowBlur = 7;
+            ctx.font = fontSize + 'px monospace';
+
+            for (let i = 0; i < rainDrops.length; i++) {
+                const text = nameChars.charAt(Math.floor(Math.random() * nameChars.length));
+                ctx.fillText(text, i * fontSize, rainDrops[i] * fontSize);
+
+                if (rainDrops[i] * fontSize > canvas.height && Math.random() > 0.99) {
+                    rainDrops[i] = 0;
+                }
+                rainDrops[i]++;
+            }
+        }
+        
+        setInterval(draw, 33);
+        
+        window.onresize = () => {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        };
+    }
+
+    // --- INITIALIZE ---
+    render();
+});
+</script>
+
 </body>
 </html>
