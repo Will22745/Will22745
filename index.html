@@ -168,13 +168,19 @@
         from { opacity: 0; }
         to { opacity: 1; }
     }
-    .blinking-cursor {
-        animation: blink-caret .75s step-end infinite;
-        color: #0F0;
+    /* --- CHANGE: Replaced blinking cursor span with native caret styling --- */
+    #login-input {
+      background-color: transparent;
+      border: none;
+      outline: none;
+      color: #6ef1a6;
+      caret-color: #0F0;
+      font-family: 'Share Tech Mono', monospace;
+      font-size: inherit;
     }
     @keyframes blink-caret {
-        from, to { color: transparent }
-        50% { color: #0F0; }
+        from, to { border-color: transparent }
+        50% { border-color: #0F0; }
     }
     body.screen-shake {
         animation: shake 0.4s cubic-bezier(.36,.07,.19,.97) both;
@@ -382,9 +388,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 formHTML += '<div><span>user@willie.dev:~$ </span></div>';
 
                 if (currentInput === 'username') {
-                    formHTML += `<div><span>login: </span><input type="text" id="login-input" class="bg-transparent border-none outline-none text-green-400" autofocus /><span class="blinking-cursor">|</span></div>`;
+                    // --- CHANGE: Removed the blinking cursor span ---
+                    formHTML += `<div><span>login: </span><input type="text" id="login-input" autofocus /></div>`;
                 } else {
-                    formHTML += `<div><span>password: </span><input type="password" id="login-input" class="bg-transparent border-none outline-none text-green-400" autofocus /><span class="blinking-cursor">|</span></div>`;
+                    formHTML += `<div><span>password: </span><input type="password" id="login-input" autofocus /></div>`;
                 }
                 form.innerHTML = formHTML;
                 overlay.appendChild(form);
@@ -509,13 +516,8 @@ document.addEventListener('DOMContentLoaded', () => {
             const line = codeLines[lineIndex];
             const p = document.createElement('p');
             p.className = 'mb-2';
-            p.innerHTML = `${line.isCommand ? '<span class="text-cyan-400">&gt; </span>' : ''}<span>${line.text}</span><span class="blinking-cursor">|</span>`;
+            p.innerHTML = `${line.isCommand ? '<span class="text-cyan-400">&gt; </span>' : ''}<span>${line.text}</span>`;
             
-            if (lineIndex > 0) {
-                const prevLine = terminalContent.querySelector(`p:nth-child(${lineIndex})`);
-                if(prevLine) prevLine.querySelector('.blinking-cursor').remove();
-            }
-
             terminalContent.appendChild(p);
 
             if (isToneReady) sounds.typing.triggerAttackRelease('C1', '8n');
@@ -576,9 +578,8 @@ document.addEventListener('DOMContentLoaded', () => {
             ctx.fillStyle = 'rgba(16, 20, 26, 0.05)';
             ctx.fillRect(0, 0, canvas.width, canvas.height);
             
-            // --- CHANGE: Updated color to a neutral grey ---
             ctx.fillStyle = '#AAAAAA';
-            ctx.shadowColor = 'transparent'; // Remove shadow for a non-neon look
+            ctx.shadowColor = 'transparent';
             ctx.shadowBlur = 0;
             ctx.font = fontSize + 'px monospace';
 
