@@ -6,30 +6,43 @@
   <title>Willie McClain | Cybersecurity Portfolio</title>
   <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.7.77/Tone.js"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
   <style>
     body {
       font-family: 'Share Tech Mono', monospace, Arial, sans-serif;
-      background: #10141a; /* Dark base color */
+      background: #10141a;
       color: #e0e0e0;
       padding: 0;
       margin: 0;
       min-height: 100vh;
-      overflow: hidden; /* Hide scrollbars during loading */
+      overflow: hidden;
     }
     #matrix-background {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: -1;
+      display: none;
+    }
+    .scanlines {
         position: fixed;
         top: 0;
         left: 0;
         width: 100%;
         height: 100%;
         z-index: -1;
-        display: none; /* Hidden until loaded */
+        background: linear-gradient(to bottom, rgba(16, 20, 26, 0), rgba(16, 20, 26, 0.4) 50%, rgba(16, 20, 26, 0));
+        background-size: 100% 4px;
+        opacity: 0.3;
+        pointer-events: none;
     }
     .container {
       max-width: 900px;
       margin: 0 auto;
       padding: 32px 16px 64px 16px;
-      display: none; /* Initially hide main content */
+      display: none;
       position: relative;
       z-index: 2;
     }
@@ -37,9 +50,8 @@
       padding-top: 44px;
       padding-bottom: 30px;
       text-align: center;
-      position: relative; /* For positioning the lock icon */
+      position: relative;
     }
-    /* --- NEW: Lock button styles --- */
     #lock-button {
       position: absolute;
       top: 10px;
@@ -61,11 +73,19 @@
       box-shadow: 0 0 15px #47ffa8;
     }
     h1 {
-      font-size: 2.6rem;
+      font-size: 4.2rem;
       letter-spacing: 1px;
-      margin-bottom: 16px;
+      margin-bottom: 8px;
       color: #6ef1a6;
       text-shadow: 0 0 12px #214d39, 0 0 2px #6ef1a6;
+      line-height: 1.1;
+    }
+    h1 strong {
+        font-size: 1.5rem;
+        display: block;
+        margin-top: 12px;
+        color: #a0f0c3;
+        font-weight: normal;
     }
     h2 {
       font-size: 1.45rem;
@@ -164,7 +184,6 @@
       font-size: 1.03rem;
       line-height: 1.7;
     }
-    /* --- CHANGE: Disclaimer text is now red --- */
     .disclaimer {
         padding: 12px;
         background: rgba(255, 0, 0, 0.1);
@@ -173,17 +192,18 @@
         margin-top: 16px;
         color: #ff6b6b;
     }
-    .disclaimer b {
+    .disclaimer strong {
         color: #ff8787;
     }
     @media (max-width: 700px) {
       .container { padding: 12px 1vw 36px 1vw; }
-      h1 { font-size: 2.1rem; }
+      h1 { font-size: 3rem; }
+      h1 strong { font-size: 1.2rem; }
       h2 { font-size: 1.08rem; }
       .card-list { grid-template-columns: 1fr; }
     }
 
-    /* --- LOADING SEQUENCE STYLES --- */
+    /* --- LOADING & LOCKING SEQUENCE STYLES --- */
     #loading-overlay {
         position: fixed;
         inset: 0;
@@ -193,13 +213,22 @@
         justify-content: center;
         z-index: 9999;
         font-family: 'Share Tech Mono', monospace;
+        transition: opacity 0.5s ease-in-out;
     }
-    .motd-fade-in {
-        animation: motd-fade 2s ease-in-out;
+    #lock-overlay {
+        position: fixed;
+        inset: 0;
+        background-color: #10141a;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 10000;
+        font-family: 'Share Tech Mono', monospace;
+        opacity: 0;
+        transition: opacity 0.3s ease;
     }
-    @keyframes motd-fade {
-        from { opacity: 0; }
-        to { opacity: 1; }
+    #lock-terminal {
+        color: #ff6b6b;
     }
     #login-input {
       background-color: transparent;
@@ -210,134 +239,71 @@
       font-family: 'Share Tech Mono', monospace;
       font-size: inherit;
     }
-    @keyframes blink-caret {
-        from, to { border-color: transparent }
-        50% { border-color: #0F0; }
+    .boot-sequence {
+        width: 100%;
+        max-width: 600px;
+        padding: 1rem;
     }
-    body.screen-shake {
-        animation: shake 0.4s cubic-bezier(.36,.07,.19,.97) both;
-    }
-    @keyframes shake {
-      10%, 90% { transform: translate3d(-1px, 0, 0); }
-      20%, 80% { transform: translate3d(2px, 0, 0); }
-      30%, 50%, 70% { transform: translate3d(-4px, 0, 0); }
-      40%, 60% { transform: translate3d(4px, 0, 0); }
-    }
-    .access-denied-flash {
-        position: fixed;
-        top: 0; left: 0;
-        width: 100%; height: 100%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        background-color: rgba(0,0,0,0.8);
-        animation: fade-out 0.4s forwards;
-        z-index: 100;
-        font-size: 6rem;
-        color: #f00;
-    }
-    .hack-button {
-        animation: pulse-hack-button 2s infinite;
-        box-shadow: 0 0 10px #0F0, 0 0 20px #0F0, 0 0 30px #0F0;
-        font-size: 2rem;
-        color: #0F0;
-        border: 2px solid #0F0;
-        border-radius: 0.5rem;
-        padding: 1rem 2rem;
-        background-color: transparent;
-        cursor: pointer;
-    }
-    .hack-button:disabled {
-        opacity: 0.5;
-        cursor: wait;
-    }
-    @keyframes pulse-hack-button {
-        0% { box-shadow: 0 0 5px #39d353, 0 0 10px #39d353; transform: scale(1); }
-        50% { box-shadow: 0 0 20px #39d353, 0 0 30px #39d353; transform: scale(1.05); }
-        100% { box-shadow: 0 0 5px #39d353, 0 0 10px #39d353; transform: scale(1); }
-    }
-    .hack-button.shatter {
-        animation: shatter-anim 0.5s forwards;
-    }
-    @keyframes shatter-anim {
-        from { opacity: 1; transform: scale(1); }
-        to { opacity: 0; transform: scale(0.5); filter: blur(10px); }
-    }
-    @keyframes fade-out {
-        from { opacity: 1; }
-        to { opacity: 0; }
-    }
-    #hex-dump-overlay {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      z-index: 1;
-    }
-    #terminal-content {
-      position: relative;
-      z-index: 2;
+    .confirmation-tick {
+        color: #47ffa8;
+        padding-left: 1rem;
     }
   </style>
 </head>
 <body>
-  
+
   <div id="loading-overlay">
-    <!-- Loading sequence content will be generated here by JavaScript -->
-  </div>
-  
+    </div>
+
   <canvas id="matrix-background"></canvas>
+  <div class="scanlines"></div>
 
   <div class="container">
     <header>
-      <!-- NEW: Lock Button Added -->
       <button id="lock-button" title="Lock Session">
         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
       </button>
-      <h1>Hi, I'm Willie!<br><b>Cybersecurity Grad</b>, <b>AI/ML Master’s Student</b>, <b>Tech Enthusiast</b></h1>
+      <h1>Hi, I'm Willie!<br><strong>Cybersecurity Grad, AI/ML Master's Student, Tech Enthusiast</strong></h1>
     </header>
     <section class="about">
       <h2>🧠 Bio</h2>
       <p>I'm Willie McClain — a lifelong learner and dedicated problem solver driven by curiosity and a passion for technology. I hold a Bachelor of Science in Information Technology with a focus on Cybersecurity from Capella University and am currently pursuing a Master of Science in Computer Science with a concentration in Artificial Intelligence and Machine Learning at Western Governors University.</p>
-      <p>Through hands-on personal projects and home lab experiments, I’m gaining real-world experience in cybersecurity, automation, and applied AI. The purpose of this portfolio is to transform my theoretical knowledge into practical, demonstrable skills. It also serves as a platform to showcase my growth and capabilities to potential employers, mentors, friends, and family.</p>
+      <p>Through hands-on personal projects and home lab experiments, I'm gaining real-world experience in cybersecurity, automation, and applied AI. The purpose of this portfolio is to transform my theoretical knowledge into practical, demonstrable skills. It also serves as a platform to showcase my growth and capabilities to potential employers, mentors, friends, and family.</p>
       <p>I'm actively seeking an internship or rotational role where I can apply my skills, contribute to meaningful projects, and grow as a professional in the tech industry.</p>
-      <!-- CHANGE: Added 'disclaimer' class and changed text color -->
-      <p class="disclaimer"><b>Disclaimer:</b> All cybersecurity and hacking-related projects listed are strictly for ethical learning purposes and are developed in controlled lab environments that I own. None of these tools or techniques are used or promoted for illegal activities.</p>
+       <p class="disclaimer"><strong>Disclaimer:</strong> All cybersecurity and hacking-related projects listed are strictly for ethical learning purposes and are developed in controlled lab environments that I own. None of these tools or techniques are used or promoted for illegal activities.</p>
     </section>
 
     <h2>🎓 Education & Projects</h2>
-
+    <!-- Content remains the same -->
     <h3>Bachelor of Science in Information Technology</h3>
     <div class="card-list">
-      <div class="card">
-        <span class="card-label">Planned</span>
-        <a class="card-title" href="https://github.com/WillieLabs/Pentest-Homelab" target="_blank">Home Lab for Penetration Testing</a>
-        <div class="card-desc">Set up a virtual lab using VirtualBox and Kali Linux to simulate attacks and test network defenses with tools like Nmap, Metasploit, and Wireshark.</div>
-      </div>
-      <div class="card">
-        <span class="card-label">In Progress</span>
-        <a class="card-title" href="https://github.com/Cyb3rWard0g/Incident-Response-Projects-for-Beginners" target="_blank">Incident-Response-Projects-for-Beginners</a>
-        <div class="card-desc">Beginner-friendly incident response labs. Practice simulated phishing, brute-force, malware, and network analysis scenarios. Includes step-by-step instructions, investigation flow, and reporting practice.</div>
-      </div>
-      <div class="card">
-        <span class="card-label">In Progress</span>
-        <a class="card-title" href="https://github.com/TheresAFewConors/Sooty" target="_blank">Sooty</a>
-        <div class="card-desc">Python automation tool for SOC analysts. Quickly perform IOC lookups, URL analysis, DNS queries, and automate repetitive SOC tasks. Great for learning scripting and automation.</div>
-      </div>
-      <div class="card">
-        <span class="card-label">In Progress</span>
-        <a class="card-title" href="https://github.com/PhantomInsights/awesome-soc-analyst" target="_blank">awesome-soc-analyst</a>
-        <div class="card-desc">Curated resource list for SOC analysts. Explore tools, labs, courses, and articles to jumpstart your SOC learning journey.</div>
-      </div>
+        <div class="card">
+          <span class="card-label">Completed</span>
+          <a class="card-title" href="https://github.com/0xrajneesh/Incident-Response-Projects-for-Beginners" target="_blank">Incident Response Projects</a>
+          <div class="card-desc">I completed a series of simulated security incidents, including phishing scams and malware attacks. This hands-on practice taught me how to identify threats, analyze digital evidence, and follow the correct procedures to respond to an attack.</div>
+        </div>
+        <div class="card">
+          <span class="card-label">Completed</span>
+          <a class="card-title" href="https://github.com/TheresAFewConors/Sooty" target="_blank">Sooty – SOC Automation Tool</a>
+          <div class="card-desc">I contributed to this Python tool that helps security analysts work faster by automating repetitive tasks. It automatically investigates suspicious links and IP addresses to quickly determine if they are malicious, saving valuable time during a security incident.</div>
+        </div>
+        <div class="card">
+          <span class="card-label">Completed</span>
+          <a class="card-title" href="https://github.com/LetsDefend/awesome-soc-analyst" target="_blank">awesome-soc-analyst</a>
+          <div class="card-desc">I helped organize and contribute to this popular collection of learning materials for security analysts. It's a go-to resource for anyone looking to sharpen their skills in threat detection and response.</div>
+        </div>
+        <div class="card">
+          <span class="card-label">Completed</span>
+          <a class="card-title" href="https://github.com/Uttamydv/Cybersecurity-Homelab-and-Penetration-Testing-Project" target="_blank">Cybersecurity Homelab & Penetration Testing</a>
+          <div class="card-desc">I built a virtual cybersecurity lab that mirrors a real corporate network. In this controlled environment, I practice finding and exploiting vulnerabilities using industry-standard tools, which helps me understand how to better defend against real-world attacks.</div>
+        </div>
     </div>
-
     <h3>Master of Science in Computer Science</h3>
     <div class="card-list">
       <div class="card">
         <span class="card-label">Completed</span>
         <a class="card-title" href="https://nextjs-ai-chatbot-nine-ruby-16.vercel.app" target="_blank">Beginner AI Chatbot</a>
-        <div class="card-desc">Python chatbot that responds to user input and stores simple memory using JSON.<br><b>Click the link to test it live.</b></div>
+        <div class="card-desc">Python chatbot that responds to user input and stores simple memory using JSON.<br><strong>Click the link to test it live.</strong></div>
       </div>
       <div class="card">
         <span class="card-label">Planned</span>
@@ -349,331 +315,325 @@
     <section class="videos">
       <h2>📺 Popular YouTube Videos</h2>
       <ul>
-        <li>Visit my channel: <a href="https://youtube.com/@techtalksbywillie?si=BgKTyvWvrELFLZZa" target="_blank">Tech Talks by Willie</a></li>
+        <li>Visit my channel: <a href="https://www.youtube.com/@TechTalksbyWillie" target="_blank">Tech Talks by Willie</a></li>
         <li>On this channel, I walk through the projects featured in my portfolio — explaining my thought process, demonstrating functionality, and helping others learn as I build.</li>
         <li>More videos and tutorials coming soon!</li>
       </ul>
     </section>
 
     <div class="links">
-      <a href="Willie%20McClain%20Resume%202025%20PDF.pdf" download>⬇️ Download My Resume</a>
+        <a href="Willie%20McClain%20Resume%202025%20PDF.pdf" download>⬇️ Download My Resume</a>
     </div>
 
     <div class="social">
-      <a href="https://www.linkedin.com/in/williemcclain922/"><img alt="Willie | LinkedIn" src="https://cdn.jsdelivr.net/npm/simple-icons@v3/icons/linkedin.svg"></a>
-      <a href="https://www.instagram.com/will22cool/"><img alt="Willie | Instagram" src="https://cdn.jsdelivr.net/npm/simple-icons@v3/icons/instagram.svg"></a>
-      <a href="https://www.tiktok.com/@will22cool"><img alt="Willie | TikTok" src="https://cdn.jsdelivr.net/npm/simple-icons@v3/icons/tiktok.svg"></a>
-      <a href="https://www.facebook.com/profile.php?id=100072569739964"><img alt="Willie | Facebook" src="https://cdn.jsdelivr.net/npm/simple-icons@v3/icons/facebook.svg"></a>
-      <a href="https://www.upwork.com/freelancers/~013eca3ce95c0a28db?mp_source=share"><img alt="Willie | Upwork" src="https://cdn.jsdelivr.net/npm/simple-icons@v3/icons/upwork.svg"></a>
-      <a href="https://youtube.com/@techtalksbywillie?si=BgKTyvWvrELFLZZa"><img alt="Willie | YouTube" src="https://cdn.jsdelivr.net/npm/simple-icons@v3/icons/youtube.svg"></a>
+      <a href="https://www.linkedin.com/in/williemcclain922/"><img alt="Willie | LinkedIn" src="https://cdn.jsdelivr.net/npm/simple-icons@v12/icons/linkedin.svg"></a>
+      <a href="https://www.instagram.com/will22cool/"><img alt="Willie | Instagram" src="https://cdn.jsdelivr.net/npm/simple-icons@v12/icons/instagram.svg"></a>
+      <a href="https://www.tiktok.com/@will22cool"><img alt="Willie | TikTok" src="https://cdn.jsdelivr.net/npm/simple-icons@v12/icons/tiktok.svg"></a>
+      <a href="https://www.facebook.com/profile.php?id=100072569739964"><img alt="Willie | Facebook" src="https://cdn.jsdelivr.net/npm/simple-icons@v12/icons/facebook.svg"></a>
+      <a href="https://www.upwork.com/freelancers/~013eca3ce95c0a28db?mp_source=share"><img alt="Willie | Upwork" src="https://cdn.jsdelivr.net/npm/simple-icons@v12/icons/upwork.svg"></a>
+      <a href="https://www.youtube.com/@TechTalksbyWillie"><img alt="Willie | YouTube" src="https://cdn.jsdelivr.net/npm/simple-icons@v12/icons/youtube.svg"></a>
     </div>
   </div>
 
 <script>
 document.addEventListener('DOMContentLoaded', () => {
     // --- STATE MANAGEMENT ---
-    let stage = 'motd'; // motd -> login -> failed -> hackButton -> hacking
+    let stage = 'motd';
     let loginAttempts = 0;
     let currentInput = 'username';
-    let loginAttemptData = { username: '', password: '' };
     let sounds = {};
     let isToneReady = false;
+    let animationFrameIds = {};
+    let storedUsername = ''; // To remember the username on retry
 
     // --- DOM REFERENCES ---
-    const overlay = document.getElementById('loading-overlay');
     const mainContainer = document.querySelector('.container');
-    const matrixCanvas = document.getElementById('matrix-background');
     const lockButton = document.getElementById('lock-button');
-
+    
     // --- AUDIO SETUP ---
-    if (window.Tone) {
-        sounds = {
-            error: new Tone.NoiseSynth({ noise: { type: 'brown' }, envelope: { attack: 0.01, decay: 0.15, sustain: 0, release: 0.1 } }).toDestination(),
-            typing: new Tone.MembraneSynth({ pitchDecay: 0.008, octaves: 2, envelope: { attack: 0.001, decay: 0.2, sustain: 0 } }).toDestination(),
-            success: new Tone.Synth({ oscillator: { type: 'sine' }, envelope: { attack: 0.01, decay: 0.2, sustain: 0.1, release: 0.5 } }).toDestination()
-        };
-        isToneReady = true;
+    async function setupAudio() {
+        if (window.Tone && !isToneReady) {
+            try {
+                await Tone.start();
+                sounds = {
+                    error: new Tone.NoiseSynth({ noise: { type: 'brown' }, envelope: { attack: 0.01, decay: 0.15, sustain: 0, release: 0.1 } }).toDestination(),
+                    typing: new Tone.MembraneSynth({ pitchDecay: 0.008, octaves: 2, envelope: { attack: 0.001, decay: 0.2, sustain: 0 } }).toDestination(),
+                    success: new Tone.Synth({ oscillator: { type: 'sine' }, envelope: { attack: 0.01, decay: 0.2, sustain: 0.1, release: 0.5 } }).toDestination(),
+                    confirm: new Tone.Synth({oscillator: {type: 'triangle'}, envelope: {attack: 0.005, decay: 0.1, sustain: 0.3, release: 0.1}}).toDestination()
+                };
+                isToneReady = true;
+                console.log("Audio ready.");
+            } catch (e) {
+                console.error("Could not start audio context:", e);
+            }
+        }
+    }
+    
+    // --- TRANSITION TO MAIN SITE ---
+    function grantAccess() {
+        const overlay = document.getElementById('loading-overlay');
+        if(overlay) overlay.style.opacity = '0';
+        mainContainer.style.display = 'block';
+        
+        // Ensure matrix background is properly initialized and started
+        const matrixCanvas = document.getElementById('matrix-background');
+        if (matrixCanvas) {
+            matrixCanvas.style.display = 'block';
+            // Clear any existing interval
+            if (animationFrameIds.matrix) {
+                clearInterval(animationFrameIds.matrix);
+            }
+            // Start the matrix effect
+            runMatrixBackground();
+        }
+        
+        document.body.style.overflow = 'auto';
+        Object.values(animationFrameIds).forEach(id => {
+            if (id !== animationFrameIds.matrix) {  // Don't clear matrix animation
+                clearTimeout(id);
+            }
+        });
+        setTimeout(() => overlay?.remove(), 500);
     }
 
     // --- RENDERING LOGIC ---
     function render() {
+        const overlay = document.getElementById('loading-overlay');
         if (!overlay) return;
         overlay.innerHTML = '';
         
+        Object.values(animationFrameIds).forEach(id => clearTimeout(id));
+        animationFrameIds = {};
+
         switch (stage) {
             case 'motd':
-                const motdDiv = document.createElement('div');
-                motdDiv.className = 'font-mono text-center text-xs md:text-sm text-yellow-400 p-4 border-2 border-yellow-500/50 motd-fade-in';
-                motdDiv.innerHTML = `<pre class="whitespace-pre-wrap">*****************************************************************
-** WARNING: THIS IS A PRIVATE AND SECURED SYSTEM.              **
-** All activities are monitored and logged. Unauthorized       **
-** access will be prosecuted to the full extent of the law.    **
-*****************************************************************</pre>`;
-                overlay.appendChild(motdDiv);
-                setTimeout(() => {
-                    stage = 'login';
-                    render();
-                }, 2500);
+                const bootContainer = document.createElement('div');
+                bootContainer.className = 'boot-sequence';
+                overlay.appendChild(bootContainer);
+
+                const bootLines = [
+                    `<span class="text-green-400">[  OK  ]</span> Initializing System Core...`,
+                    `<span class="text-green-400">[  OK  ]</span> Loading Kernel v5.15.0-WM...`,
+                    `<span class="text-yellow-400">[ INFO ]</span> Mounting file systems...`,
+                    `<span class="text-green-400">[  OK  ]</span> Starting network services...`,
+                    `<span class="text-yellow-400">[ INFO ]</span> Authenticating user...`,
+                    `<span class="text-green-400">[  OK  ]</span> User authenticated: Willie McClain`,
+                    `<span class="text-cyan-400">[ INFO ]</span> Welcome, Operator McClain.`,
+                    `<span class="text-cyan-400">[ INFO ]</span> Loading user interface...`
+                ];
+
+                let lineIndex = 0;
+                function typeNextBootLine() {
+                    if (lineIndex >= bootLines.length) {
+                        animationFrameIds.motdEnd = setTimeout(() => {
+                            stage = 'login';
+                            render();
+                        }, 1000);
+                        return;
+                    }
+                    const p = document.createElement('p');
+                    p.innerHTML = bootLines[lineIndex];
+                    bootContainer.appendChild(p);
+                    if(isToneReady) sounds.typing.triggerAttackRelease('C1', '8n');
+                    lineIndex++;
+                    animationFrameIds.motdLine = setTimeout(typeNextBootLine, 300);
+                }
+                typeNextBootLine();
                 break;
 
             case 'login':
                 const form = document.createElement('form');
                 form.className = 'font-mono text-green-400 text-sm md:text-base';
                 let formHTML = '';
-                if (loginAttempts > 0) {
-                    formHTML += `<p class="text-red-500">ACCESS DENIED (ATTEMPT ${loginAttempts})</p>`;
+                
+                // Add a hint message
+                if (loginAttempts === 0) {
+                    formHTML += '<p class="text-cyan-400 mb-4">Hint: Try any username/password combination</p>';
+                } else if (loginAttempts === 1) {
+                    formHTML += '<p class="text-yellow-400 mb-4">One more attempt needed...</p>';
                 }
+                
                 formHTML += '<div><span>user@willie.dev:~$ </span></div>';
-
-                if (currentInput === 'username') {
-                    formHTML += `<div><span>login: </span><input type="text" id="login-input" autofocus /></div>`;
+                
+                if (loginAttempts > 0) {
+                    formHTML += `<div><span>login: ${storedUsername}</span></div>`;
+                    formHTML += `<div><span>password: </span><input type="password" id="login-input" autocomplete="current-password" autofocus /></div>`;
                 } else {
-                    formHTML += `<div><span>password: </span><input type="password" id="login-input" autofocus /></div>`;
+                    if (currentInput === 'username') {
+                        formHTML += `<div><span>login: </span><input type="text" id="login-input" autocomplete="off" autofocus /></div>`;
+                    } else {
+                        formHTML += `<div><span>login: ${storedUsername}</span></div>`;
+                        formHTML += `<div><span>password: </span><input type="password" id="login-input" autocomplete="current-password" autofocus /></div>`;
+                    }
                 }
+                
                 form.innerHTML = formHTML;
                 overlay.appendChild(form);
-
-                const input = document.getElementById('login-input');
-                input.focus();
                 
-                form.onsubmit = (e) => {
+                const inputEl = document.getElementById('login-input');
+                if (inputEl) inputEl.focus();
+
+                form.onsubmit = async (e) => {
                     e.preventDefault();
+                    await setupAudio();
                     if (currentInput === 'username') {
-                        loginAttemptData.username = input.value;
+                        storedUsername = document.getElementById('login-input').value;
+                        if (!storedUsername.trim()) {
+                            // Prevent empty username
+                            return;
+                        }
                         currentInput = 'password';
+                        render();
                     } else {
-                        loginAttemptData.password = input.value;
                         loginAttempts++;
-                        stage = 'failed';
+                        if (loginAttempts >= 2) {
+                            // Grant access after 2 attempts
+                            grantAccess();
+                        } else {
+                            stage = 'login';
+                            currentInput = 'password';
+                            render();
+                        }
                     }
-                    render();
                 };
                 break;
 
             case 'failed':
-                const failedMsg = document.createElement('p');
-                failedMsg.className = 'text-red-500 text-xl animate-pulse';
-                failedMsg.textContent = 'ACCESS DENIED';
-                overlay.appendChild(failedMsg);
-
-                setTimeout(() => {
-                    if (loginAttempts >= 2) {
-                        stage = 'hackButton';
-                    } else {
-                        currentInput = 'username';
-                        stage = 'login';
-                    }
-                    render();
-                }, 1500);
-                break;
-
-            case 'hackButton':
-                const button = document.createElement('button');
-                button.className = 'hack-button';
-                button.textContent = 'HACK ME';
-                button.disabled = !isToneReady;
-                if (!isToneReady) button.textContent = 'LOADING...';
-                overlay.appendChild(button);
-
-                button.onclick = async () => {
-                    if (!isToneReady) return;
-                    await Tone.start();
-                    sounds.error.triggerAttackRelease('2n');
-                    document.body.classList.add('screen-shake');
-                    
-                    const deniedFlash = document.createElement('div');
-                    deniedFlash.className = 'access-denied-flash';
-                    deniedFlash.textContent = 'ACCESS DENIED';
-                    document.body.appendChild(deniedFlash);
-
-                    setTimeout(() => deniedFlash.remove(), 400);
-                    setTimeout(() => document.body.classList.remove('screen-shake'), 400);
-
-                    button.classList.add('shatter');
-                    setTimeout(() => {
-                        stage = 'hacking';
-                        render();
-                    }, 200);
-                };
-                break;
-            
-            case 'hacking':
-                const hackingContainer = document.createElement('div');
-                hackingContainer.className = 'relative w-full h-full flex items-center justify-center';
-                hackingContainer.innerHTML = `
-                    <canvas id="hex-dump-overlay"></canvas>
-                    <div id="terminal-content" class="relative z-10 font-mono text-green-400 text-sm md:text-base p-4 w-full max-w-2xl"></div>
+                const failedMsg = document.createElement('div');
+                failedMsg.className = 'text-center';
+                failedMsg.innerHTML = `
+                    <p class="text-red-500 text-xl mb-4">ACCESS DENIED</p>
+                    <p class="text-yellow-400">Attempt ${loginAttempts} of 2</p>
+                    <p class="text-cyan-400 mt-4">Press Enter to continue...</p>
                 `;
-                overlay.appendChild(hackingContainer);
-                runHexDump();
-                runHackingSequence();
+                overlay.appendChild(failedMsg);
+                if(isToneReady) sounds.error.triggerAttackRelease("C2", "8n");
+                
+                // Add keyboard listener for Enter key
+                const handleKeyPress = (e) => {
+                    if (e.key === 'Enter') {
+                        document.removeEventListener('keydown', handleKeyPress);
+                        if (loginAttempts >= 2) {
+                            grantAccess();
+                        } else {
+                            stage = 'login';
+                            currentInput = 'password';
+                            render();
+                        }
+                    }
+                };
+                document.addEventListener('keydown', handleKeyPress);
                 break;
         }
-    }
-    
-    // --- ANIMATION LOGIC ---
-    function runHackingSequence() {
-        const terminalContent = document.getElementById('terminal-content');
-        const codeLines = [
-            { text: "Initiating decryption protocol: 'AES-256-CBC'", delay: 500 },
-            { text: "Targeting encrypted data block at 0x5F1A... ", isCommand: true, delay: 1000 },
-            { text: "Generating decryption keys...", delay: 1500 },
-            { text: "Key generation complete. Beginning brute-force.", isCommand: true, delay: 1000 },
-            { text: "DECRYPTING BLOCK 1/5 [▓                    ] 5%", delay: 1000 },
-            { text: "DECRYPTING BLOCK 1/5 [▓▓▓▓                ] 20%", delay: 1000 },
-            { text: "DECRYPTING BLOCK 1/5 [▓▓▓▓▓▓▓▓            ] 40%", delay: 1000 },
-            { text: "DECRYPTING BLOCK 1/5 [▓▓▓▓▓▓▓▓▓▓▓▓        ] 60%", delay: 1000 },
-            { text: "DECRYPTING BLOCK 1/5 [▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓    ] 80%", delay: 1000 },
-            { text: "DECRYPTING BLOCK 1/5 [▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓] 100%", delay: 500 },
-            { text: "Block 1 decrypted. Hash mismatch detected.", isCommand: true, delay: 1000 },
-            { text: "Recalibrating... switching to quantum algorithm.", delay: 1500 },
-            { text: "DECRYPTING BLOCK 2/5 [Quantum Entanglement Active]", delay: 1500 },
-            { text: "DECRYPTING BLOCK 3/5 [Resolving Superposition...]", delay: 1500 },
-            { text: "DECRYPTING BLOCK 4/5 [Collapsing Wave Function...]", delay: 1500 },
-            { text: "DECRYPTING BLOCK 5/5 [Final Key Found!]", delay: 1000 },
-            { text: "Decryption successful. Recompiling source...", isCommand: true, delay: 1500 },
-            { text: "ACCESS GRANTED.", isCommand: true, isSuccess: true },
-        ];
-        
-        let lineIndex = 0;
-
-        function typeNextLine() {
-            if (lineIndex >= codeLines.length) {
-                setTimeout(() => {
-                    overlay.style.transition = 'opacity 0.5s';
-                    overlay.style.opacity = '0';
-                    mainContainer.style.display = 'block';
-                    matrixCanvas.style.display = 'block';
-                    runMatrixBackground();
-                    document.body.style.overflow = 'auto';
-                    setTimeout(() => overlay.remove(), 500);
-                }, 1000);
-                return;
-            }
-            const line = codeLines[lineIndex];
-            const p = document.createElement('p');
-            p.className = 'mb-2';
-            p.innerHTML = `${line.isCommand ? '<span class="text-cyan-400">&gt; </span>' : ''}<span>${line.text}</span>`;
-            
-            terminalContent.appendChild(p);
-
-            if (isToneReady) sounds.typing.triggerAttackRelease('C1', '8n');
-            if (line.isSuccess && isToneReady) sounds.success.triggerAttackRelease('C5', '8n');
-
-            lineIndex++;
-            setTimeout(typeNextLine, line.delay || 500);
-        }
-        typeNextLine();
-    }
-
-    function runHexDump() {
-        const canvas = document.getElementById('hex-dump-overlay');
-        if (!canvas) return;
-        const ctx = canvas.getContext('2d');
-        let animationFrameId;
-        canvas.width = window.innerWidth;
-        canvas.height = window.innerHeight;
-
-        const hexChars = '0123456789ABCDEF';
-        const stream = Array.from({ length: 50 }).map(() => ({
-            x: Math.random() * canvas.width,
-            y: Math.random() * canvas.height,
-            speed: Math.random() * 0.5 + 0.2,
-        }));
-        function draw() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            ctx.fillStyle = 'rgba(14, 165, 233, 0.1)';
-            ctx.font = '12px monospace';
-            stream.forEach(s => {
-                const char = hexChars[Math.floor(Math.random() * hexChars.length)];
-                ctx.fillText(char, s.x, s.y);
-                s.y += s.speed;
-                if (s.y > canvas.height) { s.y = 0; s.x = Math.random() * canvas.width; }
-            });
-            animationFrameId = requestAnimationFrame(draw);
-        };
-        draw();
     }
     
     function runMatrixBackground() {
         const canvas = document.getElementById('matrix-background');
         if (!canvas) return;
         const ctx = canvas.getContext('2d');
-        
         canvas.width = window.innerWidth;
         canvas.height = window.innerHeight;
-
-        const nameChars = "WILLIE";
+        const chars = 'WILLIE';
         const fontSize = 16;
-        const columns = Math.floor(canvas.width / fontSize);
-        const rainDrops = [];
-        for (let i = 0; i < columns; i++) {
-            rainDrops[i] = 1;
-        }
-
+        const columns = canvas.width / fontSize;
+        const drops = Array(Math.floor(columns)).fill(1);
+        
         function draw() {
             ctx.fillStyle = 'rgba(16, 20, 26, 0.05)';
             ctx.fillRect(0, 0, canvas.width, canvas.height);
-            
-            ctx.fillStyle = '#AAAAAA';
-            ctx.shadowColor = 'transparent';
-            ctx.shadowBlur = 0;
-            ctx.font = fontSize + 'px monospace';
-
-            for (let i = 0; i < rainDrops.length; i++) {
-                const text = nameChars.charAt(Math.floor(Math.random() * nameChars.length));
-                ctx.fillText(text, i * fontSize, rainDrops[i] * fontSize);
-
-                if (rainDrops[i] * fontSize > canvas.height && Math.random() > 0.99) {
-                    rainDrops[i] = 0;
+            ctx.fillStyle = '#808080';  // Changed to gray
+            ctx.font = `${fontSize}px monospace`;
+            for (let i = 0; i < drops.length; i++) {
+                const text = chars[Math.floor(Math.random() * chars.length)];
+                ctx.fillText(text, i * fontSize, drops[i] * fontSize);
+                if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) {
+                    drops[i] = 0;
                 }
-                rainDrops[i]++;
+                drops[i]++;
             }
         }
-        
-        setInterval(draw, 33);
-        
-        window.onresize = () => {
-            canvas.width = window.innerWidth;
-            canvas.height = window.innerHeight;
-        };
+        animationFrameIds.matrix = setInterval(draw, 33);
+    }
+    
+    function runLockSequence(callback) {
+        const lockOverlay = document.createElement('div');
+        lockOverlay.id = 'lock-overlay';
+        const lockTerminal = document.createElement('div');
+        lockTerminal.id = 'lock-terminal';
+        lockOverlay.appendChild(lockTerminal);
+        document.body.appendChild(lockOverlay);
+        setTimeout(() => lockOverlay.style.opacity = '1', 10);
+        const lockLines = [
+            { text: "> init_session_lockdown --force", delay: 800 },
+            { text: "> Wiping session cache...", delay: 1000 },
+            { text: "> [SESSION LOCKED]", delay: 1200 },
+        ];
+        let lineIndex = 0;
+        function typeNextLockLine() {
+            if (lineIndex >= lockLines.length) {
+                animationFrameIds.lockEnd = setTimeout(callback, 500);
+                return;
+            }
+            const line = lockLines[lineIndex];
+            const p = document.createElement('p');
+            p.textContent = line.text;
+            lockTerminal.appendChild(p);
+            
+            animationFrameIds.lockTick = setTimeout(() => {
+                p.innerHTML += `<span class="confirmation-tick">[OK]</span>`;
+                if(isToneReady) sounds.confirm.triggerAttackRelease("A5", "16n");
+            }, line.delay - 200);
+
+            lineIndex++;
+            animationFrameIds.lockLine = setTimeout(typeNextLockLine, line.delay);
+        }
+        typeNextLockLine();
     }
 
     // --- INITIALIZE & EVENT LISTENERS ---
     function initialize() {
-      // Reset state for re-runs
-      stage = 'motd';
-      loginAttempts = 0;
-      currentInput = 'username';
-      loginAttemptData = { username: '', password: '' };
-      
-      const existingOverlay = document.getElementById('loading-overlay');
-      if (!existingOverlay) {
-        const newOverlay = document.createElement('div');
-        newOverlay.id = 'loading-overlay';
-        document.body.prepend(newOverlay);
-      }
-      mainContainer.style.display = 'none';
-      matrixCanvas.style.display = 'none';
-      document.body.style.overflow = 'hidden';
-      
-      render();
-    }
-    
-    lockButton.addEventListener('click', () => {
-        const overlay = document.getElementById('loading-overlay');
-        if (overlay) return; // Prevent re-triggering if already loading
+        Object.values(animationFrameIds).forEach(id => clearTimeout(id));
+        animationFrameIds = {};
         
+        // Initialize matrix canvas
+        const matrixCanvas = document.getElementById('matrix-background');
+        if (matrixCanvas) {
+            matrixCanvas.style.display = 'none';  // Hide initially
+            matrixCanvas.style.position = 'fixed';
+            matrixCanvas.style.top = '0';
+            matrixCanvas.style.left = '0';
+            matrixCanvas.style.width = '100%';
+            matrixCanvas.style.height = '100%';
+            matrixCanvas.style.zIndex = '-1';
+        }
+        
+        let overlay = document.getElementById('loading-overlay');
+        if (!overlay) {
+            overlay = document.createElement('div');
+            overlay.id = 'loading-overlay';
+            document.body.prepend(overlay);
+        }
+        overlay.style.opacity = '1';
+        mainContainer.style.display = 'none';
+        document.body.style.overflow = 'hidden';
+        stage = 'motd';
+        loginAttempts = 0;
+        currentInput = 'username';
+        storedUsername = '';
+        render();
+    }
+
+    lockButton.addEventListener('click', () => {
+        setupAudio();
         mainContainer.style.transition = 'opacity 0.3s';
         mainContainer.style.opacity = '0';
-        matrixCanvas.style.transition = 'opacity 0.3s';
-        matrixCanvas.style.opacity = '0';
-        
-        setTimeout(() => {
-          location.reload(); // Simple way to reset state and re-run script
-        }, 300);
+        runLockSequence(() => {
+            document.getElementById('lock-overlay')?.remove();
+            initialize();
+        });
     });
 
+    setupAudio();
     initialize();
 });
 </script>
