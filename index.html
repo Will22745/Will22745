@@ -228,6 +228,9 @@
         transition: opacity 0.3s ease;
     }
     #lock-terminal {
+        width: 100%;
+        max-width: 600px;
+        padding: 1rem;
         color: #ff6b6b;
     }
     #login-input {
@@ -239,7 +242,7 @@
       font-family: 'Share Tech Mono', monospace;
       font-size: inherit;
     }
-    .boot-sequence {
+    .boot-sequence, .bypass-sequence {
         width: 100%;
         max-width: 600px;
         padding: 1rem;
@@ -248,12 +251,43 @@
         color: #47ffa8;
         padding-left: 1rem;
     }
+    #bypass-button {
+        background-color: #e082ff;
+        color: #10141a;
+        font-family: 'Share Tech Mono', monospace;
+        border: none;
+        padding: 10px 20px;
+        margin-top: 20px;
+        cursor: pointer;
+        font-size: 1.1rem;
+        text-shadow: 0 0 5px #e082ff;
+        border-radius: 4px;
+        transition: all 0.2s ease;
+    }
+    #bypass-button:hover {
+        box-shadow: 0 0 15px #e082ff;
+        transform: scale(1.05);
+    }
+    .progress-bar-container {
+        width: 80%;
+        height: 20px;
+        border: 1px solid #61d2ff;
+        border-radius: 4px;
+        margin-top: 20px;
+        padding: 2px;
+    }
+    .progress-bar {
+        width: 0%;
+        height: 100%;
+        background-color: #61d2ff;
+        border-radius: 2px;
+        transition: width 0.5s linear;
+    }
   </style>
 </head>
 <body>
 
-  <div id="loading-overlay">
-    </div>
+  <div id="loading-overlay"></div>
 
   <canvas id="matrix-background"></canvas>
   <div class="scanlines"></div>
@@ -274,7 +308,6 @@
     </section>
 
     <h2>🎓 Education & Projects</h2>
-    <!-- Content remains the same -->
     <h3>Bachelor of Science in Information Technology</h3>
     <div class="card-list">
         <div class="card">
@@ -339,17 +372,30 @@
 document.addEventListener('DOMContentLoaded', () => {
     // --- STATE MANAGEMENT ---
     let stage = 'motd';
-    let loginAttempts = 0;
+    let loginAttempts = 0; // Tracks password attempts
     let currentInput = 'username';
     let sounds = {};
     let isToneReady = false;
     let animationFrameIds = {};
-    let storedUsername = ''; // To remember the username on retry
+    let storedUsername = '';
 
     // --- DOM REFERENCES ---
     const mainContainer = document.querySelector('.container');
     const lockButton = document.getElementById('lock-button');
     
+    // --- TEXT-TO-SPEECH FUNCTION ---
+    function speak(text, rate = 0.8, pitch = 0.7) {
+        if ('speechSynthesis' in window) {
+            window.speechSynthesis.cancel(); 
+            const utterance = new SpeechSynthesisUtterance(text);
+            utterance.rate = rate;
+            utterance.pitch = pitch;
+            window.speechSynthesis.speak(utterance);
+        } else {
+            console.warn("Text-to-speech is not supported in this browser.");
+        }
+    }
+
     // --- AUDIO SETUP ---
     async function setupAudio() {
         if (window.Tone && !isToneReady) {
@@ -359,10 +405,10 @@ document.addEventListener('DOMContentLoaded', () => {
                     error: new Tone.NoiseSynth({ noise: { type: 'brown' }, envelope: { attack: 0.01, decay: 0.15, sustain: 0, release: 0.1 } }).toDestination(),
                     typing: new Tone.MembraneSynth({ pitchDecay: 0.008, octaves: 2, envelope: { attack: 0.001, decay: 0.2, sustain: 0 } }).toDestination(),
                     success: new Tone.Synth({ oscillator: { type: 'sine' }, envelope: { attack: 0.01, decay: 0.2, sustain: 0.1, release: 0.5 } }).toDestination(),
-                    confirm: new Tone.Synth({oscillator: {type: 'triangle'}, envelope: {attack: 0.005, decay: 0.1, sustain: 0.3, release: 0.1}}).toDestination()
+                    confirm: new Tone.Synth({oscillator: {type: 'triangle'}, envelope: {attack: 0.005, decay: 0.1, sustain: 0.3, release: 0.1}}).toDestination(),
+                    bypass: new Tone.PluckSynth({attackNoise: 0.5, dampening: 4000, resonance: 0.9}).toDestination()
                 };
                 isToneReady = true;
-                console.log("Audio ready.");
             } catch (e) {
                 console.error("Could not start audio context:", e);
             }
@@ -371,15 +417,17 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // --- TRANSITION TO MAIN SITE ---
     function grantAccess() {
+        speak('Access Granted. Welcome, Operator McClain.');
+        if(isToneReady) sounds.success.triggerAttackRelease("C4", "0.5s");
+
         const overlay = document.getElementById('loading-overlay');
         if(overlay) overlay.style.opacity = '0';
         mainContainer.style.display = 'block';
         
-        // Ensure matrix background is properly initialized and started
         const matrixCanvas = document.getElementById('matrix-background');
         if (matrixCanvas) {
             matrixCanvas.style.display = 'block';
-            // Clear any existing interval
+            // Clear any old interval just in case
             if (animationFrameIds.matrix) {
                 clearInterval(animationFrameIds.matrix);
             }
@@ -388,12 +436,19 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         
         document.body.style.overflow = 'auto';
-        Object.values(animationFrameIds).forEach(id => {
-            if (id !== animationFrameIds.matrix) {  // Don't clear matrix animation
-                clearTimeout(id);
+        // Clear all timers EXCEPT the matrix one
+        Object.keys(animationFrameIds).forEach(key => {
+             if (key !== 'matrix') {
+                clearTimeout(animationFrameIds[key]);
+                clearInterval(animationFrameIds[key]);
             }
         });
-        setTimeout(() => overlay?.remove(), 500);
+        // Hide the overlay instead of removing it to prevent issues on restart
+        setTimeout(() => {
+            if (overlay) {
+                overlay.style.display = 'none'; 
+            }
+        }, 500);
     }
 
     // --- RENDERING LOGIC ---
@@ -402,7 +457,10 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!overlay) return;
         overlay.innerHTML = '';
         
-        Object.values(animationFrameIds).forEach(id => clearTimeout(id));
+        Object.values(animationFrameIds).forEach(id => {
+            clearTimeout(id);
+            clearInterval(id);
+        });
         animationFrameIds = {};
 
         switch (stage) {
@@ -410,18 +468,16 @@ document.addEventListener('DOMContentLoaded', () => {
                 const bootContainer = document.createElement('div');
                 bootContainer.className = 'boot-sequence';
                 overlay.appendChild(bootContainer);
-
                 const bootLines = [
-                    `<span class="text-green-400">[  OK  ]</span> Initializing System Core...`,
-                    `<span class="text-green-400">[  OK  ]</span> Loading Kernel v5.15.0-WM...`,
+                    `<span class="text-green-400">[&nbsp; OK&nbsp; ]</span> Initializing System Core...`,
+                    `<span class="text-green-400">[&nbsp; OK&nbsp; ]</span> Loading Kernel v5.15.0-WM...`,
                     `<span class="text-yellow-400">[ INFO ]</span> Mounting file systems...`,
-                    `<span class="text-green-400">[  OK  ]</span> Starting network services...`,
+                    `<span class="text-green-400">[&nbsp; OK&nbsp; ]</span> Starting network services...`,
                     `<span class="text-yellow-400">[ INFO ]</span> Authenticating user...`,
-                    `<span class="text-green-400">[  OK  ]</span> User authenticated: Willie McClain`,
+                    `<span class="text-green-400">[&nbsp; OK&nbsp; ]</span> User authenticated: Willie McClain`,
                     `<span class="text-cyan-400">[ INFO ]</span> Welcome, Operator McClain.`,
                     `<span class="text-cyan-400">[ INFO ]</span> Loading user interface...`
                 ];
-
                 let lineIndex = 0;
                 function typeNextBootLine() {
                     if (lineIndex >= bootLines.length) {
@@ -445,86 +501,136 @@ document.addEventListener('DOMContentLoaded', () => {
                 const form = document.createElement('form');
                 form.className = 'font-mono text-green-400 text-sm md:text-base';
                 let formHTML = '';
-                
-                // Add a hint message
-                if (loginAttempts === 0) {
-                    formHTML += '<p class="text-cyan-400 mb-4">Hint: Try any username/password combination</p>';
-                } else if (loginAttempts === 1) {
-                    formHTML += '<p class="text-yellow-400 mb-4">One more attempt needed...</p>';
-                }
-                
-                formHTML += '<div><span>user@willie.dev:~$ </span></div>';
-                
                 if (loginAttempts > 0) {
+                    formHTML += '<p class="text-yellow-400 mb-4">Authentication failed. Please try again.</p>';
+                } else {
+                    formHTML += '<p class="text-cyan-400 mb-4">Hint: Try any username/password combination</p>';
+                }
+                formHTML += '<div><span>user@willie.dev:~$ </span></div>';
+                if (currentInput === 'username') {
+                    formHTML += `<div><span>login: </span><input type="text" id="login-input" autocomplete="off" autofocus /></div>`;
+                } else {
                     formHTML += `<div><span>login: ${storedUsername}</span></div>`;
                     formHTML += `<div><span>password: </span><input type="password" id="login-input" autocomplete="current-password" autofocus /></div>`;
-                } else {
-                    if (currentInput === 'username') {
-                        formHTML += `<div><span>login: </span><input type="text" id="login-input" autocomplete="off" autofocus /></div>`;
-                    } else {
-                        formHTML += `<div><span>login: ${storedUsername}</span></div>`;
-                        formHTML += `<div><span>password: </span><input type="password" id="login-input" autocomplete="current-password" autofocus /></div>`;
-                    }
                 }
-                
                 form.innerHTML = formHTML;
                 overlay.appendChild(form);
-                
                 const inputEl = document.getElementById('login-input');
                 if (inputEl) inputEl.focus();
-
                 form.onsubmit = async (e) => {
                     e.preventDefault();
                     await setupAudio();
                     if (currentInput === 'username') {
-                        storedUsername = document.getElementById('login-input').value;
-                        if (!storedUsername.trim()) {
-                            // Prevent empty username
-                            return;
-                        }
+                        storedUsername = inputEl.value;
+                        if (!storedUsername.trim()) return;
                         currentInput = 'password';
                         render();
                     } else {
                         loginAttempts++;
-                        if (loginAttempts >= 2) {
-                            // Grant access after 2 attempts
-                            grantAccess();
-                        } else {
-                            stage = 'login';
-                            currentInput = 'password';
-                            render();
-                        }
+                        stage = 'failed';
+                        render();
                     }
                 };
                 break;
 
             case 'failed':
-                const failedMsg = document.createElement('div');
-                failedMsg.className = 'text-center';
-                failedMsg.innerHTML = `
-                    <p class="text-red-500 text-xl mb-4">ACCESS DENIED</p>
-                    <p class="text-yellow-400">Attempt ${loginAttempts} of 2</p>
-                    <p class="text-cyan-400 mt-4">Press Enter to continue...</p>
-                `;
-                overlay.appendChild(failedMsg);
-                if(isToneReady) sounds.error.triggerAttackRelease("C2", "8n");
-                
-                // Add keyboard listener for Enter key
-                const handleKeyPress = (e) => {
-                    if (e.key === 'Enter') {
-                        document.removeEventListener('keydown', handleKeyPress);
-                        if (loginAttempts >= 2) {
-                            grantAccess();
-                        } else {
-                            stage = 'login';
-                            currentInput = 'password';
-                            render();
-                        }
-                    }
-                };
-                document.addEventListener('keydown', handleKeyPress);
+                const failedContainer = document.createElement('div');
+                failedContainer.className = 'text-center';
+                failedContainer.innerHTML = `<p class="text-red-500 text-xl mb-4">ACCESS DENIED</p>`;
+                overlay.appendChild(failedContainer);
+
+                speak('Access Denied');
+                if(isToneReady) sounds.error.triggerAttackRelease("8n");
+
+                if (loginAttempts >= 2) {
+                    // After the second failure, show the bypass button.
+                    const bypassButton = document.createElement('button');
+                    bypassButton.id = 'bypass-button';
+                    bypassButton.textContent = 'Initiate System Bypass';
+                    failedContainer.appendChild(bypassButton);
+                    bypassButton.onclick = () => {
+                        stage = 'bypassing';
+                        render();
+                    };
+                } else {
+                    // After the first failure, automatically return to the login screen.
+                    animationFrameIds.failDelay = setTimeout(() => {
+                        stage = 'login';
+                        render();
+                    }, 1500);
+                }
+                break;
+
+            case 'bypassing':
+                runBypassAnimation();
                 break;
         }
+    }
+
+    function runBypassAnimation() {
+        const overlay = document.getElementById('loading-overlay');
+        speak('Bypass initiated. Decrypting system files.');
+        const bypassContainer = document.createElement('div');
+        bypassContainer.className = 'bypass-sequence text-center';
+        bypassContainer.innerHTML = `
+            <p class="text-cyan-400 text-xl mb-4">[ DECRYPTION IN PROGRESS... ]</p>
+            <div id="bypass-log" class="text-left text-sm text-green-400 h-48 overflow-y-auto"></div>
+            <div class="progress-bar-container mx-auto">
+                <div id="progress-bar" class="progress-bar"></div>
+            </div>
+            <p id="progress-text" class="text-cyan-400 mt-2">0%</p>
+        `;
+        overlay.innerHTML = '';
+        overlay.appendChild(bypassContainer);
+        
+        const log = document.getElementById('bypass-log');
+        const progressBar = document.getElementById('progress-bar');
+        const progressText = document.getElementById('progress-text');
+
+        const totalDuration = 10000; // 10 seconds
+        const intervalTime = 500; // 0.5 seconds
+        let elapsedTime = 0;
+
+        const bypassLines = [
+            "> Locating encryption keys...",
+            "> Analyzing AES-256 protocol...",
+            "> Firewall detected. Rerouting traffic...",
+            "> Exploiting kernel vulnerability CVE-2025-WM01...",
+            "> Injecting payload...",
+            "> Bypassing security layer 1/3... [DONE]",
+            "> Escalating privileges to root...",
+            "> Bypassing security layer 2/3... [DONE]",
+            "> Disabling logging services...",
+            "> Bypassing security layer 3/3... [DONE]",
+            "> Cleaning tracks...",
+            "> Decryption successful. Mounting filesystem..."
+        ];
+        let lineIndex = 0;
+
+        const intervalId = setInterval(() => {
+            elapsedTime += intervalTime;
+            const percent = Math.min(100, Math.floor((elapsedTime / totalDuration) * 100));
+            
+            progressBar.style.width = `${percent}%`;
+            progressText.textContent = `${percent}%`;
+
+            if (isToneReady) sounds.bypass.triggerAttackRelease(percent < 90 ? 'C2' : 'G4', '16n', Tone.now() + 0.1);
+
+            if (lineIndex < bypassLines.length && (elapsedTime % 1000 === 0)) {
+                 const p = document.createElement('p');
+                 p.textContent = bypassLines[lineIndex];
+                 log.appendChild(p);
+                 log.scrollTop = log.scrollHeight;
+                 lineIndex++;
+            }
+
+            if (elapsedTime >= totalDuration) {
+                clearInterval(intervalId);
+                setTimeout(grantAccess, 1000);
+            }
+        }, intervalTime);
+
+        animationFrameIds.bypass = intervalId;
     }
     
     function runMatrixBackground() {
@@ -533,7 +639,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const ctx = canvas.getContext('2d');
         canvas.width = window.innerWidth;
         canvas.height = window.innerHeight;
-        const chars = 'WILLIE';
+        const chars = 'W I L L I E'; // Changed characters
         const fontSize = 16;
         const columns = canvas.width / fontSize;
         const drops = Array(Math.floor(columns)).fill(1);
@@ -541,7 +647,7 @@ document.addEventListener('DOMContentLoaded', () => {
         function draw() {
             ctx.fillStyle = 'rgba(16, 20, 26, 0.05)';
             ctx.fillRect(0, 0, canvas.width, canvas.height);
-            ctx.fillStyle = '#808080';  // Changed to gray
+            ctx.fillStyle = '#808080';
             ctx.font = `${fontSize}px monospace`;
             for (let i = 0; i < drops.length; i++) {
                 const text = chars[Math.floor(Math.random() * chars.length)];
@@ -552,38 +658,58 @@ document.addEventListener('DOMContentLoaded', () => {
                 drops[i]++;
             }
         }
+        // Store the interval ID in a way that it won't be cleared by the main render loop
+        if (animationFrameIds.matrix) clearInterval(animationFrameIds.matrix);
         animationFrameIds.matrix = setInterval(draw, 33);
     }
     
+    // *** TASK 1 FIX: Corrected lock sequence animation ***
     function runLockSequence(callback) {
         const lockOverlay = document.createElement('div');
         lockOverlay.id = 'lock-overlay';
         const lockTerminal = document.createElement('div');
         lockTerminal.id = 'lock-terminal';
         lockOverlay.appendChild(lockTerminal);
-        document.body.appendChild(lockOverlay);
-        setTimeout(() => lockOverlay.style.opacity = '1', 10);
+        document.body.appendChild(lockTerminal); // Correctly append the terminal
+        
+        // Use a fade-in effect
+        setTimeout(() => {
+            lockTerminal.style.transition = 'opacity 0.3s ease';
+            lockTerminal.style.opacity = '1';
+        }, 10);
+
+        speak('Security protocol engaged. Terminating session.');
+
         const lockLines = [
-            { text: "> init_session_lockdown --force", delay: 800 },
-            { text: "> Wiping session cache...", delay: 1000 },
-            { text: "> [SESSION LOCKED]", delay: 1200 },
+            { text: "> Running sudo kill -9 $(lsof -t -i:session)", delay: 800 },
+            { text: "> Scrubbing volatile memory sectors...", delay: 1200 },
+            { text: "> Purging temporary authentication tokens...", delay: 1000 },
+            { text: "> Disconnecting from host...", delay: 800 },
+            { text: "> [SESSION TERMINATED]", delay: 1500 }
         ];
         let lineIndex = 0;
+
         function typeNextLockLine() {
             if (lineIndex >= lockLines.length) {
+                // End of sequence, call the callback to restart
                 animationFrameIds.lockEnd = setTimeout(callback, 500);
                 return;
             }
+
             const line = lockLines[lineIndex];
             const p = document.createElement('p');
-            p.textContent = line.text;
             lockTerminal.appendChild(p);
             
-            animationFrameIds.lockTick = setTimeout(() => {
-                p.innerHTML += `<span class="confirmation-tick">[OK]</span>`;
-                if(isToneReady) sounds.confirm.triggerAttackRelease("A5", "16n");
-            }, line.delay - 200);
-
+            p.textContent = line.text; // Display the whole line at once for a more direct feel
+            if(isToneReady) sounds.typing.triggerAttackRelease('C1', '8n');
+            
+            if (line.text.includes('...')) {
+                 setTimeout(() => {
+                    p.innerHTML += `<span class="confirmation-tick">[DONE]</span>`;
+                    if(isToneReady) sounds.confirm.triggerAttackRelease("A5", "16n");
+                }, line.delay / 2);
+            }
+            
             lineIndex++;
             animationFrameIds.lockLine = setTimeout(typeNextLockLine, line.delay);
         }
@@ -592,27 +718,23 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- INITIALIZE & EVENT LISTENERS ---
     function initialize() {
-        Object.values(animationFrameIds).forEach(id => clearTimeout(id));
+        Object.keys(animationFrameIds).forEach(key => {
+            clearTimeout(animationFrameIds[key]);
+            clearInterval(animationFrameIds[key]);
+        });
         animationFrameIds = {};
         
-        // Initialize matrix canvas
         const matrixCanvas = document.getElementById('matrix-background');
-        if (matrixCanvas) {
-            matrixCanvas.style.display = 'none';  // Hide initially
-            matrixCanvas.style.position = 'fixed';
-            matrixCanvas.style.top = '0';
-            matrixCanvas.style.left = '0';
-            matrixCanvas.style.width = '100%';
-            matrixCanvas.style.height = '100%';
-            matrixCanvas.style.zIndex = '-1';
-        }
+        if (matrixCanvas) matrixCanvas.style.display = 'none';
         
         let overlay = document.getElementById('loading-overlay');
         if (!overlay) {
-            overlay = document.createElement('div');
-            overlay.id = 'loading-overlay';
-            document.body.prepend(overlay);
+             overlay = document.createElement('div');
+             overlay.id = 'loading-overlay';
+             document.body.prepend(overlay);
         }
+        
+        overlay.style.display = 'flex';
         overlay.style.opacity = '1';
         mainContainer.style.display = 'none';
         document.body.style.overflow = 'hidden';
@@ -627,10 +749,23 @@ document.addEventListener('DOMContentLoaded', () => {
         setupAudio();
         mainContainer.style.transition = 'opacity 0.3s';
         mainContainer.style.opacity = '0';
-        runLockSequence(() => {
-            document.getElementById('lock-overlay')?.remove();
-            initialize();
-        });
+        
+        // Ensure main container is hidden before showing lock sequence
+        setTimeout(() => {
+             mainContainer.style.display = 'none';
+             runLockSequence(() => {
+                const lockTerminal = document.getElementById('lock-terminal');
+                if (lockTerminal) {
+                    lockTerminal.style.opacity = '0';
+                    setTimeout(() => {
+                        lockTerminal.remove();
+                        initialize();
+                    }, 300);
+                } else {
+                    initialize();
+                }
+            });
+        }, 300);
     });
 
     setupAudio();
