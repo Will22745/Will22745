@@ -6,6 +6,7 @@
   <title>Willie McClain | Cybersecurity Portfolio</title>
   <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.7.77/Tone.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
     body {
@@ -15,16 +16,16 @@
       padding: 0;
       margin: 0;
       min-height: 100vh;
-      overflow: hidden;
+      overflow-x: hidden; /* Prevent horizontal scroll */
     }
-    #matrix-background {
+    #particle-canvas, #matrix-canvas { /* Style both canvases */
       position: fixed;
       top: 0;
       left: 0;
       width: 100%;
       height: 100%;
       z-index: -1;
-      display: none;
+      display: none; /* Initially hidden */
     }
     .scanlines {
         position: fixed;
@@ -32,7 +33,7 @@
         left: 0;
         width: 100%;
         height: 100%;
-        z-index: -1;
+        z-index: 0;
         background: linear-gradient(to bottom, rgba(16, 20, 26, 0), rgba(16, 20, 26, 0.4) 50%, rgba(16, 20, 26, 0));
         background-size: 100% 4px;
         opacity: 0.3;
@@ -52,14 +53,19 @@
       text-align: center;
       position: relative;
     }
-    #lock-button {
-      position: absolute;
-      top: 10px;
-      right: 10px;
+    .header-buttons {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        display: flex;
+        gap: 10px;
+    }
+    #lock-button, #emp-button {
       background: transparent;
       border: 1px solid #47ffa8;
       color: #47ffa8;
-      padding: 8px;
+      width: 40px;
+      height: 40px;
       border-radius: 50%;
       cursor: pointer;
       display: flex;
@@ -67,13 +73,29 @@
       justify-content: center;
       transition: all 0.2s ease;
     }
-    #lock-button:hover {
+    #lock-button:hover, #emp-button:hover {
       background: #47ffa8;
       color: #10141a;
       box-shadow: 0 0 15px #47ffa8;
     }
+     #emp-button {
+        border-color: #ff6b6b;
+        color: #ff6b6b;
+    }
+    #emp-button:hover {
+        background: #ff6b6b;
+        color: #10141a;
+        box-shadow: 0 0 15px #ff6b6b;
+    }
+    #emp-button.cooldown {
+        cursor: not-allowed;
+        background: #333 !important;
+        color: #777 !important;
+        border-color: #555 !important;
+        box-shadow: none !important;
+    }
     h1 {
-      font-size: 4.2rem;
+      font-size: 5.5rem;
       letter-spacing: 1px;
       margin-bottom: 8px;
       color: #6ef1a6;
@@ -120,7 +142,7 @@
       box-shadow: 0 8px 32px 2px #3eebbb77;
       border-left-color: #61d2ff;
     }
-    .card-title {
+    .card-title, .links a {
       font-size: 1.16rem;
       font-weight: bold;
       margin-bottom: 4px;
@@ -151,9 +173,6 @@
       background: #181d2a;
       border-radius: 6px;
       padding: 12px 16px;
-      color: #6ef1a6;
-      text-decoration: none;
-      font-weight: bold;
       font-size: 1rem;
       box-shadow: 0 2px 8px #213b2c66;
       transition: background 0.1s, color 0.1s;
@@ -162,18 +181,9 @@
       background: #6ef1a6;
       color: #212b24;
     }
-    .social {
-      margin-top: 20px;
-      text-align: center;
-    }
-    .social a {
-      margin: 0 6px;
-      display: inline-block;
-    }
-    .social img {
-      width: 26px;
-      filter: drop-shadow(0 0 5px #61d2ff88);
-    }
+    .social { margin-top: 20px; text-align: center; }
+    .social a { margin: 0 6px; display: inline-block; }
+    .social img { width: 26px; filter: drop-shadow(0 0 5px #61d2ff88); }
     .about, .videos {
       margin-top: 42px;
       padding: 18px 26px 18px 26px;
@@ -192,111 +202,180 @@
         margin-top: 16px;
         color: #ff6b6b;
     }
-    .disclaimer strong {
-        color: #ff8787;
-    }
+    .disclaimer strong { color: #ff8787; }
     @media (max-width: 700px) {
       .container { padding: 12px 1vw 36px 1vw; }
-      h1 { font-size: 3rem; }
+      h1 { font-size: 4rem; }
       h1 strong { font-size: 1.2rem; }
       h2 { font-size: 1.08rem; }
       .card-list { grid-template-columns: 1fr; }
     }
 
-    /* --- LOADING & LOCKING SEQUENCE STYLES --- */
-    #loading-overlay {
-        position: fixed;
-        inset: 0;
-        background-color: #10141a;
-        display: flex;
-        align-items: center;
-        justify-content: center;
+    #loading-overlay, #lock-overlay {
+        position: fixed; inset: 0; display: flex; align-items: center; justify-content: center; z-index: 9999;
+        font-family: 'Share Tech Mono', monospace; transition: opacity 0.5s ease-in-out;
+    }
+    #loading-overlay { background-color: transparent; }
+    #lock-overlay { 
+        position: fixed; 
+        inset: 0; 
+        display: flex; 
+        align-items: center; 
+        justify-content: center; 
         z-index: 9999;
-        font-family: 'Share Tech Mono', monospace;
-        transition: opacity 0.5s ease-in-out;
+        font-family: 'Share Tech Mono', monospace; 
+        background-color: #10141a; 
+        opacity: 1;
     }
-    #lock-overlay {
-        position: fixed;
-        inset: 0;
-        background-color: #10141a;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        z-index: 10000;
-        font-family: 'Share Tech Mono', monospace;
-        opacity: 0;
-        transition: opacity 0.3s ease;
+    
+    #lock-terminal { 
+        width: 100%; 
+        max-width: 600px; 
+        padding: 1rem; 
+        color: #6ef1a6; 
+        opacity: 1;
+        background-color: rgba(16, 20, 26, 0.9);
+        border-radius: 8px;
+        box-shadow: 0 0 20px rgba(110, 241, 166, 0.2);
     }
-    #lock-terminal {
-        width: 100%;
-        max-width: 600px;
-        padding: 1rem;
-        color: #ff6b6b;
-    }
-    #login-input {
-      background-color: transparent;
-      border: none;
-      outline: none;
-      color: #6ef1a6;
-      caret-color: #0F0;
-      font-family: 'Share Tech Mono', monospace;
-      font-size: inherit;
-    }
-    .boot-sequence, .bypass-sequence {
-        width: 100%;
-        max-width: 600px;
-        padding: 1rem;
-    }
-    .confirmation-tick {
-        color: #47ffa8;
-        padding-left: 1rem;
-    }
+    #login-input { background-color: transparent; border: none; outline: none; color: #6ef1a6; caret-color: #0F0; font-family: inherit; font-size: inherit; }
+    .boot-sequence, .bypass-sequence { width: 100%; max-width: 600px; padding: 1rem; background-color: #10141aa0; backdrop-filter: blur(2px); border-radius: 8px; }
+    .confirmation-tick { color: #47ffa8; padding-left: 1rem; }
+    
+    @keyframes glitch-anim { 0%{transform:translate(0)}20%{transform:translate(-3px,3px)}40%{transform:translate(-3px,-3px)}60%{transform:translate(3px,3px)}80%{transform:translate(3px,-3px)}to{transform:translate(0)} }
+    @keyframes glitch-anim-2 { 0%{transform:translate(0)}20%{transform:translate(3px,-3px)}40%{transform:translate(3px,3px)}60%{transform:translate(-3px,-3px)}80%{transform:translate(-3px,3px)}to{transform:translate(0)} }
     #bypass-button {
-        background-color: #e082ff;
-        color: #10141a;
-        font-family: 'Share Tech Mono', monospace;
-        border: none;
-        padding: 10px 20px;
-        margin-top: 20px;
-        cursor: pointer;
-        font-size: 1.1rem;
-        text-shadow: 0 0 5px #e082ff;
-        border-radius: 4px;
-        transition: all 0.2s ease;
+      background-color: #2ecc71;
+      color: #fff;
+      font-family: inherit;
+      border: none;
+      padding: 10px 20px;
+      margin-top: 20px;
+      cursor: pointer;
+      font-size: 1.1rem;
+      border-radius: 4px;
+      transition: all 0.2s ease;
     }
     #bypass-button:hover {
-        box-shadow: 0 0 15px #e082ff;
-        transform: scale(1.05);
+      background-color: #27ae60;
+      transform: translateY(-2px);
     }
-    .progress-bar-container {
-        width: 80%;
-        height: 20px;
-        border: 1px solid #61d2ff;
+    /* Remove the glitch animations */
+    #bypass-button::before, #bypass-button::after { display: none; }
+    
+    .progress-bar-container { width: 80%; height: 20px; border: 1px solid #61d2ff; border-radius: 4px; margin-top: 20px; padding: 2px; }
+    .progress-bar { width: 0%; height: 100%; background-color: #61d2ff; border-radius: 2px; transition: width 0.5s linear; }
+
+    #emp-overlay { position: fixed; inset: 0; background: radial-gradient(circle, rgba(255,255,255,0.2) 0%, rgba(255,255,255,0) 70%); z-index: 10001; opacity: 0; animation: emp-flicker 1.5s linear; pointer-events: none; }
+    @keyframes emp-flicker { 0%, 100% { opacity: 0; } 5%, 15%, 25%, 35%, 50%, 70%, 90% { opacity: 1; } 10%, 20%, 30%, 40%, 60%, 80% { opacity: 0.5; } }
+    .container.emp-active { animation: emp-glitch 1.5s forwards; }
+    @keyframes emp-glitch { 0% { filter: grayscale(0) brightness(1); } 50% { filter: grayscale(1) brightness(0.5); transform: scale(0.98); } 100% { filter: grayscale(1) brightness(0); transform: scale(1); opacity: 0; } }
+    #emp-message { position: fixed; inset: 0; display: none; flex-direction: column; align-items: center; justify-content: center; z-index: 10002; color: #ff6b6b; text-align: center; background-color: #10141a; font-size: 1.5rem; text-shadow: 0 0 10px #ff6b6b; }
+    #restart-button { background: transparent; border: 2px solid #47ffa8; color: #47ffa8; padding: 10px 20px; font-size: 1.2rem; cursor: pointer; margin-top: 20px; border-radius: 4px; transition: all 0.2s ease; }
+    #restart-button:hover { background: #47ffa8; color: #10141a; box-shadow: 0 0 15px #47ffa8; }
+    #attack-button {
+        background: transparent;
+        border: 1px solid #ff4757;
+        color: #ff4757;
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.2s ease;
+    }
+    #attack-button:hover {
+        background: #ff4757;
+        color: #10141a;
+        box-shadow: 0 0 15px #ff4757;
+    }
+    .error-popup {
+        position: fixed;
+        background: rgba(255, 0, 0, 0.1);
+        border: 2px solid #ff4757;
+        color: #ff4757;
+        padding: 15px 20px;
         border-radius: 4px;
-        margin-top: 20px;
-        padding: 2px;
+        font-family: 'Share Tech Mono', monospace;
+        z-index: 10000;
+        animation: glitch-popup 0.3s infinite, shake 0.5s infinite;
+        box-shadow: 0 0 10px rgba(255, 71, 87, 0.5);
+        backdrop-filter: blur(2px);
     }
-    .progress-bar {
-        width: 0%;
-        height: 100%;
-        background-color: #61d2ff;
-        border-radius: 2px;
-        transition: width 0.5s linear;
+    @keyframes glitch-popup {
+        0% { transform: translate(0); filter: hue-rotate(0deg); }
+        20% { transform: translate(-2px, 2px); filter: hue-rotate(90deg); }
+        40% { transform: translate(-2px, -2px); filter: hue-rotate(180deg); }
+        60% { transform: translate(2px, 2px); filter: hue-rotate(270deg); }
+        80% { transform: translate(2px, -2px); filter: hue-rotate(360deg); }
+        100% { transform: translate(0); filter: hue-rotate(0deg); }
+    }
+    @keyframes shake {
+        0%, 100% { transform: translate(0, 0) rotate(0deg); }
+        25% { transform: translate(-1px, 1px) rotate(-1deg); }
+        75% { transform: translate(1px, -1px) rotate(1deg); }
+    }
+    #attack-overlay {
+        position: fixed;
+        inset: 0;
+        background: rgba(255, 0, 0, 0.1);
+        backdrop-filter: blur(2px);
+        z-index: 9999;
+        opacity: 0;
+        pointer-events: none;
+        animation: flicker 0.1s infinite;
+    }
+    @keyframes flicker {
+        0%, 100% { opacity: 0.1; }
+        50% { opacity: 0.2; }
+    }
+    #restore-system {
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background: #10141a;
+        border: 2px solid #47ffa8;
+        color: #47ffa8;
+        padding: 15px 30px;
+        border-radius: 4px;
+        font-family: 'Share Tech Mono', monospace;
+        cursor: pointer;
+        z-index: 10001;
+        display: none;
+        animation: pulse 2s infinite;
+    }
+    @keyframes pulse {
+        0% { box-shadow: 0 0 0 0 rgba(71, 255, 168, 0.4); }
+        70% { box-shadow: 0 0 0 10px rgba(71, 255, 168, 0); }
+        100% { box-shadow: 0 0 0 0 rgba(71, 255, 168, 0); }
     }
   </style>
 </head>
 <body>
 
   <div id="loading-overlay"></div>
-
-  <canvas id="matrix-background"></canvas>
+  <canvas id="particle-canvas"></canvas>
+  <canvas id="matrix-canvas"></canvas>
   <div class="scanlines"></div>
 
   <div class="container">
     <header>
-      <button id="lock-button" title="Lock Session">
-        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
-      </button>
+      <div class="header-buttons">
+          <button id="emp-button" title="Initiate EMP">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"></path></svg>
+          </button>
+          <button id="lock-button" title="Lock Session">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+          </button>
+          <button id="attack-button" title="Simulate Cyber Attack">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"></path>
+            </svg>
+          </button>
+      </div>
       <h1>Hi, I'm Willie!<br><strong>Cybersecurity Grad, AI/ML Master's Student, Tech Enthusiast</strong></h1>
     </header>
     <section class="about">
@@ -370,20 +449,20 @@
 
 <script>
 document.addEventListener('DOMContentLoaded', () => {
-    // --- STATE MANAGEMENT ---
     let stage = 'motd';
-    let loginAttempts = 0; // Tracks password attempts
+    let loginAttempts = 0;
     let currentInput = 'username';
     let sounds = {};
     let isToneReady = false;
     let animationFrameIds = {};
     let storedUsername = '';
+    let isEmpOnCooldown = false;
+    const empCooldownTime = 30000;
 
-    // --- DOM REFERENCES ---
     const mainContainer = document.querySelector('.container');
     const lockButton = document.getElementById('lock-button');
+    const empButton = document.getElementById('emp-button');
     
-    // --- TEXT-TO-SPEECH FUNCTION ---
     function speak(text, rate = 0.8, pitch = 0.7) {
         if ('speechSynthesis' in window) {
             window.speechSynthesis.cancel(); 
@@ -391,12 +470,9 @@ document.addEventListener('DOMContentLoaded', () => {
             utterance.rate = rate;
             utterance.pitch = pitch;
             window.speechSynthesis.speak(utterance);
-        } else {
-            console.warn("Text-to-speech is not supported in this browser.");
         }
     }
 
-    // --- AUDIO SETUP ---
     async function setupAudio() {
         if (window.Tone && !isToneReady) {
             try {
@@ -406,16 +482,15 @@ document.addEventListener('DOMContentLoaded', () => {
                     typing: new Tone.MembraneSynth({ pitchDecay: 0.008, octaves: 2, envelope: { attack: 0.001, decay: 0.2, sustain: 0 } }).toDestination(),
                     success: new Tone.Synth({ oscillator: { type: 'sine' }, envelope: { attack: 0.01, decay: 0.2, sustain: 0.1, release: 0.5 } }).toDestination(),
                     confirm: new Tone.Synth({oscillator: {type: 'triangle'}, envelope: {attack: 0.005, decay: 0.1, sustain: 0.3, release: 0.1}}).toDestination(),
-                    bypass: new Tone.PluckSynth({attackNoise: 0.5, dampening: 4000, resonance: 0.9}).toDestination()
+                    bypass: new Tone.PluckSynth({attackNoise: 0.5, dampening: 4000, resonance: 0.9}).toDestination(),
+                    empZap: new Tone.NoiseSynth({ noise: { type: 'pink' }, envelope: { attack: 0.001, decay: 0.5, sustain: 0, release: 0.1 } }).toDestination(),
+                    empPowerUp: new Tone.Synth({ oscillator: { type: 'fatsawtooth', count: 3, spread: 30 }, envelope: { attack: 0.1, decay: 0.1, sustain: 0.3, release: 0.5 } }).toDestination()
                 };
                 isToneReady = true;
-            } catch (e) {
-                console.error("Could not start audio context:", e);
-            }
+            } catch (e) { console.error("Could not start audio context:", e); }
         }
     }
     
-    // --- TRANSITION TO MAIN SITE ---
     function grantAccess() {
         speak('Access Granted. Welcome, Operator McClain.');
         if(isToneReady) sounds.success.triggerAttackRelease("C4", "0.5s");
@@ -424,26 +499,11 @@ document.addEventListener('DOMContentLoaded', () => {
         if(overlay) overlay.style.opacity = '0';
         mainContainer.style.display = 'block';
         
-        const matrixCanvas = document.getElementById('matrix-background');
-        if (matrixCanvas) {
-            matrixCanvas.style.display = 'block';
-            // Clear any old interval just in case
-            if (animationFrameIds.matrix) {
-                clearInterval(animationFrameIds.matrix);
-            }
-            // Start the matrix effect
-            runMatrixBackground();
-        }
-        
         document.body.style.overflow = 'auto';
-        // Clear all timers EXCEPT the matrix one
-        Object.keys(animationFrameIds).forEach(key => {
-             if (key !== 'matrix') {
-                clearTimeout(animationFrameIds[key]);
-                clearInterval(animationFrameIds[key]);
-            }
-        });
-        // Hide the overlay instead of removing it to prevent issues on restart
+        
+        stopAllAnimations();
+        runMatrixRain(); 
+        
         setTimeout(() => {
             if (overlay) {
                 overlay.style.display = 'none'; 
@@ -451,17 +511,12 @@ document.addEventListener('DOMContentLoaded', () => {
         }, 500);
     }
 
-    // --- RENDERING LOGIC ---
     function render() {
         const overlay = document.getElementById('loading-overlay');
         if (!overlay) return;
         overlay.innerHTML = '';
         
-        Object.values(animationFrameIds).forEach(id => {
-            clearTimeout(id);
-            clearInterval(id);
-        });
-        animationFrameIds = {};
+        stopAllAnimations(true); // Keep particles during intro stages
 
         switch (stage) {
             case 'motd':
@@ -469,14 +524,14 @@ document.addEventListener('DOMContentLoaded', () => {
                 bootContainer.className = 'boot-sequence';
                 overlay.appendChild(bootContainer);
                 const bootLines = [
-                    `<span class="text-green-400">[&nbsp; OK&nbsp; ]</span> Initializing System Core...`,
-                    `<span class="text-green-400">[&nbsp; OK&nbsp; ]</span> Loading Kernel v5.15.0-WM...`,
-                    `<span class="text-yellow-400">[ INFO ]</span> Mounting file systems...`,
-                    `<span class="text-green-400">[&nbsp; OK&nbsp; ]</span> Starting network services...`,
-                    `<span class="text-yellow-400">[ INFO ]</span> Authenticating user...`,
-                    `<span class="text-green-400">[&nbsp; OK&nbsp; ]</span> User authenticated: Willie McClain`,
-                    `<span class="text-cyan-400">[ INFO ]</span> Welcome, Operator McClain.`,
-                    `<span class="text-cyan-400">[ INFO ]</span> Loading user interface...`
+                    `WM-Sec Kernel v3.13.37 initializing...`,
+                    `[INFO] Bypassing standard boot checks...`,
+                    `[ OK ] Network interface eth0 spoofed.`,
+                    `[ OK ] Proxy chain established.`,
+                    `[WARN] Rootkit detected. Loading anyway...`,
+                    `[ OK ] Authenticated user via encrypted channel: Operator`,
+                    `[ OK ] Access granted.`,
+                    `Launching secure terminal...`
                 ];
                 let lineIndex = 0;
                 function typeNextBootLine() {
@@ -499,7 +554,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             case 'login':
                 const form = document.createElement('form');
-                form.className = 'font-mono text-green-400 text-sm md:text-base';
+                form.className = 'font-mono text-green-400 text-sm md:text-base boot-sequence';
                 let formHTML = '';
                 if (loginAttempts > 0) {
                     formHTML += '<p class="text-yellow-400 mb-4">Authentication failed. Please try again.</p>';
@@ -535,15 +590,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
             case 'failed':
                 const failedContainer = document.createElement('div');
-                failedContainer.className = 'text-center';
+                failedContainer.className = 'text-center boot-sequence';
                 failedContainer.innerHTML = `<p class="text-red-500 text-xl mb-4">ACCESS DENIED</p>`;
                 overlay.appendChild(failedContainer);
-
                 speak('Access Denied');
                 if(isToneReady) sounds.error.triggerAttackRelease("8n");
-
                 if (loginAttempts >= 2) {
-                    // After the second failure, show the bypass button.
                     const bypassButton = document.createElement('button');
                     bypassButton.id = 'bypass-button';
                     bypassButton.textContent = 'Initiate System Bypass';
@@ -553,7 +605,6 @@ document.addEventListener('DOMContentLoaded', () => {
                         render();
                     };
                 } else {
-                    // After the first failure, automatically return to the login screen.
                     animationFrameIds.failDelay = setTimeout(() => {
                         stage = 'login';
                         render();
@@ -568,6 +619,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function runBypassAnimation() {
+        stopAllAnimations(true); // Keep particles while bypassing
         const overlay = document.getElementById('loading-overlay');
         speak('Bypass initiated. Decrypting system files.');
         const bypassContainer = document.createElement('div');
@@ -586,36 +638,17 @@ document.addEventListener('DOMContentLoaded', () => {
         const log = document.getElementById('bypass-log');
         const progressBar = document.getElementById('progress-bar');
         const progressText = document.getElementById('progress-text');
-
-        const totalDuration = 10000; // 10 seconds
-        const intervalTime = 500; // 0.5 seconds
+        const totalDuration = 10000;
+        const intervalTime = 500;
         let elapsedTime = 0;
-
-        const bypassLines = [
-            "> Locating encryption keys...",
-            "> Analyzing AES-256 protocol...",
-            "> Firewall detected. Rerouting traffic...",
-            "> Exploiting kernel vulnerability CVE-2025-WM01...",
-            "> Injecting payload...",
-            "> Bypassing security layer 1/3... [DONE]",
-            "> Escalating privileges to root...",
-            "> Bypassing security layer 2/3... [DONE]",
-            "> Disabling logging services...",
-            "> Bypassing security layer 3/3... [DONE]",
-            "> Cleaning tracks...",
-            "> Decryption successful. Mounting filesystem..."
-        ];
+        const bypassLines = ["> Locating encryption keys...", "> Analyzing AES-256 protocol...", "> Firewall detected. Rerouting traffic...", "> Exploiting kernel vulnerability CVE-2025-WM01...", "> Injecting payload...", "> Bypassing security layer 1/3... [DONE]", "> Escalating privileges to root...", "> Bypassing security layer 2/3... [DONE]", "> Disabling logging services...", "> Bypassing security layer 3/3... [DONE]", "> Cleaning tracks...", "> Decryption successful. Mounting filesystem..."];
         let lineIndex = 0;
-
         const intervalId = setInterval(() => {
             elapsedTime += intervalTime;
             const percent = Math.min(100, Math.floor((elapsedTime / totalDuration) * 100));
-            
             progressBar.style.width = `${percent}%`;
             progressText.textContent = `${percent}%`;
-
             if (isToneReady) sounds.bypass.triggerAttackRelease(percent < 90 ? 'C2' : 'G4', '16n', Tone.now() + 0.1);
-
             if (lineIndex < bypassLines.length && (elapsedTime % 1000 === 0)) {
                  const p = document.createElement('p');
                  p.textContent = bypassLines[lineIndex];
@@ -623,26 +656,89 @@ document.addEventListener('DOMContentLoaded', () => {
                  log.scrollTop = log.scrollHeight;
                  lineIndex++;
             }
-
             if (elapsedTime >= totalDuration) {
                 clearInterval(intervalId);
                 setTimeout(grantAccess, 1000);
             }
         }, intervalTime);
-
         animationFrameIds.bypass = intervalId;
     }
     
-    function runMatrixBackground() {
-        const canvas = document.getElementById('matrix-background');
+    function stopAllAnimations(keepParticles = false, keepMatrix = false) {
+        Object.keys(animationFrameIds).forEach(key => {
+            if (keepParticles && key === 'particles') return;
+            if (keepMatrix && key === 'matrix') return;
+            
+            clearTimeout(animationFrameIds[key]);
+            clearInterval(animationFrameIds[key]);
+            if(animationFrameIds[key]) cancelAnimationFrame(animationFrameIds[key]);
+            delete animationFrameIds[key];
+        });
+    }
+
+    function runParticleBackground() {
+        stopAllAnimations();
+        const canvas = document.getElementById('particle-canvas');
+        document.getElementById('matrix-canvas').style.display = 'none';
+        canvas.style.display = 'block';
+
+        if (!canvas || !window.THREE) return;
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        const renderer = new THREE.WebGLRenderer({ canvas: canvas, alpha: true });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        const particlesGeometry = new THREE.BufferGeometry();
+        const particlesCnt = 5000;
+        const posArray = new Float32Array(particlesCnt * 3);
+        for(let i = 0; i < particlesCnt * 3; i++) {
+            posArray[i] = (Math.random() - 0.5) * (Math.random() * 10);
+        }
+        particlesGeometry.setAttribute('position', new THREE.BufferAttribute(posArray, 3));
+        const particlesMaterial = new THREE.PointsMaterial({ size: 0.005, color: 0x61d2ff, transparent: true, opacity: 0.8 });
+        const particleMesh = new THREE.Points(particlesGeometry, particlesMaterial);
+        scene.add(particleMesh);
+        camera.position.z = 2;
+        const clock = new THREE.Clock();
+        const animate = () => {
+            animationFrameIds.particles = requestAnimationFrame(animate);
+            const elapsedTime = clock.getElapsedTime();
+            particleMesh.rotation.y = -.05 * elapsedTime;
+            particleMesh.rotation.x = -.05 * elapsedTime;
+            renderer.render(scene, camera);
+        };
+        animate();
+        window.addEventListener('resize', () => {
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+        });
+    }
+
+    function runMatrixRain() {
+        stopAllAnimations();
+        const canvas = document.getElementById('matrix-canvas');
+        document.getElementById('particle-canvas').style.display = 'none';
+        canvas.style.display = 'block';
+
         if (!canvas) return;
         const ctx = canvas.getContext('2d');
-        canvas.width = window.innerWidth;
-        canvas.height = window.innerHeight;
-        const chars = 'W I L L I E'; // Changed characters
+        if (!ctx) return; 
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        
+        let drops = [];
+        const resizeCanvas = () => {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+            const columns = canvas.width / 16;
+            drops = [];
+            for (let i = 0; i < columns; i++) {
+                drops[i] = 1;
+            }
+        };
+        resizeCanvas();
+
+        const chars = 'W I L L I E'.split(' ');
         const fontSize = 16;
-        const columns = canvas.width / fontSize;
-        const drops = Array(Math.floor(columns)).fill(1);
         
         function draw() {
             ctx.fillStyle = 'rgba(16, 20, 26, 0.05)';
@@ -658,74 +754,246 @@ document.addEventListener('DOMContentLoaded', () => {
                 drops[i]++;
             }
         }
-        // Store the interval ID in a way that it won't be cleared by the main render loop
-        if (animationFrameIds.matrix) clearInterval(animationFrameIds.matrix);
-        animationFrameIds.matrix = setInterval(draw, 33);
+        animationFrameIds.matrix = setInterval(draw, 45);
+        window.addEventListener('resize', resizeCanvas);
     }
     
-    // *** TASK 1 FIX: Corrected lock sequence animation ***
     function runLockSequence(callback) {
-        const lockOverlay = document.createElement('div');
-        lockOverlay.id = 'lock-overlay';
-        const lockTerminal = document.createElement('div');
-        lockTerminal.id = 'lock-terminal';
-        lockOverlay.appendChild(lockTerminal);
-        document.body.appendChild(lockTerminal); // Correctly append the terminal
-        
-        // Use a fade-in effect
-        setTimeout(() => {
-            lockTerminal.style.transition = 'opacity 0.3s ease';
-            lockTerminal.style.opacity = '1';
-        }, 10);
+        // Create lock screen
+        const lockScreen = document.createElement('div');
+        lockScreen.style.cssText = `
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #10141a;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+            font-family: 'Share Tech Mono', monospace;
+        `;
+        document.body.appendChild(lockScreen);
 
-        speak('Security protocol engaged. Terminating session.');
+        // Create terminal
+        const terminal = document.createElement('div');
+        terminal.style.cssText = `
+            width: 90%;
+            max-width: 600px;
+            color: #6ef1a6;
+            font-size: 1.1rem;
+            line-height: 1.5;
+        `;
+        lockScreen.appendChild(terminal);
 
-        const lockLines = [
-            { text: "> Running sudo kill -9 $(lsof -t -i:session)", delay: 800 },
-            { text: "> Scrubbing volatile memory sectors...", delay: 1200 },
-            { text: "> Purging temporary authentication tokens...", delay: 1000 },
-            { text: "> Disconnecting from host...", delay: 800 },
-            { text: "> [SESSION TERMINATED]", delay: 1500 }
+        // Lock sequence messages
+        const messages = [
+            '> Running sudo kill -9 $(lsof -t -i:session)',
+            '> Scrubbing volatile memory sectors...',
+            '> Scrubbing volatile memory sectors... [DONE]',
+            '> Purging temporary authentication tokens...',
+            '> Purging temporary authentication tokens... [DONE]',
+            '> Disconnecting from host...',
+            '> Disconnecting from host... [DONE]',
+            '> [SESSION TERMINATED]',
+            '> System will reboot in 6 seconds...'
         ];
-        let lineIndex = 0;
 
-        function typeNextLockLine() {
-            if (lineIndex >= lockLines.length) {
-                // End of sequence, call the callback to restart
-                animationFrameIds.lockEnd = setTimeout(callback, 500);
+        // Type out messages
+        let messageIndex = 0;
+        let charIndex = 0;
+        let currentMessage = '';
+
+        function typeMessage() {
+            if (messageIndex >= messages.length) {
+                // All messages typed, wait 6 seconds then restart
+                setTimeout(() => {
+                    // Remove the lock screen
+                    lockScreen.remove();
+                    // Trigger the initial loading sequence
+                    if (callback) callback();
+                }, 6000);
                 return;
             }
 
-            const line = lockLines[lineIndex];
-            const p = document.createElement('p');
-            lockTerminal.appendChild(p);
-            
-            p.textContent = line.text; // Display the whole line at once for a more direct feel
-            if(isToneReady) sounds.typing.triggerAttackRelease('C1', '8n');
-            
-            if (line.text.includes('...')) {
-                 setTimeout(() => {
-                    p.innerHTML += `<span class="confirmation-tick">[DONE]</span>`;
-                    if(isToneReady) sounds.confirm.triggerAttackRelease("A5", "16n");
-                }, line.delay / 2);
+            if (charIndex === 0) {
+                // Start new message
+                currentMessage = messages[messageIndex];
+                const p = document.createElement('p');
+                terminal.appendChild(p);
             }
-            
-            lineIndex++;
-            animationFrameIds.lockLine = setTimeout(typeNextLockLine, line.delay);
+
+            const currentLine = terminal.lastElementChild;
+            currentLine.textContent = currentMessage.substring(0, charIndex + 1);
+
+            // Play typing sound
+            if (isToneReady && charIndex % 2 === 0) {
+                sounds.typing.triggerAttackRelease('C1', '8n');
+            }
+
+            // Play done sound
+            if (currentMessage.includes('[DONE]') && charIndex === currentMessage.length - 1) {
+                if (isToneReady) sounds.success.triggerAttackRelease("C4", "0.5s");
+            }
+
+            charIndex++;
+
+            if (charIndex < currentMessage.length) {
+                // Continue typing
+                setTimeout(typeMessage, 30);
+            } else {
+                // Move to next message
+                messageIndex++;
+                charIndex = 0;
+                setTimeout(typeMessage, 500);
+            }
         }
-        typeNextLockLine();
+
+        // Start typing
+        typeMessage();
     }
 
-    // --- INITIALIZE & EVENT LISTENERS ---
-    function initialize() {
-        Object.keys(animationFrameIds).forEach(key => {
-            clearTimeout(animationFrameIds[key]);
-            clearInterval(animationFrameIds[key]);
+    function runEmpSequence() {
+        if (isEmpOnCooldown) return;
+        speak('Warning. EMP detected.');
+        if(isToneReady) sounds.empZap.triggerAttackRelease("0.5s");
+
+        const empOverlay = document.createElement('div');
+        empOverlay.id = 'emp-overlay';
+        document.body.appendChild(empOverlay);
+        mainContainer.classList.add('emp-active');
+
+        setTimeout(() => {
+            empOverlay.remove();
+            let empMessage = document.getElementById('emp-message');
+            if (!empMessage) {
+                empMessage = document.createElement('div');
+                empMessage.id = 'emp-message';
+                document.body.appendChild(empMessage);
+            }
+            empMessage.style.display = 'flex';
+            empMessage.innerHTML = `
+                <div>System disabled by EMP.</div>
+                <div>Manual reboot required.</div>
+                <button id="restart-button">Restart System</button>
+            `;
+            document.getElementById('restart-button').onclick = () => {
+                rebootSystem(empMessage);
+            };
+        }, 1500);
+    }
+
+    function rebootSystem(empMessage) {
+        if(isToneReady) sounds.empPowerUp.triggerAttackRelease("C3", "1s");
+        mainContainer.classList.remove('emp-active');
+        mainContainer.style.opacity = '1';
+        empMessage.style.display = 'none';
+        startEmpCooldown();
+    }
+
+    function startEmpCooldown() {
+        isEmpOnCooldown = true;
+        empButton.classList.add('cooldown');
+        let timeLeft = empCooldownTime / 1000;
+        empButton.innerHTML = `<span style="font-size: 12px;">${timeLeft}s</span>`;
+
+        const cooldownInterval = setInterval(() => {
+            timeLeft--;
+            empButton.innerHTML = `<span style="font-size: 12px;">${timeLeft}s</span>`;
+            if (timeLeft <= 0) {
+                clearInterval(cooldownInterval);
+                isEmpOnCooldown = false;
+                empButton.classList.remove('cooldown');
+                empButton.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"></path></svg>`;
+            }
+        }, 1000);
+    }
+
+    function runAttackSequence() {
+        // Create attack overlay
+        const attackOverlay = document.createElement('div');
+        attackOverlay.id = 'attack-overlay';
+        document.body.appendChild(attackOverlay);
+
+        // Create restore button (initially hidden)
+        const restoreButton = document.createElement('button');
+        restoreButton.id = 'restore-system';
+        restoreButton.textContent = 'RESTORE SYSTEM';
+        document.body.appendChild(restoreButton);
+
+        // Error messages
+        const errorMessages = [
+            '404 – Resource Not Found',
+            'Malware Detected!',
+            'System Integrity Compromised',
+            'Access Denied',
+            'Ransomware Alert!',
+            'Critical Error: Data Breach',
+            'System Failure',
+            'Unauthorized Access Attempt',
+            'Rootkit Detected',
+            'Network Intrusion Detected'
+        ];
+
+        // Create and position error popups
+        errorMessages.forEach((message, index) => {
+            const popup = document.createElement('div');
+            popup.className = 'error-popup';
+            popup.textContent = message;
+            
+            // Random position
+            const x = Math.random() * (window.innerWidth - 300);
+            const y = Math.random() * (window.innerHeight - 100);
+            popup.style.left = `${x}px`;
+            popup.style.top = `${y}px`;
+            
+            // Random rotation
+            const rotation = Math.random() * 10 - 5;
+            popup.style.transform = `rotate(${rotation}deg)`;
+            
+            document.body.appendChild(popup);
         });
-        animationFrameIds = {};
-        
-        const matrixCanvas = document.getElementById('matrix-background');
-        if (matrixCanvas) matrixCanvas.style.display = 'none';
+
+        // Play attack sounds
+        if (isToneReady) {
+            // Create layered sounds
+            const glitchSound = new Tone.NoiseSynth({
+                noise: { type: 'white' },
+                envelope: { attack: 0.01, decay: 0.2, sustain: 0.1, release: 0.1 }
+            }).toDestination();
+            
+            const alarmSound = new Tone.Synth({
+                oscillator: { type: 'square' },
+                envelope: { attack: 0.01, decay: 0.2, sustain: 0.1, release: 0.1 }
+            }).toDestination();
+
+            // Play sounds in sequence
+            glitchSound.triggerAttackRelease('16n');
+            setTimeout(() => alarmSound.triggerAttackRelease('C4', '8n'), 100);
+            setTimeout(() => glitchSound.triggerAttackRelease('16n'), 200);
+            setTimeout(() => alarmSound.triggerAttackRelease('E4', '8n'), 300);
+        }
+
+        // Show restore button after 3 seconds
+        setTimeout(() => {
+            restoreButton.style.display = 'block';
+            restoreButton.onclick = () => {
+                // Remove all popups and overlay
+                document.querySelectorAll('.error-popup').forEach(popup => popup.remove());
+                attackOverlay.remove();
+                restoreButton.remove();
+                
+                // Play restore sound
+                if (isToneReady) {
+                    sounds.success.triggerAttackRelease("C4", "0.5s");
+                }
+            };
+        }, 3000);
+    }
+
+    function initialize() {
+        stopAllAnimations();
         
         let overlay = document.getElementById('loading-overlay');
         if (!overlay) {
@@ -742,31 +1010,34 @@ document.addEventListener('DOMContentLoaded', () => {
         loginAttempts = 0;
         currentInput = 'username';
         storedUsername = '';
+        
+        runParticleBackground();
         render();
     }
 
     lockButton.addEventListener('click', () => {
+        // Play sound
         setupAudio();
-        mainContainer.style.transition = 'opacity 0.3s';
+        if (isToneReady) {
+            sounds.confirm.triggerAttackRelease("G5", "16n");
+        }
+
+        // Fade out main content
         mainContainer.style.opacity = '0';
-        
-        // Ensure main container is hidden before showing lock sequence
+        mainContainer.style.transition = 'opacity 0.3s';
+
+        // Start lock sequence after fade
         setTimeout(() => {
-             mainContainer.style.display = 'none';
-             runLockSequence(() => {
-                const lockTerminal = document.getElementById('lock-terminal');
-                if (lockTerminal) {
-                    lockTerminal.style.opacity = '0';
-                    setTimeout(() => {
-                        lockTerminal.remove();
-                        initialize();
-                    }, 300);
-                } else {
-                    initialize();
-                }
+            mainContainer.style.display = 'none';
+            runLockSequence(() => {
+                initialize();
             });
         }, 300);
     });
+
+    empButton.addEventListener('click', runEmpSequence);
+    const attackButton = document.getElementById('attack-button');
+    attackButton.addEventListener('click', runAttackSequence);
 
     setupAudio();
     initialize();
