@@ -1,6 +1,0 @@
-[submodule "Incident-Response-Projects"]
-    path = Incident-Response-Projects
-    url = https://github.com/Cyb3rWard0g/Incident-Response-Projects-for-Beginners.git
-[submodule "SOC-Learning-Resources"]
-    path = SOC-Learning-Resources
-    url = https://github.com/PhantomInsights/awesome-soc-analyst.git
