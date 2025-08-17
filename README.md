@@ -48,7 +48,7 @@ I'm actively seeking an internship or rotational role where I can apply my skill
     Python chatbot that responds to user input and stores simple memory using JSON.
     <br><strong>Click the link to test it live.</strong>
   </li>
-  <li><a href="https://github.com/WillieLabs/Live-Translator-App"><b>Live Translator App</b></a> <i>(Planned)</i><br>
+  <li><a href="[https://github.com/WillieLabs/Live-Translator-App](https://will22745.github.io/Will22745/williedev-academy/)"><b>WillieDev Academy</b></a> <i>(Planned)</i><br>
     Real-time language translator using Google Translate API with optional voice input/output.
   </li>
 </ul>
