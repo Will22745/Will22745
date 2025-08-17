@@ -1,0 +1,739 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WillieDev Academy - Text to Speech</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;800&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+    <style>
+        /* 1. CSS Variables for Theming (High-Tech Dark Mode) */
+        :root {
+            --bg-color: #0a0a0a;
+            --container-bg: rgba(10, 25, 47, 0.7);
+            --text-color: #cdd6f4;
+            --heading-color: #ffffff;
+            --border-color: rgba(8, 217, 214, 0.2);
+            --primary-color: #08d9d6;
+            --primary-hover: #25d2d0;
+            --secondary-color: #31326f;
+            --secondary-hover: #5053a2;
+            --shadow-color: rgba(8, 217, 214, 0.25);
+            --disabled-color: #2a2a4a;
+            --loader-dot: var(--primary-hover);
+            --gradient-start: #08d9d6;
+            --gradient-end: #25d2d0;
+            --modal-bg: rgba(10, 25, 47, 0.9);
+        }
+
+        /* 2. General Body & Animated Plexus Background */
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+            box-sizing: border-box;
+            overflow: hidden;
+            position: relative;
+        }
+        
+        #tech-background {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+        }
+
+        /* 3. Main Application Container (Glassmorphism) */
+        .tts-container {
+            background-color: var(--container-bg);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            padding: 40px;
+            border-radius: 24px;
+            border: 1px solid var(--border-color);
+            box-shadow: 0 0 32px 0 var(--shadow-color);
+            width: 100%;
+            max-width: 700px;
+            text-align: center;
+            transition: background-color 0.3s, box-shadow 0.3s;
+            position: relative;
+            z-index: 1;
+        }
+
+        h1 {
+            font-family: 'Share Tech Mono', monospace;
+            margin-top: 0;
+            margin-bottom: 1rem;
+            font-size: 2.8rem;
+            font-weight: 400;
+            background: linear-gradient(45deg, var(--gradient-start), var(--gradient-end));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            text-shadow: 0 0 10px var(--shadow-color);
+        }
+
+        /* 4. Text & Style Input Areas */
+        .input-area { margin-bottom: 1rem; }
+        #text-input, #style-input {
+            width: 100%;
+            padding: 15px;
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            font-size: 1.1rem;
+            line-height: 1.8;
+            box-sizing: border-box;
+            background-color: transparent;
+            color: var(--text-color);
+            transition: border-color 0.3s;
+            resize: vertical;
+        }
+        #text-input { min-height: 200px; }
+        #style-input { min-height: 40px; margin-top: 10px; font-size: 0.9rem; line-height: 1.5; }
+        #text-input::placeholder, #style-input::placeholder { color: #555e78; }
+
+        /* 5. Controls (Voice, Buttons) */
+        .controls, .top-controls { display: flex; align-items: center; gap: 10px; margin-bottom: 1rem; }
+        .top-controls { justify-content: flex-end; }
+        .controls { justify-content: space-between; flex-wrap: wrap; }
+        .control-group { display: flex; align-items: center; gap: 12px; }
+        label { font-weight: 500; color: var(--heading-color); }
+        select {
+            font-family: 'Inter', sans-serif; font-size: 1rem; border-radius: 8px; background-color: transparent;
+            color: var(--text-color); border: 1px solid var(--border-color); padding: 10px; cursor: pointer; max-width: 220px;
+        }
+        select:disabled { opacity: 0.5; cursor: not-allowed; }
+        select optgroup { font-weight: bold; background: var(--bg-color); }
+        select option { background: var(--container-bg); color: var(--text-color); font-weight: normal; }
+        
+        .icon-button, .secondary-buttons button {
+            padding: 8px 16px; font-size: 0.9rem; background-color: var(--secondary-color); color: white;
+            border: none; border-radius: 6px; cursor: pointer; transition: background-color 0.3s, transform 0.2s;
+            display: flex; align-items: center; gap: 6px;
+        }
+        .icon-button:hover:not(:disabled), .secondary-buttons button:hover:not(:disabled) { background-color: var(--secondary-hover); transform: translateY(-2px); }
+        .icon-button:disabled, .secondary-buttons button:disabled { background-color: var(--disabled-color); cursor: not-allowed; }
+        .icon-button svg, .secondary-buttons button svg { width: 16px; height: 16px; }
+
+        .button-group { display: flex; gap: 10px; width: 100%; }
+        .button-group button {
+            color: white; border: none; padding: 15px 0; border-radius: 8px; font-size: 1rem; font-weight: 500;
+            cursor: pointer; transition: background-color 0.3s, transform 0.2s, box-shadow 0.3s; flex-grow: 1;
+            display: flex; align-items: center; justify-content: center; gap: 8px;
+        }
+        
+        .feature-buttons { margin-top: 10px; }
+        .feature-buttons button { background-color: var(--secondary-color); }
+        .feature-buttons button:hover:not(:disabled) { background-color: var(--secondary-hover); }
+
+        #play-button { background-color: var(--primary-color); color: #0a0a0a; }
+        #play-button:hover:not(:disabled) { background-color: var(--primary-hover); transform: translateY(-2px); box-shadow: 0 4px 15px var(--shadow-color); }
+        #pause-button, #stop-button { background-color: var(--secondary-color); }
+        #pause-button:hover:not(:disabled), #stop-button:hover:not(:disabled) { background-color: var(--secondary-hover); transform: translateY(-2px); }
+        .button-group button:active:not(:disabled) { transform: scale(0.98) translateY(0); }
+        .button-group button:disabled { background-color: var(--disabled-color); cursor: not-allowed; color: #ffffffa0; }
+        .button-group button svg { width: 20px; height: 20px; }
+
+        /* 6. Animated Loader */
+        .loader { display: flex; justify-content: center; align-items: center; gap: 10px; margin-top: 20px; height: 8px; visibility: hidden; }
+        .loader.active { visibility: visible; }
+        .loader-dot { width: 8px; height: 8px; background-color: var(--loader-dot); border-radius: 50%; animation: pulse 1.4s infinite ease-in-out both; }
+        .loader-dot:nth-child(1) { animation-delay: -0.32s; }
+        .loader-dot:nth-child(2) { animation-delay: -0.16s; }
+        @keyframes pulse { 0%, 80%, 100% { transform: scale(0); } 40% { transform: scale(1.0); } }
+        
+        /* 8. Modal Styles */
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); display: flex; justify-content: center; align-items: center; z-index: 1000; opacity: 0; visibility: hidden; transition: opacity 0.3s, visibility 0.3s; }
+        .modal-overlay.active { opacity: 1; visibility: visible; }
+        .modal { background: var(--modal-bg); backdrop-filter: blur(10px); padding: 30px; border-radius: 16px; width: 90%; max-width: 600px; max-height: 80vh; overflow-y: auto; }
+        .modal h2 { margin-top: 0; color: var(--heading-color); }
+        .modal-close { float: right; cursor: pointer; font-size: 1.5rem; border: none; background: none; color: var(--text-color); }
+        .modal-form { display: flex; flex-direction: column; gap: 10px; margin-top: 20px; }
+        .modal-form .form-group { display: flex; flex-direction: column; text-align: left; }
+        .modal-form label { margin-bottom: 5px; font-weight: 500; }
+        .modal-form input, .modal-form select, .modal-form textarea { width: 100%; padding: 10px; border-radius: 6px; border: 1px solid var(--border-color); background: transparent; color: var(--text-color); font-family: 'Inter', sans-serif; }
+        .modal-form textarea { resize: vertical; min-height: 80px; }
+
+        .modal button.icon-button {
+            background-color: var(--primary-color);
+            color: #0a0a0a;
+        }
+        .modal button.icon-button:hover:not(:disabled) {
+            background-color: var(--primary-hover);
+        }
+        
+        /* 9. Settings Toggle Switch */
+        .toggle-switch { display: flex; align-items: center; justify-content: space-between; }
+        .toggle-switch label { margin-bottom: 0; }
+        .switch { position: relative; display: inline-block; width: 50px; height: 28px; }
+        .switch input { opacity: 0; width: 0; height: 0; }
+        .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #ccc; transition: .4s; border-radius: 28px; }
+        .slider:before { position: absolute; content: ""; height: 20px; width: 20px; left: 4px; bottom: 4px; background-color: white; transition: .4s; border-radius: 50%; }
+        input:checked + .slider { background-color: var(--primary-color); }
+        input:checked + .slider:before { transform: translateX(22px); }
+
+    </style>
+</head>
+<body class="dark-mode">
+    <canvas id="tech-background"></canvas>
+
+    <div class="tts-container">
+        <div class="top-controls">
+             <button class="icon-button" id="settings-button" title="Settings">
+                <svg fill="currentColor" viewBox="0 0 20 20"><path d="M10 3.5a1.5 1.5 0 0 1 3 0V4a1 1 0 0 0 1 1h1.5a1.5 1.5 0 0 1 0 3H14a1 1 0 0 0-1 1v1.5a1.5 1.5 0 0 1-3 0V10a1 1 0 0 0-1-1H7.5a1.5 1.5 0 0 1 0-3H9a1 1 0 0 0 1-1V3.5ZM10 5.5a1.5 1.5 0 0 1 3 0V6a1 1 0 0 0 1 1h.5a1.5 1.5 0 0 1 0 3H14a1 1 0 0 0-1 1v.5a1.5 1.5 0 0 1-3 0V12a1 1 0 0 0-1-1h-.5a1.5 1.5 0 0 1 0-3H8a1 1 0 0 0 1-1v-.5Z"></path></svg>
+             </button>
+        </div>
+        <h1>WillieDev Academy</h1>
+        
+        <div class="input-area">
+            <textarea id="text-input" placeholder="Enter text to begin..."></textarea>
+            <textarea id="style-input" placeholder="Reading Style (Optional): e.g., 'Speak in a dramatic, serious tone'"></textarea>
+        </div>
+
+        <div class="controls">
+            <div class="control-group">
+                <label for="language-select">Language:</label>
+                <select id="language-select">
+                    <option value="en">English</option>
+                    <option value="es">Spanish</option>
+                    <option value="fr">French</option>
+                    <option value="de">German</option>
+                    <option value="it">Italian</option>
+                    <option value="ja">Japanese</option>
+                    <option value="ko">Korean</option>
+                    <option value="hi">Hindi</option>
+                    <option value="ru">Russian</option>
+                </select>
+            </div>
+            <div class="control-group">
+                <label for="voice-select">Voice:</label>
+                <select id="voice-select">
+                    <optgroup label="Standard Voices">
+                        <option value="Kore">Standard Female (Kore)</option>
+                        <option value="Charon">Standard Male (Charon)</option>
+                    </optgroup>
+                    <optgroup label="Distinct Voices">
+                        <option value="Puck">Upbeat & Energetic (Puck)</option>
+                        <option value="Leda">Youthful & Bright (Leda)</option>
+                        <option value="Gacrux">Mature & Composed (Gacrux)</option>
+                        <option value="Algenib">Deep & Gravelly (Algenib)</option>
+                        <option value="Vindemiatrix">Calm & Gentle (Vindemiatrix)</option>
+                        <option value="Fenrir">Excitable & Eager (Fenrir)</option>
+                        <option value="Aoede">Breezy & Light (Aoede)</option>
+                        <option value="Sulafat">Warm & Smooth (Sulafat)</option>
+                    </optgroup>
+                </select>
+            </div>
+            <div class="control-group secondary-buttons">
+                <button id="clear-button">Clear Text</button>
+                <button id="test-voice-button">Test</button>
+                <button id="download-button">
+                    <svg fill="currentColor" viewBox="0 0 20 20"><path d="M10.75 2.75a.75.75 0 0 0-1.5 0v8.614L6.295 8.235a.75.75 0 1 0-1.09 1.03l4.25 4.5a.75.75 0 0 0 1.09 0l4.25-4.5a.75.75 0 0 0-1.09-1.03l-2.955 3.129V2.75Z"></path><path d="M3.5 12.75a.75.75 0 0 0-1.5 0v2.5A2.75 2.75 0 0 0 4.75 18h10.5A2.75 2.75 0 0 0 18 15.25v-2.5a.75.75 0 0 0-1.5 0v2.5c0 .69-.56 1.25-1.25 1.25H4.75c-.69 0-1.25-.56-1.25-1.25v-2.5Z"></path></svg>
+                    Download
+                </button>
+            </div>
+        </div>
+
+        <div class="button-group">
+            <button id="play-button">
+                <svg fill="currentColor" viewBox="0 0 20 20"><path d="M6.3 2.841A1.5 1.5 0 0 0 4 4.11V15.89a1.5 1.5 0 0 0 2.3 1.269l9.344-5.89a1.5 1.5 0 0 0 0-2.538L6.3 2.841Z"></path></svg>
+                <span class="button-text">Play</span>
+            </button>
+            <button id="pause-button">
+                <svg fill="currentColor" viewBox="0 0 20 20"><path d="M5.75 3a.75.75 0 0 0-.75.75v12.5c0 .414.336.75.75.75h1.5a.75.75 0 0 0 .75-.75V3.75A.75.75 0 0 0 7.25 3h-1.5ZM12.75 3a.75.75 0 0 0-.75.75v12.5c0 .414.336.75.75.75h1.5a.75.75 0 0 0 .75-.75V3.75a.75.75 0 0 0-.75-.75h-1.5Z"></path></svg>
+                Pause
+            </button>
+            <button id="stop-button">
+                <svg fill="currentColor" viewBox="0 0 20 20"><path d="M5 3.75A1.75 1.75 0 0 1 6.75 2h6.5A1.75 1.75 0 0 1 15 3.75v12.5A1.75 1.75 0 0 1 13.25 18h-6.5A1.75 1.75 0 0 1 5 16.25V3.75Z"></path></svg>
+                Stop
+            </button>
+        </div>
+        
+        <div class="button-group feature-buttons">
+            <button id="teach-me-button-main">
+                <svg fill="currentColor" viewBox="0 0 20 20"><path d="M10 9a3 3 0 1 0 0-6 3 3 0 0 0 0 6Zm-7 9a7 7 0 1 1 14 0H3Z"></path></svg>
+                Teach Me
+            </button>
+        </div>
+        
+        <div class="loader" id="loader">
+            <div class="loader-dot"></div>
+            <div class="loader-dot"></div>
+            <div class="loader-dot"></div>
+        </div>
+    </div>
+    
+    <!-- Modals -->
+    <div class="modal-overlay" id="teach-me-modal-overlay">
+        <div class="modal">
+            <button class="modal-close" id="close-teach-me-modal">&times;</button>
+            <h2>Teach Me</h2>
+            <form id="teach-me-form" class="modal-form">
+                <div class="form-group">
+                    <label for="grade-level-select">Select Learning Level:</label>
+                    <select id="grade-level-select">
+                        <option value="Elementary School">Elementary School</option>
+                        <option value="Middle School">Middle School</option>
+                        <option value="High School">High School</option>
+                        <option value="ADHD Adolescent">ADHD Adolescent</option>
+                        <option value="College">College</option>
+                        <option value="ADHD Adult">ADHD Adult</option>
+                        <option value="Grad Student">Grad Student</option>
+                    </select>
+                </div>
+                <button type="submit" class="icon-button">Generate Lesson</button>
+            </form>
+        </div>
+    </div>
+    <div class="modal-overlay" id="settings-modal-overlay">
+        <div class="modal">
+            <button class="modal-close" id="close-settings-modal">&times;</button>
+            <h2>Settings</h2>
+            <form id="settings-form" class="modal-form">
+                <div class="form-group">
+                    <label for="api-key-input">Google AI API Key:</label>
+                    <input type="password" id="api-key-input" placeholder="Enter your API key here">
+                    <small>Your key is saved securely in your browser's local storage.</small>
+                </div>
+                 <div class="form-group toggle-switch">
+                    <label for="quality-toggle">Voice Quality (High = Slower)</label>
+                    <label class="switch">
+                        <input type="checkbox" id="quality-toggle" checked>
+                        <span class="slider"></span>
+                    </label>
+                </div>
+                <button type="submit" class="icon-button">Save Key</button>
+            </form>
+        </div>
+    </div>
+
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // DOM Element References
+            const playButton = document.getElementById('play-button');
+            const playButtonText = playButton.querySelector('.button-text');
+            const pauseButton = document.getElementById('pause-button');
+            const stopButton = document.getElementById('stop-button');
+            const downloadButton = document.getElementById('download-button');
+            const textInput = document.getElementById('text-input');
+            const styleInput = document.getElementById('style-input');
+            const languageSelect = document.getElementById('language-select');
+            const voiceSelect = document.getElementById('voice-select');
+            const testVoiceButton = document.getElementById('test-voice-button');
+            const clearButton = document.getElementById('clear-button');
+            const teachMeButton = document.getElementById('teach-me-button-main');
+            const settingsButton = document.getElementById('settings-button');
+            const loader = document.getElementById('loader');
+
+            // Modals
+            const teachMeModal = document.getElementById('teach-me-modal-overlay');
+            const settingsModal = document.getElementById('settings-modal-overlay');
+            const teachMeForm = document.getElementById('teach-me-form');
+            const settingsForm = document.getElementById('settings-form');
+            const apiKeyInput = document.getElementById('api-key-input');
+            const qualityToggle = document.getElementById('quality-toggle');
+
+            // Audio Players
+            let mainAudioPlayer = new Audio();
+            let testAudioPlayer = new Audio();
+            let audioContextState = 'idle'; // idle, loading, playing, paused
+            let lastGeneratedAudioUrl = null;
+            let userApiKey = '';
+            let voiceEngine = 'high-quality'; // 'high-quality' or 'instant'
+            
+            // --- CORE LOGIC ---
+            function updateUIState() {
+                playButton.disabled = audioContextState === 'loading' || audioContextState === 'playing';
+                pauseButton.disabled = audioContextState !== 'playing';
+                stopButton.disabled = audioContextState === 'idle' || audioContextState === 'loading';
+                downloadButton.disabled = !lastGeneratedAudioUrl || audioContextState === 'loading' || audioContextState === 'playing';
+                playButtonText.textContent = audioContextState === 'paused' ? 'Resume' : 'Play';
+                
+                // Update UI based on voice engine
+                const isHighQuality = voiceEngine === 'high-quality';
+                teachMeButton.disabled = !isHighQuality;
+                voiceSelect.disabled = !isHighQuality;
+                styleInput.disabled = !isHighQuality;
+                if (!isHighQuality) {
+                    teachMeButton.style.cursor = 'not-allowed';
+                    styleInput.placeholder = 'Style input disabled in Instant mode.';
+                } else {
+                    teachMeButton.style.cursor = 'pointer';
+                    styleInput.placeholder = "Reading Style (Optional): e.g., 'Speak in a dramatic, serious tone'";
+                }
+            }
+
+            function base64ToArrayBuffer(base64) {
+                const binaryString = window.atob(base64);
+                const len = binaryString.length;
+                const bytes = new Uint8Array(len);
+                for (let i = 0; i < len; i++) { bytes[i] = binaryString.charCodeAt(i); }
+                return bytes.buffer;
+            }
+
+            function pcmToWav(pcmData, sampleRate) {
+                const pcm16 = new Int16Array(pcmData);
+                const header = new ArrayBuffer(44);
+                const view = new DataView(header);
+                view.setUint32(0, 1380533830, false); view.setUint32(4, 36 + pcm16.byteLength, true); view.setUint32(8, 1463899717, false); view.setUint32(12, 1718449184, false); view.setUint32(16, 16, true); view.setUint16(20, 1, true); view.setUint16(22, 1, true); view.setUint32(24, sampleRate, true); view.setUint32(28, sampleRate * 2, true); view.setUint16(32, 2, true); view.setUint16(34, 16, true); view.setUint32(36, 1684108385, false); view.setUint32(40, pcm16.byteLength, true);
+                return new Blob([header, pcm16], { type: 'audio/wav' });
+            }
+            
+            async function generateText(prompt) {
+                if (!userApiKey) {
+                    alert("Please set your Google AI API key in the Settings to use this feature.");
+                    return null;
+                }
+                 try {
+                    let chatHistory = [{ role: "user", parts: [{ text: prompt }] }];
+                    const payload = { contents: chatHistory };
+                    const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${userApiKey}`;
+                    const response = await fetch(apiUrl, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+                    if (!response.ok) throw new Error(`Text generation failed with status ${response.status}`);
+                    const result = await response.json();
+                    if (result.candidates && result.candidates.length > 0) {
+                        return result.candidates[0].content.parts[0].text;
+                    }
+                    return null;
+                } catch (error) {
+                    console.error("Error generating text:", error);
+                    return null;
+                }
+            }
+
+            async function generateAudio(text, voice) {
+                if (!userApiKey) {
+                    alert("Please set your Google AI API key in the Settings to use this feature.");
+                    return null;
+                }
+                try {
+                    const payload = {
+                        contents: [{ parts: [{ text: text }] }],
+                        generationConfig: { 
+                            responseModalities: ["AUDIO"], 
+                            speechConfig: { voiceConfig: { prebuiltVoiceConfig: { voiceName: voice } } }
+                        },
+                    };
+                    const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-tts:generateContent?key=${userApiKey}`;
+                    
+                    const response = await fetch(apiUrl, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+                    if (!response.ok) throw new Error(`API request failed with status ${response.status}`);
+
+                    const result = await response.json();
+                    const part = result?.candidates?.[0]?.content?.parts?.[0];
+                    const audioData = part?.inlineData?.data;
+                    const mimeType = part?.inlineData?.mimeType;
+
+                    if (audioData && mimeType?.startsWith("audio/")) {
+                        const sampleRate = parseInt(mimeType.match(/rate=(\d+)/)?.[1] || '24000', 10);
+                        const pcmData = base64ToArrayBuffer(audioData);
+                        const wavBlob = pcmToWav(pcmData, sampleRate);
+                        return URL.createObjectURL(wavBlob);
+                    } else {
+                        throw new Error("Invalid audio data received from API.");
+                    }
+                } catch (error) {
+                    console.error("Error generating speech:", error);
+                    return null;
+                }
+            }
+
+            function playWithBrowserVoice(text) {
+                if ('speechSynthesis' in window) {
+                    speechSynthesis.cancel(); // Stop any previous speech
+                    const utterance = new SpeechSynthesisUtterance(text);
+                    utterance.lang = languageSelect.value;
+                    utterance.onstart = () => {
+                        audioContextState = 'playing';
+                        updateUIState();
+                    };
+                    utterance.onend = () => {
+                        audioContextState = 'idle';
+                        updateUIState();
+                    };
+                    speechSynthesis.speak(utterance);
+                } else {
+                    alert("Sorry, your browser does not support the standard text-to-speech engine.");
+                }
+            }
+
+            async function handleMainPlayback() {
+                let text = textInput.value.trim();
+                if (text === '') return;
+
+                if (voiceEngine === 'instant') {
+                    playWithBrowserVoice(text);
+                    return;
+                }
+
+                audioContextState = 'loading';
+                if(lastGeneratedAudioUrl) {
+                    URL.revokeObjectURL(lastGeneratedAudioUrl);
+                }
+                lastGeneratedAudioUrl = null;
+                updateUIState();
+                loader.classList.add('active');
+
+                const style = styleInput.value.trim();
+                let finalText = text;
+                if (style) {
+                    finalText = `${style}: "${finalText}"`;
+                }
+
+                const audioUrl = await generateAudio(finalText, voiceSelect.value);
+                
+                loader.classList.remove('active');
+
+                if (audioUrl) {
+                    lastGeneratedAudioUrl = audioUrl;
+                    mainAudioPlayer.src = audioUrl;
+                    mainAudioPlayer.play();
+                } else {
+                    audioContextState = 'idle';
+                    updateUIState();
+                }
+            }
+
+            // --- EVENT LISTENERS ---
+            playButton.addEventListener('click', () => {
+                if (audioContextState === 'paused') {
+                    mainAudioPlayer.play();
+                } else if (audioContextState === 'idle') {
+                    handleMainPlayback();
+                }
+            });
+
+
+            pauseButton.addEventListener('click', () => { 
+                if (voiceEngine === 'instant') {
+                    speechSynthesis.pause();
+                } else {
+                    if (audioContextState === 'playing') mainAudioPlayer.pause(); 
+                }
+            });
+            stopButton.addEventListener('click', () => {
+                if (voiceEngine === 'instant') {
+                    speechSynthesis.cancel();
+                    audioContextState = 'idle';
+                    updateUIState();
+                } else {
+                    mainAudioPlayer.pause();
+                    mainAudioPlayer.currentTime = 0;
+                    audioContextState = 'idle';
+                    updateUIState();
+                }
+            });
+
+            downloadButton.addEventListener('click', () => {
+                if (!lastGeneratedAudioUrl) return;
+                window.open(lastGeneratedAudioUrl, '_blank');
+            });
+            
+            clearButton.addEventListener('click', () => {
+                textInput.value = '';
+                styleInput.value = '';
+                updateUIState();
+            });
+
+            testVoiceButton.addEventListener('click', async () => {
+                if (audioContextState !== 'idle') return;
+                const sampleText = "Hello, this is a test of my voice.";
+                if (voiceEngine === 'instant') {
+                    playWithBrowserVoice(sampleText);
+                } else {
+                    testVoiceButton.disabled = true;
+                    const audioUrl = await generateAudio(sampleText, voiceSelect.value);
+                    if (audioUrl) {
+                        testAudioPlayer.src = audioUrl;
+                        testAudioPlayer.play();
+                    } else {
+                        testVoiceButton.disabled = false;
+                    }
+                }
+            });
+
+            mainAudioPlayer.onplay = () => { audioContextState = 'playing'; updateUIState(); };
+            mainAudioPlayer.onpause = () => { if (!mainAudioPlayer.ended && mainAudioPlayer.currentTime > 0) { audioContextState = 'paused'; updateUIState(); } };
+            mainAudioPlayer.onended = () => { audioContextState = 'idle'; updateUIState(); };
+            testAudioPlayer.onended = () => { testVoiceButton.disabled = false; };
+            textInput.addEventListener('input', updateUIState);
+
+            // Modal Listeners
+            const setupModal = (buttonId, modalId, closeId) => {
+                const button = document.getElementById(buttonId);
+                const modal = document.getElementById(modalId);
+                const closeButton = document.getElementById(closeId);
+                button.addEventListener('click', () => modal.classList.add('active'));
+                closeButton.addEventListener('click', () => modal.classList.remove('active'));
+                modal.addEventListener('click', (e) => { if (e.target === modal) modal.classList.remove('active'); });
+            };
+            setupModal('teach-me-button-main', 'teach-me-modal-overlay', 'close-teach-me-modal');
+            setupModal('settings-button', 'settings-modal-overlay', 'close-settings-modal');
+            
+            teachMeForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const originalText = textInput.value.trim();
+                if (!originalText) {
+                    return;
+                }
+                const level = document.getElementById('grade-level-select').value;
+                teachMeModal.classList.remove('active');
+                loader.classList.add('active');
+                
+                let prompt;
+                const basePrompt = `You are an expert educator. Create a structured lesson plan based on the following text. The target audience is a ${level} student. Your response must be well-organized and include all of the following sections, clearly labeled: 1. Outline, 2. Title and Subtitle, 3. Core Concepts (in detail), 4. Key Terms (with simple definitions), and 5. Examples and Analogies. Here is the text to analyze: "${originalText}"`;
+
+                if (level === 'ADHD Adolescent') {
+                    prompt = `You are an engaging tutor specializing in teaching adolescents with ADHD. Create a structured lesson plan based on the following text. The target audience is a high schooler with ADHD. Your response must be highly structured and easy to scan. Use all of the following formatting techniques: short sentences, bullet points, and bolded keywords. The lesson plan must include these sections: 1. Quick Outline, 2. Main Idea (Title & Subtitle), 3. Key Concepts (explained simply), 4. Important Words (with easy definitions), and 5. Real-World Examples. Here is the text: "${originalText}"`;
+                } else if (level === 'ADHD Adult') {
+                     prompt = `You are a clear and concise expert creating a learning module for an adult with ADHD. Analyze the following text and generate a structured summary. Your response must be professional, scannable, and efficient. Use clear headings, bullet points for key takeaways, and use analogies to make abstract concepts concrete. Avoid long paragraphs. The module must include these sections: 1. Lesson Outline, 2. Title and Subtitle, 3. Core Concepts, 4. Key Terminology, and 5. Practical Analogies/Examples. Here is the text: "${originalText}"`;
+                } else {
+                    prompt = basePrompt;
+                }
+                
+                const lessonText = await generateText(prompt);
+                loader.classList.remove('active');
+                
+                if (lessonText) {
+                    textInput.value = lessonText;
+                    updateUIState();
+                }
+            });
+            
+            settingsForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                const key = apiKeyInput.value.trim();
+                if (key) {
+                    localStorage.setItem('williex-api-key', key);
+                    userApiKey = key;
+                    settingsModal.classList.remove('active');
+                }
+            });
+
+            qualityToggle.addEventListener('change', (e) => {
+                voiceEngine = e.target.checked ? 'high-quality' : 'instant';
+                localStorage.setItem('williex-voice-engine', voiceEngine);
+                updateUIState();
+            });
+
+            // Language Placeholder Logic
+            const placeholders = {
+                en: "Enter text here...",
+                es: "Escriba el texto aquí...",
+                fr: "Entrez le texte ici...",
+                de: "Geben Sie hier Text ein...",
+                it: "Inserisci il testo qui...",
+                ja: "ここにテキストを入力してください...",
+                ko: "여기에 텍스트를 입력하세요...",
+                hi: "यहां टेक्स्ट दर्ज करें...",
+                ru: "Введите текст здесь..."
+            };
+            
+            function updateLanguagePlaceholder() {
+                const selectedLang = languageSelect.value;
+                textInput.placeholder = placeholders[selectedLang] || placeholders.en;
+            }
+            languageSelect.addEventListener('change', updateLanguagePlaceholder);
+            updateLanguagePlaceholder();
+            
+            // Load Settings on startup
+            userApiKey = localStorage.getItem('williex-api-key') || '';
+            if (userApiKey) {
+                apiKeyInput.value = userApiKey;
+            }
+            const savedEngine = localStorage.getItem('williex-voice-engine');
+            if (savedEngine) {
+                voiceEngine = savedEngine;
+                qualityToggle.checked = voiceEngine === 'high-quality';
+            }
+
+            updateUIState();
+
+            // Plexus Background Animation
+            const canvas = document.getElementById('tech-background');
+            const ctx = canvas.getContext('2d');
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+
+            let particles;
+
+            const particle = {
+                x: 0,
+                y: 0,
+                vx: 0,
+                vy: 0,
+                radius: 0
+            };
+
+            function createParticles() {
+                particles = [];
+                const particleCount = Math.floor(canvas.width * canvas.height / 15000);
+                for (let i = 0; i < particleCount; i++) {
+                    const p = Object.create(particle);
+                    p.x = Math.random() * canvas.width;
+                    p.y = Math.random() * canvas.height;
+                    p.vx = Math.random() * 0.4 - 0.2;
+                    p.vy = Math.random() * 0.4 - 0.2;
+                    p.radius = 1.5;
+                    particles.push(p);
+                }
+            }
+
+            function update() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                
+                particles.forEach(p1 => {
+                    p1.x += p1.vx;
+                    p1.y += p1.vy;
+
+                    if (p1.x < -50) p1.x = canvas.width + 50;
+                    if (p1.y < -50) p1.y = canvas.height + 50;
+                    if (p1.x > canvas.width + 50) p1.x = -50;
+                    if (p1.y > canvas.height + 50) p1.y = -50;
+
+                    ctx.beginPath();
+                    ctx.arc(p1.x, p1.y, p1.radius, 0, Math.PI * 2);
+                    ctx.fillStyle = 'rgba(8, 217, 214, 0.5)';
+                    ctx.fill();
+
+                    particles.forEach(p2 => {
+                        const dx = p1.x - p2.x;
+                        const dy = p1.y - p2.y;
+                        const dist = Math.sqrt(dx * dx + dy * dy);
+
+                        if (dist < 120) {
+                            ctx.beginPath();
+                            ctx.moveTo(p1.x, p1.y);
+                            ctx.lineTo(p2.x, p2.y);
+                            ctx.strokeStyle = `rgba(8, 217, 214, ${1 - dist / 120})`;
+                            ctx.lineWidth = 0.5;
+                            ctx.stroke();
+                        }
+                    });
+                });
+
+                requestAnimationFrame(update);
+            }
+
+            window.addEventListener('resize', () => {
+                canvas.width = window.innerWidth;
+                canvas.height = window.innerHeight;
+                createParticles();
+            });
+
+            createParticles();
+            update();
+        });
+    </script>
+</body>
+</html>
