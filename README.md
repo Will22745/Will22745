@@ -50,7 +50,7 @@ I'm actively seeking an internship or rotational role where I can apply my skill
   </li>
 <li>
   <a href="https://will22745.github.io/Will22745/williedev-academy/"><b>WillieDev Academy</b></a> <i>(Completed)</i><br>
-  Real-time language translator using Google Translate API with optional voice input/output.
+  Real-time text-to-speech app using Google Translate API with optional voice input/output.
 </li>
 </ul>
 
