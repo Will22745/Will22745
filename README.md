@@ -49,7 +49,7 @@ I'm actively seeking an internship or rotational role where I can apply my skill
     <br><strong>Click the link to test it live.</strong>
   </li>
 <li>
-  <a href="https://will22745.github.io/Will22745/williedev-academy/"><b>WillieDev Academy</b></a> <i>(Planned)</i><br>
+  <a href="https://will22745.github.io/Will22745/williedev-academy/"><b>WillieDev Academy</b></a> <i>(Completed)</i><br>
   Real-time language translator using Google Translate API with optional voice input/output.
 </li>
 </ul>
