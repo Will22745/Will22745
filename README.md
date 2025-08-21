@@ -45,7 +45,7 @@ I'm actively seeking an internship or rotational role where I can apply my skill
 <small>Specialization: Artificial Intelligence and Machine Learning Western Governors University</small></h3>
 <ul>
   <li>
-    <a href="https://will22745.github.io/Will22745/myproject.html" target="_blank"><strong>WillieX 2.0 – Advanced Dashboard</strong></a> <em>(Live)</em><br>
+    <a href="[https://will22745.github.io/Will22745/myproject.html](https://will22745.github.io/Will22745/myproject/)" target="_blank"><strong>WillieX 2.0 – Advanced Dashboard</strong></a> <em>(Live)</em><br>
     Advanced dashboard with live data streaming and optional Gemini API configuration.
   </li>
 
