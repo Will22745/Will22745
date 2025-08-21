@@ -44,11 +44,13 @@ I'm actively seeking an internship or rotational role where I can apply my skill
 <h3>Master of Science in Computer Science<br>
 <small>Specialization: Artificial Intelligence and Machine Learning Western Governors University</small></h3>
 <ul>
+ <ul>
   <li>
-    <a href="https://will22745.github.io/Will22745/myproject/" target="_blank"><b>Beginner AI Chatbot</b></a> <i>(Completed)</i><br>
-    Python chatbot that responds to user input and stores simple memory using JSON.
-    <br><strong>Click the link to test it live.</strong>
+    <a href="https://will22745.github.io/Will22745/myproject.html" target="_blank"><strong>WillieX 2.0 – Advanced Dashboard</strong></a> <em>(Live)</em><br>
+    Advanced dashboard with live data streaming and optional Gemini API configuration.
   </li>
+</ul>
+
 </ul>
 
 <li>
