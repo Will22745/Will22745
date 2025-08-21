@@ -1,0 +1,653 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WillieX 2.0 - Advanced Dashboard</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <style>
+        /* --- Base & Theme Variables --- */
+        :root {
+            --background-color: #0a0f1e;
+            --primary-glow: #ffc400; /* Amber */
+            --secondary-glow: #ff3333; /* Red */
+            --positive-glow: #89b4fa; /* Blue */
+            --text-color: #cdd6f4;
+            --glass-bg: rgba(17, 24, 39, 0.7);
+            --border-color: rgba(255, 196, 0, 0.2);
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        html, body {
+            height: 100%;
+            width: 100%;
+            font-family: 'Roboto Mono', monospace;
+            background-color: var(--background-color);
+            color: var(--text-color);
+            overflow: hidden;
+        }
+        
+        /* --- Main App Structure --- */
+        .app-container { display: flex; height: 100vh; width: 100vw; }
+
+        /* --- Live Data Stream Panel --- */
+        .system-log-panel {
+            width: 300px; /* Increased width */
+            height: 100%;
+            background: rgba(0,0,0,0.2);
+            border-right: 1px solid var(--border-color);
+            padding: 15px;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            z-index: 2; /* Ensure it's above the background */
+        }
+        .system-log-panel h2 {
+            color: var(--primary-glow);
+            font-size: 1.2em;
+            margin-bottom: 15px;
+            text-shadow: 0 0 5px var(--primary-glow);
+        }
+        .log-window { 
+            flex-grow: 1; 
+            overflow-x: auto; /* Allow horizontal scroll */
+            overflow-y: hidden; /* Hide vertical scroll, let the list handle it */
+            position: relative; 
+        }
+        #log-entries { 
+            list-style: none; 
+            font-size: 0.75em; 
+            line-height: 1.4; 
+            color: #6c7086; 
+            height: 100%;
+            overflow-y: auto; /* Handle vertical scrolling here */
+        }
+        .log-entry { 
+            white-space: nowrap; 
+            padding-right: 15px; /* Add padding for scrollbar */
+        }
+        .log-hex { color: #89b4fa; }
+        .log-status-ok { color: #a6e3a1; }
+        .log-status-error { color: #f38ba8; }
+        .log-ip { color: #fab387; }
+
+        /* --- Chat Container & Canvas Background --- */
+        .chat-container { 
+            flex-grow: 1; 
+            display: flex; 
+            flex-direction: column; 
+            position: relative;
+        }
+        #synapse-canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+        }
+        .chat-header, .chat-window, .input-area-wrapper {
+            position: relative;
+            z-index: 1;
+        }
+
+        .chat-header {
+            padding: 10px 2vw;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--border-color);
+            background: var(--glass-bg);
+            backdrop-filter: blur(5px);
+            flex-shrink: 0;
+        }
+        .header-title-container { display: flex; align-items: center; gap: 20px; }
+        .header-title { font-size: 1.8em; color: var(--primary-glow); text-shadow: 0 0 5px var(--primary-glow); }
+        #waveform-monitor { width: 150px; height: 40px; }
+        .header-controls { display: flex; align-items: center; gap: 20px; }
+        .icon-button { cursor: pointer; width: 28px; height: 28px; fill: var(--text-color); transition: all 0.3s; position: relative; background: none; border: none; }
+        .icon-button:hover { fill: var(--primary-glow); }
+        #settings-btn:hover { transform: rotate(180deg); }
+        .icon-button .mute-slash {
+            display: none;
+            stroke: var(--secondary-glow);
+            stroke-width: 2;
+            position: absolute;
+            top: 5px;
+            left: 5px;
+        }
+        .icon-button.muted .mute-slash {
+            display: block;
+        }
+
+        /* --- Chat Window & Messages --- */
+        .chat-window { flex-grow: 1; padding: 20px 2vw; overflow-y: auto; display: flex; flex-direction: column; gap: 15px; }
+        .message-wrapper { display: flex; flex-direction: column; align-items: flex-start; }
+        .message-wrapper.user-wrapper { align-items: flex-end; }
+        .message { max-width: 80%; padding: 12px 18px; border-radius: 8px; line-height: 1.6; animation: fadeIn 0.5s ease; border: 1px solid transparent; word-wrap: break-word; background: var(--glass-bg); }
+        .message.bot { border-color: var(--border-color); }
+        .message.user { border-color: rgba(205, 214, 244, 0.1); }
+        .confidence-score { font-size: 0.8em; color: var(--primary-glow); margin-top: 8px; padding-left: 5px; align-self: flex-start; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* --- Typing Indicator --- */
+        .typing-indicator span {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background-color: var(--primary-glow);
+            margin: 0 2px;
+            animation: typing-bounce 1.4s infinite;
+        }
+        .typing-indicator span:nth-child(2) { animation-delay: 0.2s; }
+        .typing-indicator span:nth-child(3) { animation-delay: 0.4s; }
+        @keyframes typing-bounce {
+            0%, 80%, 100% { transform: scale(0); }
+            40% { transform: scale(1.0); }
+        }
+
+        /* --- Input Area & Autocomplete --- */
+        .input-area-wrapper { position: relative; }
+        #autocomplete-box { position: absolute; bottom: 100%; left: 2vw; width: calc(100% - 4vw); background: #1e2233; border: 1px solid var(--border-color); border-bottom: none; border-radius: 4px 4px 0 0; z-index: 10; max-height: 150px; overflow-y: auto;}
+        .autocomplete-item { padding: 8px 12px; cursor: pointer; }
+        .autocomplete-item:hover, .autocomplete-item.selected { background-color: var(--primary-glow); color: var(--background-color); }
+        .input-area { padding: 10px 2vw; border-top: 1px solid var(--border-color); display: flex; align-items: center; gap: 15px; background: var(--glass-bg); backdrop-filter: blur(5px); }
+        #user-input { flex-grow: 1; background: transparent; border: none; padding: 12px 0; color: var(--text-color); font-size: 1.1em; font-family: 'Roboto Mono', monospace; }
+        #user-input:focus { outline: none; }
+        .input-prompt { color: var(--primary-glow); font-size: 1.1em; font-weight: 700; margin-right: 10px; }
+        .input-button { background: transparent; border: none; cursor: pointer; padding: 5px; }
+        .input-button svg { width: 24px; height: 24px; fill: var(--text-color); transition: fill 0.3s; }
+        .input-button:hover svg { fill: var(--primary-glow); }
+        .input-button.listening svg { fill: var(--secondary-glow); animation: pulse 1.5s infinite; }
+        @keyframes pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.2); } }
+        #send-btn { background: var(--primary-glow); border: none; border-radius: 4px; width: 50px; height: 45px; display: flex; justify-content: center; align-items: center; cursor: pointer; transition: all 0.3s; }
+        #send-btn:hover { box-shadow: 0 0 15px var(--primary-glow); transform: scale(1.1); }
+        .send-icon { width: 22px; height: 22px; fill: var(--background-color); transform: rotate(90deg); }
+        
+        /* --- Quantum Thinking Toggle --- */
+        .quantum-toggle { display: flex; align-items: center; gap: 10px; margin-right: 15px; }
+        .switch { position: relative; display: inline-block; width: 40px; height: 22px; }
+        .switch input { opacity: 0; width: 0; height: 0; }
+        .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #444; transition: .4s; border-radius: 22px; }
+        .slider:before { position: absolute; content: ""; height: 16px; width: 16px; left: 3px; bottom: 3px; background-color: var(--text-color); transition: .4s; border-radius: 50%; }
+        input:checked + .slider { background-color: var(--primary-glow); }
+        input:checked + .slider:before { transform: translateX(18px); }
+
+        /* --- Modal & Settings --- */
+        #settings-modal { background: var(--glass-bg); border: 1px solid var(--border-color); border-radius: 8px; color: var(--text-color); width: 90%; max-width: 500px; }
+        #settings-modal::backdrop { background: rgba(0,0,0,0.6); }
+        .modal-content { padding: 25px; display: flex; flex-direction: column; gap: 20px; }
+        .modal-content h2 { color: var(--primary-glow); text-align: center; }
+        .modal-actions { display: flex; justify-content: flex-end; gap: 15px; }
+        .modal-btn { padding: 8px 20px; border-radius: 4px; cursor: pointer; font-weight: 700; transition: all 0.3s; }
+        .save-btn { background-color: var(--primary-glow); color: var(--background-color); border: none; }
+        .close-btn { background: transparent; border: 1px solid var(--text-color); color: var(--text-color); }
+        #api-key-input { width: 100%; padding: 10px; background: rgba(0,0,0,0.3); border: 1px solid var(--border-color); color: var(--text-color); font-family: 'Roboto Mono', monospace; }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <!-- Left panel for simulated live data stream -->
+        <div class="system-log-panel">
+            <h2>LIVE DATA STREAM</h2>
+            <div class="log-window">
+                <ul id="log-entries"></ul>
+            </div>
+        </div>
+
+        <!-- Main chat interface -->
+        <div class="chat-container">
+            <canvas id="synapse-canvas"></canvas>
+            <header class="chat-header">
+                <div class="header-title-container">
+                    <h1 class="header-title">WillieX 2.0</h1>
+                    <canvas id="waveform-monitor"></canvas>
+                </div>
+                <div class="header-controls">
+                    <button id="voice-toggle-btn" class="icon-button" title="Toggle Voice Output">
+                        <svg viewBox="0 0 24 24">
+                            <path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"></path>
+                            <line class="mute-slash" x1="1" y1="1" x2="23" y2="23"></line>
+                        </svg>
+                    </button>
+                    <button id="settings-btn" class="icon-button" title="Settings">
+                        <svg viewBox="0 0 24 24">
+                            <path d="M19.14,12.94c0.04-0.3,0.06-0.61,0.06-0.94c0-0.32-0.02-0.64-0.07-0.94l2.03-1.58c0.18-0.14,0.23-0.41,0.12-0.61 l-1.92-3.32c-0.12-0.22-0.37-0.29-0.59-0.22l-2.39,0.96c-0.5-0.38-1.03-0.7-1.62-0.94L14.4,2.81c-0.04-0.24-0.24-0.41-0.48-0.41 h-3.84c-0.24,0-0.44,0.17-0.48,0.41L9.2,5.77C8.61,6.01,8.08,6.33,7.58,6.71L5.19,5.75C4.97,5.68,4.72,5.75,4.6,5.97L2.68,9.29 c-0.11,0.2-0.06,0.47,0.12,0.61l2.03,1.58C4.78,11.76,4.76,12.08,4.76,12.4c0,0.32,0.02,0.64,0.07,0.94l-2.03,1.58 c-0.18,0.14-0.23,0.41-0.12,0.61l1.92,3.32c0.12,0.22,0.37,0.29,0.59,0.22l2.39-0.96c0.5,0.38,1.03,0.7,1.62,0.94l0.36,2.54 c0.04,0.24,0.24,0.41,0.48,0.41h3.84c0.24,0,0.44,0.17,0.48,0.41l0.36-2.54c0.59-0.24,1.12-0.56,1.62-0.94l2.39,0.96 c0.22,0.08,0.47,0.01,0.59-0.22l1.92-3.32c0.11-0.2,0.06-0.47-0.12-0.61L19.14,12.94z M12,15.6c-1.98,0-3.6-1.62-3.6-3.6 s1.62-3.6,3.6-3.6s3.6,1.62,3.6,3.6S13.98,15.6,12,15.6z"/>
+                        </svg>
+                    </button>
+                </div>
+            </header>
+
+            <div class="chat-window" id="chat-window"></div>
+            
+            <div class="input-area-wrapper">
+                <div id="autocomplete-box" style="display: none;"></div>
+                <div class="input-area">
+                    <span class="input-prompt">></span>
+                    <input type="text" id="user-input" placeholder="Enter command...">
+                    <div class="quantum-toggle" id="quantum-toggle-container" style="display: none;" title="Engage deep analysis mode">
+                        <label for="quantum-toggle" style="font-size: 0.8em;">Quantum Thinking</label>
+                        <label class="switch">
+                            <input type="checkbox" id="quantum-toggle">
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                    <button class="input-button" id="mic-btn" title="Voice Input">
+                        <svg viewBox="0 0 24 24"><path d="M12,14c1.66,0,3-1.34,3-3V5c0-1.66-1.34-3-3-3S9,3.34,9,5v6C9,12.66,10.34,14,12,14z M17.3,11c0,3-2.54,5.1-5.3,5.1S6.7,14,6.7,11H5c0,3.41,2.72,6.23,6,6.72V21h2v-3.28c3.28-0.49,6-3.31,6-6.72H17.3z"/></svg>
+                    </button>
+                    <button id="send-btn" title="Send Message">
+                        <svg class="send-icon" viewBox="0 0 24 24"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Settings Modal Dialog -->
+    <dialog id="settings-modal">
+        <div class="modal-content">
+            <h2>API Configuration</h2>
+            <p>Enter your Gemini API key to engage the advanced processing core. If left blank, a basic model will be used.</p>
+            <input type="password" id="api-key-input" placeholder="Paste your key here">
+            <div class="modal-actions">
+                <button id="close-modal-btn" class="modal-btn close-btn">Cancel</button>
+                <button id="save-api-key-btn" class="modal-btn save-btn">Save</button>
+            </div>
+        </div>
+    </dialog>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // --- DOM Elements ---
+            const body = document.body;
+            const synapseCanvas = document.getElementById('synapse-canvas');
+            const waveformCanvas = document.getElementById('waveform-monitor');
+            const logEntries = document.getElementById('log-entries');
+            const chatWindow = document.getElementById('chat-window');
+            const settingsModal = document.getElementById('settings-modal');
+            const apiKeyInput = document.getElementById('api-key-input');
+            const saveApiKeyBtn = document.getElementById('save-api-key-btn');
+            const closeModalBtn = document.getElementById('close-modal-btn');
+            const userInput = document.getElementById('user-input');
+            const sendBtn = document.getElementById('send-btn');
+            const micBtn = document.getElementById('mic-btn');
+            const settingsBtn = document.getElementById('settings-btn');
+            const quantumToggleContainer = document.getElementById('quantum-toggle-container');
+            const quantumToggle = document.getElementById('quantum-toggle');
+            const voiceToggleBtn = document.getElementById('voice-toggle-btn');
+            const autocompleteBox = document.getElementById('autocomplete-box');
+            
+            // --- Interactive Particle Field (Three.js) ---
+            let animationState = 'idle'; // 'idle', 'thinking'
+            const scene = new THREE.Scene();
+            const camera = new THREE.PerspectiveCamera(75, synapseCanvas.clientWidth / synapseCanvas.clientHeight, 0.1, 1000);
+            const renderer = new THREE.WebGLRenderer({ canvas: synapseCanvas, alpha: true });
+            let particleMesh, originalPositions, typingEffect = 0;
+            const clock = new THREE.Clock();
+
+            function setupParticleField() {
+                renderer.setSize(synapseCanvas.clientWidth, synapseCanvas.clientHeight);
+                
+                const particles = new THREE.BufferGeometry();
+                const particleCount = 5000;
+                const posArray = new Float32Array(particleCount * 3);
+                for(let i = 0; i < particleCount * 3; i++) {
+                    posArray[i] = (Math.random() - 0.5) * 10;
+                }
+                particles.setAttribute('position', new THREE.BufferAttribute(posArray, 3));
+                originalPositions = posArray.slice(); // Store original positions for reset
+
+                const particleMaterial = new THREE.PointsMaterial({ 
+                    size: 0.015, 
+                    color: new THREE.Color(getComputedStyle(body).getPropertyValue('--primary-glow').trim()),
+                    transparent: true,
+                    blending: THREE.AdditiveBlending
+                });
+                particleMesh = new THREE.Points(particles, particleMaterial);
+                scene.add(particleMesh);
+                camera.position.z = 5;
+            }
+
+            function animateParticleField() {
+                const elapsedTime = clock.getElapsedTime();
+                
+                // Base rotation
+                particleMesh.rotation.y += 0.0005;
+
+                // AI Thinking effect
+                if (animationState === 'thinking') {
+                    const speed = quantumToggle.checked ? 0.05 : 0.01;
+                    particleMesh.rotation.y += speed;
+                    particleMesh.rotation.x += speed / 2;
+                    
+                    // Color shift for quantum mode
+                    const targetColor = quantumToggle.checked 
+                        ? new THREE.Color(getComputedStyle(body).getPropertyValue('--positive-glow').trim())
+                        : new THREE.Color(getComputedStyle(body).getPropertyValue('--primary-glow').trim());
+                    particleMesh.material.color.lerp(targetColor, 0.1);
+                } else {
+                     // Return to base color when not thinking
+                    const baseColor = new THREE.Color(getComputedStyle(body).getPropertyValue('--primary-glow').trim());
+                    particleMesh.material.color.lerp(baseColor, 0.1);
+                }
+                
+                // User typing effect (shockwave)
+                if (typingEffect > 0) {
+                    typingEffect -= 0.02; // Fade out the effect
+                    const positions = particleMesh.geometry.attributes.position.array;
+                    for (let i = 0; i < positions.length; i += 3) {
+                        const x = originalPositions[i];
+                        const y = originalPositions[i+1];
+                        const z = originalPositions[i+2];
+                        const dist = Math.sqrt(x*x + y*y + z*z);
+                        const displacement = Math.sin(dist * 2 - elapsedTime * 5) * typingEffect * 0.5;
+                        positions[i] = x + x * displacement;
+                        positions[i+1] = y + y * displacement;
+                        positions[i+2] = z + z * displacement;
+                    }
+                    particleMesh.geometry.attributes.position.needsUpdate = true;
+                }
+
+
+                renderer.render(scene, camera);
+                requestAnimationFrame(animateParticleField);
+            }
+
+            function handleTypingRipple() {
+                typingEffect = 1.0; // Trigger the effect
+            }
+
+            window.addEventListener('resize', () => {
+                renderer.setSize(synapseCanvas.clientWidth, synapseCanvas.clientHeight);
+                camera.aspect = synapseCanvas.clientWidth / synapseCanvas.clientHeight;
+                camera.updateProjectionMatrix();
+            });
+
+            setupParticleField();
+            animateParticleField();
+
+
+            // --- Waveform Monitor ---
+            const waveformCtx = waveformCanvas.getContext('2d');
+            let currentSentiment = 'neutral';
+            let waveData = new Array(150).fill(0);
+            function drawWaveform() {
+                const width = waveformCanvas.width;
+                const height = waveformCanvas.height;
+                waveformCtx.clearRect(0, 0, width, height);
+
+                let amplitude, frequency, jaggedness;
+                switch(currentSentiment) {
+                    case 'positive': amplitude = 0.8; frequency = 0.1; jaggedness = 0; break;
+                    case 'warning': amplitude = 0.9; frequency = 0.3; jaggedness = 0.5; break;
+                    default: amplitude = 0.5; frequency = 0.05; jaggedness = 0.1;
+                }
+                const newPoint = Math.sin(Date.now() * frequency) * (height / 2 * amplitude) + (Math.random() - 0.5) * (height * jaggedness);
+                waveData.push(newPoint);
+                if (waveData.length > 150) waveData.shift();
+
+                let color = getComputedStyle(body).getPropertyValue('--secondary-glow').trim();
+                if (currentSentiment === 'positive') color = getComputedStyle(body).getPropertyValue('--positive-glow').trim();
+                if (currentSentiment === 'neutral') color = getComputedStyle(body).getPropertyValue('--primary-glow').trim();
+                
+                waveformCtx.strokeStyle = color;
+                waveformCtx.lineWidth = 2;
+                waveformCtx.beginPath();
+                for (let i = 0; i < waveData.length; i++) {
+                    const x = (i / (waveData.length - 1)) * width;
+                    const y = height / 2 + waveData[i];
+                    if (i === 0) waveformCtx.moveTo(x, y);
+                    else waveformCtx.lineTo(x, y);
+                }
+                waveformCtx.stroke();
+                
+                requestAnimationFrame(drawWaveform);
+            }
+            drawWaveform();
+
+            // --- Live Data Stream ---
+            function generateRandomHex(length) { return [...Array(length)].map(() => Math.floor(Math.random() * 16).toString(16)).join(''); }
+            function addLogEntry() {
+                const statuses = ['200 OK', '404 NOT FOUND', '503 SRV UNVAIL', '201 CREATED'];
+                const ips = [`192.168.${Math.floor(Math.random()*255)}.${Math.floor(Math.random()*255)}`, '10.0.5.21', '208.67.222.222'];
+                const hex = generateRandomHex(8);
+                const status = statuses[Math.floor(Math.random() * statuses.length)];
+                const ip = ips[Math.floor(Math.random() * ips.length)];
+                
+                let statusClass = 'log-status-ok';
+                if (status.includes('404') || status.includes('503')) statusClass = 'log-status-error';
+
+                const li = document.createElement('li');
+                li.className = 'log-entry';
+                li.innerHTML = `<span class="log-hex">${hex}</span> <span class="${statusClass}">${status}</span> REQ GET /root from <span class="log-ip">${ip}</span>`;
+                logEntries.appendChild(li);
+
+                if (logEntries.children.length > 100) logEntries.removeChild(logEntries.firstChild);
+                // Auto-scroll the log window
+                const logWindow = document.querySelector('.log-window');
+                if(logWindow) logWindow.scrollTop = logWindow.scrollHeight;
+            }
+            setInterval(addLogEntry, 100);
+
+            // --- Voice Recognition & Synthesis ---
+            let isVoiceEnabled = true;
+            let synthVoices = [];
+            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+            let recognition;
+
+            function populateVoiceList() {
+                if (typeof speechSynthesis === 'undefined') return;
+                synthVoices = speechSynthesis.getVoices();
+            }
+            
+            if (typeof speechSynthesis !== 'undefined' && speechSynthesis.onvoiceschanged !== undefined) {
+                speechSynthesis.onvoiceschanged = populateVoiceList;
+            }
+
+            if (SpeechRecognition) {
+                recognition = new SpeechRecognition();
+                recognition.continuous = false;
+                recognition.lang = 'en-US';
+                recognition.interimResults = false;
+                recognition.maxAlternatives = 1;
+                recognition.onresult = (event) => { userInput.value = event.results[0][0].transcript; handleUserInput(); };
+                recognition.onspeechend = () => { recognition.stop(); micBtn.classList.remove('listening'); };
+                recognition.onerror = (event) => { console.error('Speech recognition error:', event.error); micBtn.classList.remove('listening'); };
+            }
+
+            function speak(text) {
+                if (isVoiceEnabled && 'speechSynthesis' in window) {
+                    speechSynthesis.cancel();
+                    const utterance = new SpeechSynthesisUtterance(text.replace(/<[^>]*>/g, ''));
+                    utterance.voice = synthVoices.find(v => v.lang.startsWith('en-GB') && v.name.includes('Female')) || synthVoices.find(v => v.lang.startsWith('en'));
+                    utterance.pitch = 0.9;
+                    utterance.rate = 1;
+                    speechSynthesis.speak(utterance);
+                }
+            }
+
+            // --- Command Autocomplete ---
+            const commands = ['status', 'help', 'scan ports', 'ping google.com', 'time', 'clear', 'who are you?', 'hello'];
+            userInput.addEventListener('input', () => {
+                const text = userInput.value.toLowerCase();
+                if (!text) { autocompleteBox.style.display = 'none'; return; }
+                const suggestions = commands.filter(cmd => cmd.startsWith(text));
+                if (suggestions.length > 0) {
+                    autocompleteBox.innerHTML = suggestions.map(s => `<div class="autocomplete-item">${s}</div>`).join('');
+                    autocompleteBox.style.display = 'block';
+                    document.querySelectorAll('.autocomplete-item').forEach(item => {
+                        item.addEventListener('click', () => {
+                            userInput.value = item.textContent;
+                            autocompleteBox.style.display = 'none';
+                            userInput.focus();
+                        });
+                    });
+                } else {
+                    autocompleteBox.style.display = 'none';
+                }
+            });
+
+            // --- Chatbot Logic ---
+            function getFallbackResponse(input) {
+                const lowerInput = input.toLowerCase().trim();
+                if (lowerInput.includes('hello') || lowerInput.includes('hi')) return "Greetings, Operator! WillieX online. I've processed your query using my local heuristics. How can I assist you today?";
+                if (lowerInput.includes('who are you')) return "I am WillieX, a terminal-based AI assistant. My primary function is to process your queries and provide data-driven insights. For a full deep-dive, engage my advanced processing core via an API key in the settings!";
+                return `Query received: "${input}". My analysis, based on my pre-compiled knowledge base, suggests a positive correlation with your request. However, for a high-confidence response, please provide an API key.`;
+            }
+
+            async function getApiResponse(prompt, userApiKey) {
+                const apiKey = userApiKey || ""; 
+                const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${apiKey}`;
+                let promptText = `You are WillieX, a highly advanced AI analyst. Provide concise, direct, data-driven answers. Access real-time internet information as needed. Avoid conversational fluff. Return ONLY a JSON object with the specified schema. Query: ${prompt}`;
+                if (quantumToggle.checked) {
+                    promptText = `You are WillieX in Quantum Thinking mode. Provide an exceptionally deep, concise, and data-driven analysis. Prioritize synthesizing real-time internet information. Eliminate all fluff. Return ONLY a JSON object with the specified schema. Query: ${prompt}`;
+                }
+                const payload = {
+                    contents: [{ parts: [{ text: promptText }] }],
+                    generationConfig: {
+                        responseMimeType: "application/json",
+                        responseSchema: {
+                            type: "OBJECT",
+                            properties: { response: { type: "STRING" }, confidence: { type: "NUMBER" }, sentiment: { type: "STRING" } },
+                            required: ["response", "confidence", "sentiment"]
+                        }
+                    }
+                };
+                let attempts = 0;
+                while (attempts < 5) {
+                    try {
+                        const response = await fetch(apiUrl, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+                        if (!response.ok) throw new Error(`API Error: ${response.status}`);
+                        const data = await response.json();
+                        const text = data.candidates?.[0]?.content?.parts?.[0]?.text;
+                        if (text) {
+                            const result = JSON.parse(text);
+                            currentSentiment = result.sentiment || 'neutral';
+                            return result;
+                        }
+                        throw new Error("Invalid response structure.");
+                    } catch (error) {
+                        attempts++;
+                        console.error(`API attempt ${attempts} failed:`, error);
+                        if (attempts >= 5) {
+                            currentSentiment = 'warning';
+                            return { error: `API connection failed: ${error.message}.` };
+                        }
+                        await new Promise(resolve => setTimeout(resolve, Math.pow(2, attempts - 1) * 1000));
+                    }
+                }
+            }
+            
+            // --- UI Manipulation ---
+            function addMessage(text, sender, type = '', confidence = null) {
+                const wrapper = document.createElement('div');
+                wrapper.className = `message-wrapper ${sender}-wrapper`;
+                const messageElement = document.createElement('div');
+                messageElement.classList.add('message', sender);
+                if (type) messageElement.classList.add(type);
+                messageElement.innerHTML = text;
+                wrapper.appendChild(messageElement);
+                if (confidence !== null && confidence !== undefined) {
+                    const confidenceEl = document.createElement('div');
+                    confidenceEl.className = 'confidence-score';
+                    confidenceEl.textContent = `[Confidence: ${confidence}%]`;
+                    wrapper.appendChild(confidenceEl);
+                }
+                chatWindow.appendChild(wrapper);
+                scrollToBottom();
+                if (sender === 'bot') speak(text);
+            }
+            
+            function showTypingIndicator() {
+                animationState = 'thinking';
+                if (document.getElementById('typing-indicator-wrapper')) return;
+                const wrapper = document.createElement('div');
+                wrapper.id = 'typing-indicator-wrapper';
+                wrapper.className = 'message-wrapper bot-wrapper';
+                const indicator = document.createElement('div');
+                indicator.classList.add('message', 'bot', 'typing-indicator');
+                indicator.innerHTML = '<span></span><span></span><span></span>';
+                wrapper.appendChild(indicator);
+                chatWindow.appendChild(wrapper);
+                scrollToBottom();
+            }
+
+            function hideTypingIndicator() {
+                animationState = 'idle';
+                const indicatorWrapper = document.getElementById('typing-indicator-wrapper');
+                if (indicatorWrapper) indicatorWrapper.remove();
+            }
+
+            function scrollToBottom() { chatWindow.scrollTop = chatWindow.scrollHeight; }
+
+            // --- Event Handling ---
+            async function handleUserInput() {
+                const messageText = userInput.value.trim();
+                if (messageText === '') return;
+                autocompleteBox.style.display = 'none';
+                addMessage(messageText, 'user');
+                userInput.value = '';
+                showTypingIndicator();
+                const userApiKey = localStorage.getItem('williex_api_key');
+                let botResponse = userApiKey ? await getApiResponse(messageText, userApiKey) : (await new Promise(r => setTimeout(r, 800)), { response: getFallbackResponse(messageText), confidence: null });
+                hideTypingIndicator();
+                if (botResponse.error) addMessage(botResponse.error, 'bot', 'error');
+                else addMessage(botResponse.response, 'bot', '', botResponse.confidence);
+            }
+            
+            // --- Modal & API Key Logic ---
+            function openSettings() {
+                apiKeyInput.value = localStorage.getItem('williex_api_key') || '';
+                settingsModal.showModal();
+            }
+            function saveApiKey() {
+                const newKey = apiKeyInput.value.trim();
+                if (newKey) {
+                    localStorage.setItem('williex_api_key', newKey);
+                    quantumToggleContainer.style.display = 'flex';
+                    addMessage("API key saved. Advanced processing core is now online.", 'bot');
+                } else {
+                    localStorage.removeItem('williex_api_key');
+                    quantumToggleContainer.style.display = 'none';
+                    addMessage("API key removed. Reverting to local heuristics.", 'bot');
+                }
+                settingsModal.close();
+            }
+            
+            if (localStorage.getItem('williex_api_key')) quantumToggleContainer.style.display = 'flex';
+
+            // --- Initial Greeting & Event Listeners ---
+            let greetingShown = false;
+            function initialGreeting() {
+                if (greetingShown) return;
+                const msg = localStorage.getItem('williex_api_key') ? "Advanced core engaged. Awaiting command..." : "Awaiting command...";
+                addMessage(`Greetings, Operator! WillieX is online. ${msg}`, 'bot');
+                greetingShown = true;
+            }
+            
+            setTimeout(() => { populateVoiceList(); initialGreeting(); }, 500);
+
+            sendBtn.addEventListener('click', handleUserInput);
+            userInput.addEventListener('keydown', (e) => { 
+                if (e.key === 'Enter') handleUserInput(); 
+                else handleTypingRipple();
+            });
+            settingsBtn.addEventListener('click', openSettings);
+            saveApiKeyBtn.addEventListener('click', saveApiKey);
+            closeModalBtn.addEventListener('click', () => settingsModal.close());
+            micBtn.addEventListener('click', () => {
+                if (recognition) { micBtn.classList.add('listening'); recognition.start(); } 
+                else { addMessage("Voice recognition not supported.", 'bot', 'error'); }
+            });
+            voiceToggleBtn.addEventListener('click', () => {
+                isVoiceEnabled = !isVoiceEnabled;
+                voiceToggleBtn.classList.toggle('muted', !isVoiceEnabled);
+                if (!isVoiceEnabled) speechSynthesis.cancel();
+            });
+        });
+    </script>
+</body>
+</html>
