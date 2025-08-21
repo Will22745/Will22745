@@ -47,11 +47,10 @@ I'm actively seeking an internship or rotational role where I can apply my skill
   <li>
     <a href="https://will22745.github.io/Will22745/myproject/" target="_blank">
       <strong>WillieX 2.0 – Advanced Dashboard</strong>
-    </a> <em>(Live)</em><br>
+    </a> <em>(Completed)</em><br>
     Advanced dashboard with live data streaming and optional Gemini API configuration.
   </li>
 </ul>
-
   <li>
     <a href="https://will22745.github.io/Will22745/williedev-academy/" target="_blank"><b>WillieDev Academy</b></a> <i>(Completed)</i><br>
     Real-time text-to-speech app using Google Translate API with optional voice input/output.
