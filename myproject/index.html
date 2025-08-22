@@ -11,14 +11,54 @@
     <style>
         /* --- Base & Theme Variables --- */
         :root {
-            --background-color: #0a0f1e;
-            --primary-glow: #ffc400; /* Amber */
-            --secondary-glow: #ff3333; /* Red */
-            --positive-glow: #89b4fa; /* Blue */
+            /* Dark Mode (Default) */
+            --background-color: #181a1f;
+            --primary-glow: #ffc400;
+            --secondary-glow: #ff3333;
+            --positive-glow: #89b4fa;
             --text-color: #cdd6f4;
-            --glass-bg: rgba(17, 24, 39, 0.7);
+            --glass-bg: rgba(24, 26, 31, 0.7);
             --border-color: rgba(255, 196, 0, 0.2);
+            --log-text-color: #7f849c;
+            --input-text-color: #dce0e8;
+
+            /* Light Mode */
+            --lt-background-color: #eff1f5;
+            --lt-primary-glow: #e67e22;
+            --lt-secondary-glow: #d32f2f;
+            --lt-positive-glow: #1976d2;
+            --lt-text-color: #4c4f69;
+            --lt-glass-bg: rgba(255, 255, 255, 0.7);
+            --lt-border-color: rgba(230, 126, 34, 0.3);
+            --lt-log-text-color: #6c6f84;
+            --lt-input-text-color: #3c3f58;
+            
+            /* Quantum Mode */
+            --quantum-bg: #0d0221;
+            --quantum-glow: #8a2be2; /* BlueViolet */
+            --quantum-positive: #00f5d4; /* Neon Teal */
+            --quantum-border: rgba(0, 245, 212, 0.3);
         }
+        
+        body.light-mode {
+            --background-color: var(--lt-background-color);
+            --primary-glow: var(--lt-primary-glow);
+            --secondary-glow: var(--lt-secondary-glow);
+            --positive-glow: var(--lt-positive-glow);
+            --text-color: var(--lt-text-color);
+            --glass-bg: var(--lt-glass-bg);
+            --border-color: var(--lt-border-color);
+            --log-text-color: var(--lt-log-text-color);
+            --input-text-color: var(--lt-input-text-color);
+        }
+
+        body.quantum-mode {
+            --background-color: var(--quantum-bg);
+            --primary-glow: var(--quantum-glow);
+            --positive-glow: var(--quantum-positive);
+            --border-color: var(--quantum-border);
+        }
+
         * { box-sizing: border-box; margin: 0; padding: 0; }
         html, body {
             height: 100%;
@@ -27,6 +67,7 @@
             background-color: var(--background-color);
             color: var(--text-color);
             overflow: hidden;
+            transition: background-color 0.5s, color 0.5s;
         }
         
         /* --- Main App Structure --- */
@@ -34,7 +75,7 @@
 
         /* --- Live Data Stream Panel --- */
         .system-log-panel {
-            width: 300px; /* Increased width */
+            width: 300px;
             height: 100%;
             background: rgba(0,0,0,0.2);
             border-right: 1px solid var(--border-color);
@@ -42,36 +83,55 @@
             display: flex;
             flex-direction: column;
             overflow: hidden;
-            z-index: 2; /* Ensure it's above the background */
+            z-index: 2;
+            transition: width 0.4s ease, height 0.4s ease, padding 0.4s ease, border-color 0.3s;
+            flex-shrink: 0;
         }
-        .system-log-panel h2 {
+        .system-log-panel.collapsed {
+            width: 0;
+            padding: 15px 0;
+            border-right-color: transparent;
+        }
+        .log-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        .log-header h2 {
             color: var(--primary-glow);
             font-size: 1.2em;
-            margin-bottom: 15px;
             text-shadow: 0 0 5px var(--primary-glow);
+            transition: color 0.3s, text-shadow 0.3s;
+            margin: 0;
+            white-space: nowrap;
         }
+        .log-controls { display: flex; gap: 8px; }
         .log-window { 
             flex-grow: 1; 
-            overflow-x: auto; /* Allow horizontal scroll */
-            overflow-y: hidden; /* Hide vertical scroll, let the list handle it */
+            overflow-y: auto;
             position: relative; 
+            min-width: 270px;
         }
         #log-entries { 
             list-style: none; 
-            font-size: 0.75em; 
-            line-height: 1.4; 
-            color: #6c7086; 
-            height: 100%;
-            overflow-y: auto; /* Handle vertical scrolling here */
+            font-size: 0.85em;
+            line-height: 1.5; 
+            color: var(--log-text-color); 
+            transition: color 0.3s;
         }
         .log-entry { 
             white-space: nowrap; 
-            padding-right: 15px; /* Add padding for scrollbar */
+            padding-right: 15px;
         }
-        .log-hex { color: #89b4fa; }
+        .log-hex { color: var(--positive-glow); }
         .log-status-ok { color: #a6e3a1; }
         .log-status-error { color: #f38ba8; }
         .log-ip { color: #fab387; }
+        body.light-mode .log-status-ok { color: #4caf50; }
+        body.light-mode .log-status-error { color: #e53935; }
+        body.light-mode .log-ip { color: #fb8c00; }
+
 
         /* --- Chat Container & Canvas Background --- */
         .chat-container { 
@@ -79,6 +139,7 @@
             display: flex; 
             flex-direction: column; 
             position: relative;
+            min-width: 0; /* Fix for flexbox overflow */
         }
         #synapse-canvas {
             position: absolute;
@@ -102,12 +163,13 @@
             background: var(--glass-bg);
             backdrop-filter: blur(5px);
             flex-shrink: 0;
+            transition: background-color 0.3s, border-color 0.3s;
         }
-        .header-title-container { display: flex; align-items: center; gap: 20px; }
-        .header-title { font-size: 1.8em; color: var(--primary-glow); text-shadow: 0 0 5px var(--primary-glow); }
+        .header-title-container { display: flex; align-items: center; gap: 15px; min-width: 0; }
+        .header-title { font-size: 1.8em; color: var(--primary-glow); text-shadow: 0 0 5px var(--primary-glow); transition: color 0.3s, text-shadow 0.3s; }
         #waveform-monitor { width: 150px; height: 40px; }
-        .header-controls { display: flex; align-items: center; gap: 20px; }
-        .icon-button { cursor: pointer; width: 28px; height: 28px; fill: var(--text-color); transition: all 0.3s; position: relative; background: none; border: none; }
+        .header-controls { display: flex; align-items: center; gap: 15px; }
+        .icon-button { cursor: pointer; width: 28px; height: 28px; fill: var(--text-color); transition: all 0.3s; position: relative; background: none; border: none; padding: 0; }
         .icon-button:hover { fill: var(--primary-glow); }
         #settings-btn:hover { transform: rotate(180deg); }
         .icon-button .mute-slash {
@@ -118,19 +180,57 @@
             top: 5px;
             left: 5px;
         }
-        .icon-button.muted .mute-slash {
-            display: block;
-        }
+        .icon-button.muted .mute-slash { display: block; }
 
         /* --- Chat Window & Messages --- */
         .chat-window { flex-grow: 1; padding: 20px 2vw; overflow-y: auto; display: flex; flex-direction: column; gap: 15px; }
         .message-wrapper { display: flex; flex-direction: column; align-items: flex-start; }
         .message-wrapper.user-wrapper { align-items: flex-end; }
-        .message { max-width: 80%; padding: 12px 18px; border-radius: 8px; line-height: 1.6; animation: fadeIn 0.5s ease; border: 1px solid transparent; word-wrap: break-word; background: var(--glass-bg); }
+        .message { max-width: 80%; padding: 12px 18px; border-radius: 8px; line-height: 1.6; animation: fadeIn 0.5s ease; border: 1px solid transparent; word-wrap: break-word; background: var(--glass-bg); transition: background-color 0.3s, border-color 0.3s; }
         .message.bot { border-color: var(--border-color); }
         .message.user { border-color: rgba(205, 214, 244, 0.1); }
-        .confidence-score { font-size: 0.8em; color: var(--primary-glow); margin-top: 8px; padding-left: 5px; align-self: flex-start; }
+        .message p { margin-bottom: 1em; }
+        .message p:last-child { margin-bottom: 0; }
+        .message ul { padding-left: 20px; }
+        .message li { margin-bottom: 0.5em; }
+        .message a.source-link {
+            color: var(--positive-glow);
+            text-decoration: none;
+            font-size: 0.8em;
+            border: 1px solid var(--positive-glow);
+            padding: 2px 6px;
+            border-radius: 4px;
+            transition: all 0.3s;
+            display: inline-block;
+            margin-top: 10px;
+        }
+        .message a.source-link:hover {
+            background-color: var(--positive-glow);
+            color: var(--background-color);
+        }
+        body.light-mode .message.user { border-color: rgba(76, 79, 105, 0.1); }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* --- Interactive Buttons --- */
+        .response-actions {
+            display: flex;
+            gap: 8px;
+            margin-top: 10px;
+        }
+        .action-btn {
+            background-color: rgba(255, 255, 255, 0.1);
+            border: 1px solid var(--border-color);
+            color: var(--text-color);
+            padding: 4px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.75em;
+            transition: all 0.3s;
+        }
+        .action-btn:hover {
+            background-color: var(--primary-glow);
+            color: var(--background-color);
+        }
 
         /* --- Typing Indicator --- */
         .typing-indicator span {
@@ -151,21 +251,47 @@
 
         /* --- Input Area & Autocomplete --- */
         .input-area-wrapper { position: relative; }
-        #autocomplete-box { position: absolute; bottom: 100%; left: 2vw; width: calc(100% - 4vw); background: #1e2233; border: 1px solid var(--border-color); border-bottom: none; border-radius: 4px 4px 0 0; z-index: 10; max-height: 150px; overflow-y: auto;}
+        #autocomplete-box { 
+            position: absolute; 
+            bottom: 100%; 
+            left: 2vw; 
+            width: calc(100% - 4vw); 
+            background: var(--glass-bg); 
+            color: var(--text-color);
+            border: 1px solid var(--border-color); 
+            border-bottom: none; 
+            border-radius: 4px 4px 0 0; 
+            z-index: 10; 
+            max-height: 150px; 
+            overflow-y: auto;
+            transition: background-color 0.3s, color 0.3s, border-color 0.3s;
+        }
         .autocomplete-item { padding: 8px 12px; cursor: pointer; }
         .autocomplete-item:hover, .autocomplete-item.selected { background-color: var(--primary-glow); color: var(--background-color); }
-        .input-area { padding: 10px 2vw; border-top: 1px solid var(--border-color); display: flex; align-items: center; gap: 15px; background: var(--glass-bg); backdrop-filter: blur(5px); }
-        #user-input { flex-grow: 1; background: transparent; border: none; padding: 12px 0; color: var(--text-color); font-size: 1.1em; font-family: 'Roboto Mono', monospace; }
+        .input-area { padding: 10px 2vw; border-top: 1px solid var(--border-color); display: flex; align-items: center; gap: 15px; background: var(--glass-bg); backdrop-filter: blur(5px); transition: background-color 0.3s, border-color 0.3s; }
+        #user-input { flex-grow: 1; background: transparent; border: none; padding: 12px 0; color: var(--input-text-color); font-size: 1.2em; font-family: 'Roboto Mono', monospace; transition: color 0.3s;}
         #user-input:focus { outline: none; }
-        .input-prompt { color: var(--primary-glow); font-size: 1.1em; font-weight: 700; margin-right: 10px; }
+        
+        /* --- Browser Autofill Style Override --- */
+        input:-webkit-autofill,
+        input:-webkit-autofill:hover, 
+        input:-webkit-autofill:focus, 
+        input:-webkit-autofill:active {
+            -webkit-text-fill-color: var(--input-text-color) !important;
+            box-shadow: 0 0 0 30px var(--background-color) inset !important;
+            -webkit-box-shadow: 0 0 0 30px var(--background-color) inset !important;
+            transition: background-color 5000s ease-in-out 0s;
+        }
+
+        .input-prompt { color: var(--primary-glow); font-size: 1.2em; font-weight: 700; margin-right: 10px; transition: color 0.3s; }
         .input-button { background: transparent; border: none; cursor: pointer; padding: 5px; }
         .input-button svg { width: 24px; height: 24px; fill: var(--text-color); transition: fill 0.3s; }
         .input-button:hover svg { fill: var(--primary-glow); }
         .input-button.listening svg { fill: var(--secondary-glow); animation: pulse 1.5s infinite; }
         @keyframes pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.2); } }
-        #send-btn { background: var(--primary-glow); border: none; border-radius: 4px; width: 50px; height: 45px; display: flex; justify-content: center; align-items: center; cursor: pointer; transition: all 0.3s; }
+        #send-btn { background: var(--primary-glow); border: none; border-radius: 4px; width: 50px; height: 45px; display: flex; justify-content: center; align-items: center; cursor: pointer; transition: all 0.3s; flex-shrink: 0; }
         #send-btn:hover { box-shadow: 0 0 15px var(--primary-glow); transform: scale(1.1); }
-        .send-icon { width: 22px; height: 22px; fill: var(--background-color); transform: rotate(90deg); }
+        .send-icon { width: 22px; height: 22px; fill: var(--background-color); transition: fill 0.3s; }
         
         /* --- Quantum Thinking Toggle --- */
         .quantum-toggle { display: flex; align-items: center; gap: 10px; margin-right: 15px; }
@@ -176,23 +302,126 @@
         input:checked + .slider { background-color: var(--primary-glow); }
         input:checked + .slider:before { transform: translateX(18px); }
 
-        /* --- Modal & Settings --- */
-        #settings-modal { background: var(--glass-bg); border: 1px solid var(--border-color); border-radius: 8px; color: var(--text-color); width: 90%; max-width: 500px; }
-        #settings-modal::backdrop { background: rgba(0,0,0,0.6); }
+        /* --- Modals (Settings & Onboarding) --- */
+        .modal { background: var(--glass-bg); border: 1px solid var(--border-color); border-radius: 8px; color: var(--text-color); width: 90%; max-width: 500px; }
+        .modal::backdrop { background: rgba(0,0,0,0.6); }
         .modal-content { padding: 25px; display: flex; flex-direction: column; gap: 20px; }
         .modal-content h2 { color: var(--primary-glow); text-align: center; }
-        .modal-actions { display: flex; justify-content: flex-end; gap: 15px; }
+        .modal-content p { line-height: 1.6; }
+        .modal-content ul { padding-left: 20px; }
+        .modal-actions { display: flex; justify-content: flex-end; gap: 15px; margin-top: 10px; }
         .modal-btn { padding: 8px 20px; border-radius: 4px; cursor: pointer; font-weight: 700; transition: all 0.3s; }
         .save-btn { background-color: var(--primary-glow); color: var(--background-color); border: none; }
         .close-btn { background: transparent; border: 1px solid var(--text-color); color: var(--text-color); }
         #api-key-input { width: 100%; padding: 10px; background: rgba(0,0,0,0.3); border: 1px solid var(--border-color); color: var(--text-color); font-family: 'Roboto Mono', monospace; }
+
+        /* --- API Status & Quantum Indicators --- */
+        @keyframes pulse-green {
+            0% { box-shadow: 0 0 4px #28a745; }
+            50% { box-shadow: 0 0 12px #28a745, 0 0 16px #28a745; }
+            100% { box-shadow: 0 0 4px #28a745; }
+        }
+        #api-status-light {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background-color: #555;
+            transition: background-color 0.5s;
+        }
+        #api-status-light.active {
+            background-color: #28a745;
+            animation: pulse-green 2s infinite;
+        }
+        #live-data-badge {
+            font-size: 0.7em;
+            background-color: var(--positive-glow);
+            color: var(--background-color);
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-weight: 700;
+            display: none; /* Hidden by default */
+        }
+        #live-data-badge.active { display: block; }
+        #quantum-icon {
+            width: 24px;
+            height: 24px;
+            display: none; /* Hidden by default */
+        }
+        #quantum-icon.active { display: block; }
+
+        /* --- Toast Notification --- */
+        #toast-notification {
+            position: fixed;
+            bottom: -100px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: var(--glass-bg);
+            color: var(--text-color);
+            padding: 12px 25px;
+            border-radius: 6px;
+            border: 1px solid var(--border-color);
+            z-index: 100;
+            transition: bottom 0.5s ease-in-out;
+        }
+        #toast-notification.show {
+            bottom: 20px;
+        }
+
+        /* --- Responsive Design --- */
+        @media (max-width: 900px) {
+            .system-log-panel {
+                position: absolute;
+                height: 40vh;
+                width: 100%;
+                bottom: 0;
+                border-right: none;
+                border-top: 1px solid var(--border-color);
+                transform: translateY(100%);
+                transition: transform 0.4s ease;
+            }
+            .system-log-panel.mobile-visible {
+                transform: translateY(0);
+            }
+            .app-container {
+                flex-direction: column;
+            }
+            .log-collapse-btn {
+                display: block !important; 
+            }
+            #log-collapse-btn {
+                display: none;
+            }
+            .quantum-toggle { display: none; }
+        }
+
+        @media (max-width: 600px) {
+            .header-title { font-size: 1.4em; }
+            #waveform-monitor { display: none; }
+            .header-controls { gap: 10px; }
+            .message { max-width: 90%; }
+            .input-area { gap: 10px; }
+        }
     </style>
 </head>
 <body>
     <div class="app-container">
         <!-- Left panel for simulated live data stream -->
-        <div class="system-log-panel">
-            <h2>LIVE DATA STREAM</h2>
+        <div class="system-log-panel" id="system-log-panel">
+            <div class="log-header">
+                <h2>LIVE DATA STREAM</h2>
+                <div class="log-controls">
+                     <button id="copy-logs-btn" class="icon-button" title="Copy Logs">
+                        <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+                    </button>
+                    <button id="log-pause-btn" class="icon-button" title="Pause Log">
+                        <svg id="pause-icon" viewBox="0 0 24 24"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>
+                        <svg id="play-icon" viewBox="0 0 24 24" style="display: none;"><path d="M8 5v14l11-7z"/></svg>
+                    </button>
+                    <button id="log-collapse-btn" class="icon-button" title="Collapse Panel">
+                        <svg viewBox="0 0 24 24"><path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/></svg>
+                    </button>
+                </div>
+            </div>
             <div class="log-window">
                 <ul id="log-entries"></ul>
             </div>
@@ -203,10 +432,27 @@
             <canvas id="synapse-canvas"></canvas>
             <header class="chat-header">
                 <div class="header-title-container">
+                    <div id="quantum-icon" title="Quantum Thinking Enabled">
+                        <svg width="24" height="24" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <circle cx="50" cy="50" r="6" fill="var(--quantum-positive)"/>
+                            <ellipse cx="50" cy="50" rx="30" ry="12" stroke="var(--quantum-positive)" stroke-width="3"/>
+                            <ellipse cx="50" cy="50" rx="30" ry="12" transform="rotate(60 50 50)" stroke="var(--quantum-positive)" stroke-width="3"/>
+                            <ellipse cx="50" cy="50" rx="30" ry="12" transform="rotate(120 50 50)" stroke="var(--quantum-positive)" stroke-width="3"/>
+                        </svg>
+                    </div>
                     <h1 class="header-title">WillieX 2.0</h1>
+                    <div id="live-data-badge">LIVE DATA</div>
                     <canvas id="waveform-monitor"></canvas>
                 </div>
                 <div class="header-controls">
+                    <div id="api-status-light" title="API Status"></div>
+                    <button id="copy-transcript-btn" class="icon-button" title="Copy Transcript">
+                        <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+                    </button>
+                    <button id="theme-toggle-btn" class="icon-button" title="Toggle Theme">
+                        <svg id="theme-icon-sun" viewBox="0 0 24 24" style="display: none;"><path d="M12 7c-2.76 0-5 2.24-5 5s2.24 5 5 5 5-2.24 5-5-2.24-5-5-5zM2 13h2c.55 0 1-.45 1-1s-.45-1-1-1H2c-.55 0-1 .45-1 1s.45 1 1 1zm18 0h2c.55 0 1-.45 1-1s-.45-1-1-1h-2c-.55 0-1 .45-1 1s.45 1 1 1zm-9-8h2c.55 0 1-.45 1-1s-.45-1-1-1h-2c-.55 0-1 .45-1 1s.45 1 1 1zm0 16h2c.55 0 1-.45 1-1s-.45-1-1-1h-2c-.55 0-1 .45-1 1s.45 1 1 1zM5.64 6.36c-.39-.39-1.02-.39-1.41 0-.39.39-.39 1.02 0 1.41l1.06 1.06c.39.39 1.02.39 1.41 0s.39-1.02 0-1.41L5.64 6.36zm12.72 12.72c-.39-.39-1.02-.39-1.41 0-.39.39-.39 1.02 0 1.41l1.06 1.06c.39.39 1.02.39 1.41 0 .39-.39.39-1.02 0-1.41l-1.06-1.06zM6.36 18.36l-1.06-1.06c-.39-.39-.39-1.02 0-1.41s1.02-.39 1.41 0l1.06 1.06c.39.39.39 1.02 0 1.41s-1.02.39-1.41 0zm12.02-12.02l-1.06-1.06c-.39-.39-.39-1.02 0-1.41s1.02-.39 1.41 0l1.06 1.06c.39.39.39 1.02 0 1.41s-1.02.39-1.41 0z"/></svg>
+                        <svg id="theme-icon-moon" viewBox="0 0 24 24"><path d="M12.3 4.9c-.2-.2-.5-.3-.8-.2-.3.1-.6.3-.7.5-.1.2-.1.5.1.7.1.1 1.2 1.5 1.2 1.5s-1.5-1.1-1.5-1.2c-.2-.2-.5-.2-.7-.1-.2.1-.4.3-.5.6-.1.2-.1.5.1.7.1.1 1.8 1.8 1.8 1.8s-1.8-1.7-1.8-1.7c-.2-.2-.5-.3-.8-.2s-.6.3-.7.5c-.1.2-.1.5.1.7.1.1 2.3 2.3 2.3 2.3s-2.3-2.2-2.3-2.3c-.2-.2-.5-.2-.7-.1-.2.1-.4.4-.5.6-.1.2 0 .5.1.7.1.1 2.8 2.8 2.8 2.8s-2.8-2.7-2.8-2.8c-.2-.2-.5-.3-.8-.2-.3.1-.6.3-.7.5-.1.2-.1.5.1.7C4 13.1 5.9 16.6 9 18.5c3.1 1.9 7 1.9 10.1 0 3.1-1.9 5-5.4 4.8-9.3s-3-7.2-6.5-8.5c-.5-.2-1-.1-1.4.3-.4.4-.5.9-.3 1.4.2.5.6.9 1.1 1.1.5.2 1.1.2 1.6-.1.2-.1.3-.1.4-.2.1-.1.2-.2.2-.4.1-.1.1-.3 0-.4-.1-.1-.2-.2-.4-.2s-.3 0-.4.1c-1.7.8-2.9 2.4-3.2 4.2-.3 1.8.3 3.6 1.6 4.9.2.2.3.4.3.7s-.1.5-.3.7c-.2.2-.4.3-.7.3s-.5-.1-.7-.3c-1.8-1.8-2.5-4.3-2.1-6.7.4-2.4 1.9-4.5 4.1-5.6.2-.1.4-.2.7-.2.2 0 .5.1.7.2z"/></svg>
+                    </button>
                     <button id="voice-toggle-btn" class="icon-button" title="Toggle Voice Output">
                         <svg viewBox="0 0 24 24">
                             <path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"></path>
@@ -218,6 +464,9 @@
                             <path d="M19.14,12.94c0.04-0.3,0.06-0.61,0.06-0.94c0-0.32-0.02-0.64-0.07-0.94l2.03-1.58c0.18-0.14,0.23-0.41,0.12-0.61 l-1.92-3.32c-0.12-0.22-0.37-0.29-0.59-0.22l-2.39,0.96c-0.5-0.38-1.03-0.7-1.62-0.94L14.4,2.81c-0.04-0.24-0.24-0.41-0.48-0.41 h-3.84c-0.24,0-0.44,0.17-0.48,0.41L9.2,5.77C8.61,6.01,8.08,6.33,7.58,6.71L5.19,5.75C4.97,5.68,4.72,5.75,4.6,5.97L2.68,9.29 c-0.11,0.2-0.06,0.47,0.12,0.61l2.03,1.58C4.78,11.76,4.76,12.08,4.76,12.4c0,0.32,0.02,0.64,0.07,0.94l-2.03,1.58 c-0.18,0.14-0.23,0.41-0.12,0.61l1.92,3.32c0.12,0.22,0.37,0.29,0.59,0.22l2.39-0.96c0.5,0.38,1.03,0.7,1.62,0.94l0.36,2.54 c0.04,0.24,0.24,0.41,0.48,0.41h3.84c0.24,0,0.44,0.17,0.48,0.41l0.36-2.54c0.59-0.24,1.12-0.56,1.62-0.94l2.39,0.96 c0.22,0.08,0.47,0.01,0.59-0.22l1.92-3.32c0.11-0.2,0.06-0.47-0.12-0.61L19.14,12.94z M12,15.6c-1.98,0-3.6-1.62-3.6-3.6 s1.62-3.6,3.6-3.6s3.6,1.62,3.6,3.6S13.98,15.6,12,15.6z"/>
                         </svg>
                     </button>
+                    <button id="mobile-log-toggle-btn" class="icon-button log-collapse-btn" title="Toggle Log Panel" style="display: none;">
+                         <svg viewBox="0 0 24 24"><path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/></svg>
+                    </button>
                 </div>
             </header>
 
@@ -227,7 +476,7 @@
                 <div id="autocomplete-box" style="display: none;"></div>
                 <div class="input-area">
                     <span class="input-prompt">></span>
-                    <input type="text" id="user-input" placeholder="Enter command...">
+                    <input type="text" id="user-input" placeholder="Enter command or query...">
                     <div class="quantum-toggle" id="quantum-toggle-container" style="display: none;" title="Engage deep analysis mode">
                         <label for="quantum-toggle" style="font-size: 0.8em;">Quantum Thinking</label>
                         <label class="switch">
@@ -247,7 +496,7 @@
     </div>
 
     <!-- Settings Modal Dialog -->
-    <dialog id="settings-modal">
+    <dialog id="settings-modal" class="modal">
         <div class="modal-content">
             <h2>API Configuration</h2>
             <p>Enter your Gemini API key to engage the advanced processing core. If left blank, a basic model will be used.</p>
@@ -258,6 +507,24 @@
             </div>
         </div>
     </dialog>
+
+    <!-- Onboarding Modal Dialog -->
+    <dialog id="onboarding-modal" class="modal">
+        <div class="modal-content">
+            <h2>Welcome to WillieX 2.0</h2>
+            <p>This is an advanced AI dashboard. Here are a few tips to get started:</p>
+            <ul>
+                <li><b>API Key:</b> For the best experience, enter a Gemini API key in the Settings (⚙️). Without it, WillieX operates on a limited, local-only mode.</li>
+                <li><b>Quantum Thinking:</b> Once an API key is active, this toggle enables a deeper, more comprehensive analysis mode for your queries.</li>
+                <li><b>Local Commands:</b> Type <code>/help</code> to see a list of commands that work without an API key.</li>
+            </ul>
+            <div class="modal-actions">
+                <button id="close-onboarding-btn" class="modal-btn save-btn">Got It</button>
+            </div>
+        </div>
+    </dialog>
+
+    <div id="toast-notification"></div>
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
@@ -279,9 +546,55 @@
             const quantumToggle = document.getElementById('quantum-toggle');
             const voiceToggleBtn = document.getElementById('voice-toggle-btn');
             const autocompleteBox = document.getElementById('autocomplete-box');
+            const themeToggleBtn = document.getElementById('theme-toggle-btn');
+            const themeIconSun = document.getElementById('theme-icon-sun');
+            const themeIconMoon = document.getElementById('theme-icon-moon');
+            const systemLogPanel = document.getElementById('system-log-panel');
+            const logCollapseBtn = document.getElementById('log-collapse-btn');
+            const logPauseBtn = document.getElementById('log-pause-btn');
+            const pauseIcon = document.getElementById('pause-icon');
+            const playIcon = document.getElementById('play-icon');
+            const onboardingModal = document.getElementById('onboarding-modal');
+            const closeOnboardingBtn = document.getElementById('close-onboarding-btn');
+            const copyTranscriptBtn = document.getElementById('copy-transcript-btn');
+            const copyLogsBtn = document.getElementById('copy-logs-btn');
+            const mobileLogToggleBtn = document.getElementById('mobile-log-toggle-btn');
+            const apiStatusLight = document.getElementById('api-status-light');
+            const liveDataBadge = document.getElementById('live-data-badge');
+            const quantumIcon = document.getElementById('quantum-icon');
+            const toastNotification = document.getElementById('toast-notification');
             
+            // --- State Variables ---
+            let animationState = 'idle';
+            let isLogPaused = false;
+            let chatHistory = [];
+            let defaultVoice = null;
+
+            // --- Local Knowledge Base ---
+            const localKnowledgeBase = {
+                "what is 2+2?": "The result is 4.",
+                "what is the capital of france?": "The capital of France is Paris.",
+                "what is malware?": "Malware, short for malicious software, is any software intentionally designed to cause damage to a computer, server, client, or computer network.",
+                "what is phishing?": "Phishing is a type of social engineering attack often used to steal user data, including login credentials and credit card numbers. It occurs when an attacker, masquerading as a trusted entity, dupes a victim into opening an email, instant message, or text message.",
+                "what is a firewall?": "A firewall is a network security device that monitors incoming and outgoing network traffic and decides whether to allow or block specific traffic based on a defined set of security rules.",
+                "what is two-factor authentication?": "Two-factor authentication (2FA) is a security process where users provide two different authentication factors to verify themselves, making it harder for attackers to gain access.",
+                "what is an ip address?": "An IP address, or Internet Protocol address, is a unique numerical label assigned to each device connected to a computer network that uses the Internet Protocol for communication.",
+                "what is a cpu?": "A CPU, or Central Processing Unit, is the primary component of a computer that executes instructions. It's often referred to as the 'brain' of the computer.",
+                "what is ram?": "RAM, or Random Access Memory, is a form of computer memory that can be read and changed in any order, typically used to store working data and machine code.",
+                "what is an ssd?": "An SSD, or Solid-State Drive, is a storage device that uses integrated circuit assemblies to store data persistently, typically using flash memory. It is much faster than a traditional hard disk drive.",
+                "what is a stock?": "A stock is a security that represents the ownership of a fraction of a corporation. This entitles the owner of the stock to a proportion of the corporation's assets and profits equal to how much stock they own.",
+                "what is inflation?": "Inflation is the rate at which the general level of prices for goods and services is rising, and subsequently, purchasing power is falling.",
+                "what is cryptocurrency?": "A cryptocurrency is a digital or virtual currency that is secured by cryptography, which makes it nearly impossible to counterfeit or double-spend.",
+                "what is a budget?": "A budget is an estimation of revenue and expenses over a specified future period of time and is usually compiled and re-evaluated on a periodic basis.",
+                "what is newton's first law?": "Newton's First Law states that an object will remain at rest or in uniform motion in a straight line unless acted upon by an external force.",
+                "what is e=mc^2?": "E=mc^2 is Einstein's mass-energy equivalence equation, which states that energy equals mass times the speed of light squared. It shows that mass and energy are interchangeable.",
+                "what is gravity?": "Gravity is the natural force by which all things with mass or energy—including planets, stars, galaxies, and even light—are attracted to one another.",
+                "what is artificial intelligence?": "Artificial intelligence (AI) is the simulation of human intelligence in machines that are programmed to think like humans and mimic their actions.",
+                "what is machine learning?": "Machine learning is a subset of AI that provides systems the ability to automatically learn and improve from experience without being explicitly programmed.",
+                "what is a neural network?": "A neural network is a series of algorithms that endeavors to recognize underlying relationships in a set of data through a process that mimics the way the human brain operates."
+            };
+
             // --- Interactive Particle Field (Three.js) ---
-            let animationState = 'idle'; // 'idle', 'thinking'
             const scene = new THREE.Scene();
             const camera = new THREE.PerspectiveCamera(75, synapseCanvas.clientWidth / synapseCanvas.clientHeight, 0.1, 1000);
             const renderer = new THREE.WebGLRenderer({ canvas: synapseCanvas, alpha: true });
@@ -290,7 +603,6 @@
 
             function setupParticleField() {
                 renderer.setSize(synapseCanvas.clientWidth, synapseCanvas.clientHeight);
-                
                 const particles = new THREE.BufferGeometry();
                 const particleCount = 5000;
                 const posArray = new Float32Array(particleCount * 3);
@@ -298,10 +610,9 @@
                     posArray[i] = (Math.random() - 0.5) * 10;
                 }
                 particles.setAttribute('position', new THREE.BufferAttribute(posArray, 3));
-                originalPositions = posArray.slice(); // Store original positions for reset
-
+                originalPositions = posArray.slice();
                 const particleMaterial = new THREE.PointsMaterial({ 
-                    size: 0.015, 
+                    size: 0.01,
                     color: new THREE.Color(getComputedStyle(body).getPropertyValue('--primary-glow').trim()),
                     transparent: true,
                     blending: THREE.AdditiveBlending
@@ -313,35 +624,24 @@
 
             function animateParticleField() {
                 const elapsedTime = clock.getElapsedTime();
+                const isQuantum = body.classList.contains('quantum-mode');
                 
-                // Base rotation
-                particleMesh.rotation.y += 0.0005;
+                particleMesh.rotation.y += isQuantum ? 0.002 : 0.0005;
 
-                // AI Thinking effect
                 if (animationState === 'thinking') {
-                    const speed = quantumToggle.checked ? 0.05 : 0.01;
+                    const speed = isQuantum ? 0.05 : 0.01;
                     particleMesh.rotation.y += speed;
                     particleMesh.rotation.x += speed / 2;
-                    
-                    // Color shift for quantum mode
-                    const targetColor = quantumToggle.checked 
-                        ? new THREE.Color(getComputedStyle(body).getPropertyValue('--positive-glow').trim())
-                        : new THREE.Color(getComputedStyle(body).getPropertyValue('--primary-glow').trim());
-                    particleMesh.material.color.lerp(targetColor, 0.1);
-                } else {
-                     // Return to base color when not thinking
-                    const baseColor = new THREE.Color(getComputedStyle(body).getPropertyValue('--primary-glow').trim());
-                    particleMesh.material.color.lerp(baseColor, 0.1);
                 }
                 
-                // User typing effect (shockwave)
+                const targetColor = new THREE.Color(getComputedStyle(body).getPropertyValue('--primary-glow').trim());
+                particleMesh.material.color.lerp(targetColor, 0.1);
+
                 if (typingEffect > 0) {
-                    typingEffect -= 0.02; // Fade out the effect
+                    typingEffect -= 0.02;
                     const positions = particleMesh.geometry.attributes.position.array;
                     for (let i = 0; i < positions.length; i += 3) {
-                        const x = originalPositions[i];
-                        const y = originalPositions[i+1];
-                        const z = originalPositions[i+2];
+                        const x = originalPositions[i], y = originalPositions[i+1], z = originalPositions[i+2];
                         const dist = Math.sqrt(x*x + y*y + z*z);
                         const displacement = Math.sin(dist * 2 - elapsedTime * 5) * typingEffect * 0.5;
                         positions[i] = x + x * displacement;
@@ -350,15 +650,11 @@
                     }
                     particleMesh.geometry.attributes.position.needsUpdate = true;
                 }
-
-
                 renderer.render(scene, camera);
                 requestAnimationFrame(animateParticleField);
             }
 
-            function handleTypingRipple() {
-                typingEffect = 1.0; // Trigger the effect
-            }
+            function handleTypingRipple() { typingEffect = 1.0; }
 
             window.addEventListener('resize', () => {
                 renderer.setSize(synapseCanvas.clientWidth, synapseCanvas.clientHeight);
@@ -369,16 +665,13 @@
             setupParticleField();
             animateParticleField();
 
-
             // --- Waveform Monitor ---
             const waveformCtx = waveformCanvas.getContext('2d');
             let currentSentiment = 'neutral';
             let waveData = new Array(150).fill(0);
             function drawWaveform() {
-                const width = waveformCanvas.width;
-                const height = waveformCanvas.height;
+                const width = waveformCanvas.width, height = waveformCanvas.height;
                 waveformCtx.clearRect(0, 0, width, height);
-
                 let amplitude, frequency, jaggedness;
                 switch(currentSentiment) {
                     case 'positive': amplitude = 0.8; frequency = 0.1; jaggedness = 0; break;
@@ -388,11 +681,9 @@
                 const newPoint = Math.sin(Date.now() * frequency) * (height / 2 * amplitude) + (Math.random() - 0.5) * (height * jaggedness);
                 waveData.push(newPoint);
                 if (waveData.length > 150) waveData.shift();
-
                 let color = getComputedStyle(body).getPropertyValue('--secondary-glow').trim();
                 if (currentSentiment === 'positive') color = getComputedStyle(body).getPropertyValue('--positive-glow').trim();
                 if (currentSentiment === 'neutral') color = getComputedStyle(body).getPropertyValue('--primary-glow').trim();
-                
                 waveformCtx.strokeStyle = color;
                 waveformCtx.lineWidth = 2;
                 waveformCtx.beginPath();
@@ -403,7 +694,6 @@
                     else waveformCtx.lineTo(x, y);
                 }
                 waveformCtx.stroke();
-                
                 requestAnimationFrame(drawWaveform);
             }
             drawWaveform();
@@ -411,22 +701,17 @@
             // --- Live Data Stream ---
             function generateRandomHex(length) { return [...Array(length)].map(() => Math.floor(Math.random() * 16).toString(16)).join(''); }
             function addLogEntry() {
+                if (isLogPaused) return;
                 const statuses = ['200 OK', '404 NOT FOUND', '503 SRV UNVAIL', '201 CREATED'];
                 const ips = [`192.168.${Math.floor(Math.random()*255)}.${Math.floor(Math.random()*255)}`, '10.0.5.21', '208.67.222.222'];
-                const hex = generateRandomHex(8);
-                const status = statuses[Math.floor(Math.random() * statuses.length)];
-                const ip = ips[Math.floor(Math.random() * ips.length)];
-                
+                const hex = generateRandomHex(8), status = statuses[Math.floor(Math.random() * statuses.length)], ip = ips[Math.floor(Math.random() * ips.length)];
                 let statusClass = 'log-status-ok';
                 if (status.includes('404') || status.includes('503')) statusClass = 'log-status-error';
-
                 const li = document.createElement('li');
                 li.className = 'log-entry';
                 li.innerHTML = `<span class="log-hex">${hex}</span> <span class="${statusClass}">${status}</span> REQ GET /root from <span class="log-ip">${ip}</span>`;
                 logEntries.appendChild(li);
-
                 if (logEntries.children.length > 100) logEntries.removeChild(logEntries.firstChild);
-                // Auto-scroll the log window
                 const logWindow = document.querySelector('.log-window');
                 if(logWindow) logWindow.scrollTop = logWindow.scrollHeight;
             }
@@ -434,19 +719,22 @@
 
             // --- Voice Recognition & Synthesis ---
             let isVoiceEnabled = true;
-            let synthVoices = [];
             const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
             let recognition;
 
             function populateVoiceList() {
                 if (typeof speechSynthesis === 'undefined') return;
-                synthVoices = speechSynthesis.getVoices();
+                const voices = speechSynthesis.getVoices();
+                defaultVoice = voices.find(v => v.name === 'Google UK English Female') || voices.find(v => v.lang === 'en-GB');
+                if (defaultVoice) {
+                    console.log(`Default voice set to: ${defaultVoice.name}`);
+                } else {
+                    console.log("Could not find 'Google UK English Female' voice. A default 'en-GB' voice will be used as fallback.");
+                }
             }
-            
             if (typeof speechSynthesis !== 'undefined' && speechSynthesis.onvoiceschanged !== undefined) {
                 speechSynthesis.onvoiceschanged = populateVoiceList;
             }
-
             if (SpeechRecognition) {
                 recognition = new SpeechRecognition();
                 recognition.continuous = false;
@@ -455,14 +743,22 @@
                 recognition.maxAlternatives = 1;
                 recognition.onresult = (event) => { userInput.value = event.results[0][0].transcript; handleUserInput(); };
                 recognition.onspeechend = () => { recognition.stop(); micBtn.classList.remove('listening'); };
-                recognition.onerror = (event) => { console.error('Speech recognition error:', event.error); micBtn.classList.remove('listening'); };
+                recognition.onerror = (event) => { 
+                    console.error('Speech recognition error:', event.error);
+                    if (event.error === 'not-allowed') {
+                        addMessage("Microphone access denied. Please enable it in your browser settings to use voice input.", 'bot', 'error');
+                    }
+                    micBtn.classList.remove('listening'); 
+                };
             }
-
             function speak(text) {
                 if (isVoiceEnabled && 'speechSynthesis' in window) {
                     speechSynthesis.cancel();
                     const utterance = new SpeechSynthesisUtterance(text.replace(/<[^>]*>/g, ''));
-                    utterance.voice = synthVoices.find(v => v.lang.startsWith('en-GB') && v.name.includes('Female')) || synthVoices.find(v => v.lang.startsWith('en'));
+                    if (defaultVoice) {
+                        utterance.voice = defaultVoice;
+                        utterance.lang = 'en-GB';
+                    }
                     utterance.pitch = 0.9;
                     utterance.rate = 1;
                     speechSynthesis.speak(utterance);
@@ -470,7 +766,7 @@
             }
 
             // --- Command Autocomplete ---
-            const commands = ['status', 'help', 'scan ports', 'ping google.com', 'time', 'clear', 'who are you?', 'hello'];
+            const commands = ['/help', '/about', '/clear', 'status', 'scan ports', 'ping google.com', 'time', 'who are you?', 'hello'];
             userInput.addEventListener('input', () => {
                 const text = userInput.value.toLowerCase();
                 if (!text) { autocompleteBox.style.display = 'none'; return; }
@@ -493,26 +789,42 @@
             // --- Chatbot Logic ---
             function getFallbackResponse(input) {
                 const lowerInput = input.toLowerCase().trim();
+                // Check local knowledge base first
+                if (localKnowledgeBase[lowerInput]) {
+                    return localKnowledgeBase[lowerInput];
+                }
+
+                // Original fallback logic
                 if (lowerInput.includes('hello') || lowerInput.includes('hi')) return "Greetings, Operator! WillieX online. I've processed your query using my local heuristics. How can I assist you today?";
                 if (lowerInput.includes('who are you')) return "I am WillieX, a terminal-based AI assistant. My primary function is to process your queries and provide data-driven insights. For a full deep-dive, engage my advanced processing core via an API key in the settings!";
                 return `Query received: "${input}". My analysis, based on my pre-compiled knowledge base, suggests a positive correlation with your request. However, for a high-confidence response, please provide an API key.`;
             }
 
-            async function getApiResponse(prompt, userApiKey) {
+            async function getApiResponse(prompt, userApiKey, isRawPrompt = false) {
                 const apiKey = userApiKey || ""; 
                 const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${apiKey}`;
-                let promptText = `You are WillieX, a highly advanced AI analyst. Provide concise, direct, data-driven answers. Access real-time internet information as needed. Avoid conversational fluff. Return ONLY a JSON object with the specified schema. Query: ${prompt}`;
-                if (quantumToggle.checked) {
-                    promptText = `You are WillieX in Quantum Thinking mode. Provide an exceptionally deep, concise, and data-driven analysis. Prioritize synthesizing real-time internet information. Eliminate all fluff. Return ONLY a JSON object with the specified schema. Query: ${prompt}`;
+                
+                let finalPrompt = prompt;
+                if (!isRawPrompt) {
+                    finalPrompt = `Provide a concise, general answer (around 2-3 sentences) to the following query. Also, provide a single, high-quality source URL. Query: "${prompt}"`;
                 }
+
+                const contents = isRawPrompt
+                    ? [{ role: 'user', parts: [{ text: finalPrompt }] }]
+                    : [...chatHistory.slice(-10), { role: 'user', parts: [{ text: finalPrompt }] }];
+
                 const payload = {
-                    contents: [{ parts: [{ text: promptText }] }],
+                    contents: contents,
                     generationConfig: {
                         responseMimeType: "application/json",
                         responseSchema: {
                             type: "OBJECT",
-                            properties: { response: { type: "STRING" }, confidence: { type: "NUMBER" }, sentiment: { type: "STRING" } },
-                            required: ["response", "confidence", "sentiment"]
+                            properties: { 
+                                response: { type: "STRING" }, 
+                                sentiment: { type: "STRING" },
+                                sourceURL: { type: "STRING" }
+                            },
+                            required: ["response", "sentiment"]
                         }
                     }
                 };
@@ -542,20 +854,58 @@
             }
             
             // --- UI Manipulation ---
-            function addMessage(text, sender, type = '', confidence = null) {
+            function addMessage(text, sender, type = '', sourceURL = null) {
                 const wrapper = document.createElement('div');
                 wrapper.className = `message-wrapper ${sender}-wrapper`;
                 const messageElement = document.createElement('div');
                 messageElement.classList.add('message', sender);
                 if (type) messageElement.classList.add(type);
-                messageElement.innerHTML = text;
-                wrapper.appendChild(messageElement);
-                if (confidence !== null && confidence !== undefined) {
-                    const confidenceEl = document.createElement('div');
-                    confidenceEl.className = 'confidence-score';
-                    confidenceEl.textContent = `[Confidence: ${confidence}%]`;
-                    wrapper.appendChild(confidenceEl);
+                
+                let content = text;
+                if (sender === 'bot' && sourceURL) {
+                    content += `<br><br><a href="${sourceURL}" target="_blank" class="source-link">Source</a>`;
                 }
+                messageElement.innerHTML = content;
+                wrapper.appendChild(messageElement);
+
+                if (sender === 'bot' && type !== 'error') {
+                    const actionsContainer = document.createElement('div');
+                    actionsContainer.className = 'response-actions';
+                    actionsContainer.dataset.originalText = text.replace(/<[^>]*>/g, '');
+
+                    const easyReadBtn = document.createElement('button');
+                    easyReadBtn.className = 'action-btn';
+                    easyReadBtn.textContent = 'Easy to Read';
+                    easyReadBtn.dataset.action = 'easy';
+                    
+                    const bulletBtn = document.createElement('button');
+                    bulletBtn.className = 'action-btn';
+                    bulletBtn.textContent = 'Bullet Points';
+                    bulletBtn.dataset.action = 'bullets';
+
+                    const teachBtn = document.createElement('button');
+                    teachBtn.className = 'action-btn';
+                    teachBtn.textContent = 'Teach Me';
+                    teachBtn.dataset.action = 'teach';
+
+                    const elaborateBtn = document.createElement('button');
+                    elaborateBtn.className = 'action-btn';
+                    elaborateBtn.textContent = 'Elaborate';
+                    elaborateBtn.dataset.action = 'elaborate';
+
+                    actionsContainer.appendChild(easyReadBtn);
+                    actionsContainer.appendChild(bulletBtn);
+                    actionsContainer.appendChild(teachBtn);
+                    actionsContainer.appendChild(elaborateBtn);
+                    wrapper.appendChild(actionsContainer);
+
+                    actionsContainer.addEventListener('click', (e) => {
+                        if (e.target.classList.contains('action-btn')) {
+                            handleFormattingRequest(e.target.dataset.action, e.currentTarget.dataset.originalText);
+                        }
+                    });
+                }
+
                 chatWindow.appendChild(wrapper);
                 scrollToBottom();
                 if (sender === 'bot') speak(text);
@@ -583,22 +933,108 @@
 
             function scrollToBottom() { chatWindow.scrollTop = chatWindow.scrollHeight; }
 
-            // --- Event Handling ---
+            // --- Local Command Handling ---
+            function handleLocalCommand(command) {
+                const [cmd] = command.toLowerCase().split(' ');
+                switch (cmd) {
+                    case '/help':
+                        addMessage("<b>Available Local Commands:</b><br>/help - Shows this message.<br>/about - Displays information about WillieX.<br>/clear - Clears the chat window.", 'bot');
+                        break;
+                    case '/about':
+                        addMessage("I am WillieX 2.0, a terminal-based AI assistant. My purpose is to process your queries and provide data-driven insights. For advanced functionality, please provide an API key in the settings.", 'bot');
+                        break;
+                    case '/clear':
+                        chatWindow.innerHTML = '';
+                        chatHistory = [];
+                        break;
+                    default:
+                        addMessage(`Unknown command: "${command}". Type /help for a list of available commands.`, 'bot', 'error');
+                }
+            }
+
+            // --- Main Input Event Handling ---
             async function handleUserInput() {
                 const messageText = userInput.value.trim();
                 if (messageText === '') return;
                 autocompleteBox.style.display = 'none';
                 addMessage(messageText, 'user');
                 userInput.value = '';
+                if (messageText.startsWith('/')) {
+                    handleLocalCommand(messageText);
+                    return;
+                }
+                chatHistory.push({ role: 'user', parts: [{ text: messageText }] });
                 showTypingIndicator();
                 const userApiKey = localStorage.getItem('williex_api_key');
-                let botResponse = userApiKey ? await getApiResponse(messageText, userApiKey) : (await new Promise(r => setTimeout(r, 800)), { response: getFallbackResponse(messageText), confidence: null });
+                let botResponse = userApiKey ? await getApiResponse(messageText, userApiKey) : (await new Promise(r => setTimeout(r, 800)), { response: getFallbackResponse(messageText) });
                 hideTypingIndicator();
-                if (botResponse.error) addMessage(botResponse.error, 'bot', 'error');
-                else addMessage(botResponse.response, 'bot', '', botResponse.confidence);
+                if (botResponse.error) {
+                    addMessage(botResponse.error, 'bot', 'error');
+                } else {
+                    addMessage(botResponse.response, 'bot', '', botResponse.sourceURL);
+                    chatHistory.push({ role: 'model', parts: [{ text: botResponse.response }] });
+                }
             }
             
+            // --- Formatting Request Handler ---
+            async function handleFormattingRequest(action, originalText) {
+                const userApiKey = localStorage.getItem('williex_api_key');
+                if (!userApiKey) {
+                    addMessage("An API key is required for this feature. Please add one in the settings.", 'bot', 'error');
+                    return;
+                }
+
+                let prompt = '';
+                switch (action) {
+                    case 'easy':
+                        prompt = `Rephrase the following text in simpler, easier-to-read language. Use <p> tags for paragraphs: "${originalText}"`;
+                        break;
+                    case 'bullets':
+                        prompt = `Summarize the following text as a concise bulleted list. Use <ul> and <li> tags for the list, and <strong> for key terms: "${originalText}"`;
+                        break;
+                    case 'teach':
+                        prompt = `Explain the following topic in more detail, as if you are teaching it to a beginner. Use <p> and <strong> tags to structure the explanation clearly: "${originalText}"`;
+                        break;
+                    case 'elaborate':
+                        prompt = `Elaborate on the following topic in more detail, providing a comprehensive explanation with paragraphs and including a source link: "${originalText}"`;
+                        break;
+                }
+
+                showTypingIndicator();
+                const botResponse = await getApiResponse(prompt, userApiKey, true);
+                hideTypingIndicator();
+
+                if (botResponse.error) {
+                    addMessage(botResponse.error, 'bot', 'error');
+                } else {
+                    addMessage(botResponse.response, 'bot', '', botResponse.sourceURL);
+                }
+            }
+
             // --- Modal & API Key Logic ---
+            function showToast(message) {
+                toastNotification.textContent = message;
+                toastNotification.classList.add('show');
+                setTimeout(() => {
+                    toastNotification.classList.remove('show');
+                }, 3000);
+            }
+
+            function updateApiStatus(isActive) {
+                if (isActive) {
+                    apiStatusLight.classList.add('active');
+                    liveDataBadge.classList.add('active');
+                    quantumToggleContainer.style.display = 'flex';
+                } else {
+                    apiStatusLight.classList.remove('active');
+                    liveDataBadge.classList.remove('active');
+                    quantumToggleContainer.style.display = 'none';
+                    quantumToggle.checked = false;
+                    body.classList.remove('quantum-mode');
+                    quantumIcon.classList.remove('active');
+                }
+            }
+
             function openSettings() {
                 apiKeyInput.value = localStorage.getItem('williex_api_key') || '';
                 settingsModal.showModal();
@@ -607,46 +1043,130 @@
                 const newKey = apiKeyInput.value.trim();
                 if (newKey) {
                     localStorage.setItem('williex_api_key', newKey);
-                    quantumToggleContainer.style.display = 'flex';
-                    addMessage("API key saved. Advanced processing core is now online.", 'bot');
+                    updateApiStatus(true);
+                    showToast("Connected. Live data enabled.");
                 } else {
                     localStorage.removeItem('williex_api_key');
-                    quantumToggleContainer.style.display = 'none';
-                    addMessage("API key removed. Reverting to local heuristics.", 'bot');
+                    updateApiStatus(false);
+                    showToast("API key removed. Reverting to local heuristics.");
                 }
                 settingsModal.close();
             }
             
-            if (localStorage.getItem('williex_api_key')) quantumToggleContainer.style.display = 'flex';
-
-            // --- Initial Greeting & Event Listeners ---
-            let greetingShown = false;
-            function initialGreeting() {
-                if (greetingShown) return;
-                const msg = localStorage.getItem('williex_api_key') ? "Advanced core engaged. Awaiting command..." : "Awaiting command...";
-                addMessage(`Greetings, Operator! WillieX is online. ${msg}`, 'bot');
-                greetingShown = true;
+            // --- Theme Toggle Logic ---
+            function applyTheme(theme) {
+                if (theme === 'light') {
+                    body.classList.add('light-mode');
+                    themeIconSun.style.display = 'block';
+                    themeIconMoon.style.display = 'none';
+                } else {
+                    body.classList.remove('light-mode');
+                    themeIconSun.style.display = 'none';
+                    themeIconMoon.style.display = 'block';
+                }
             }
             
-            setTimeout(() => { populateVoiceList(); initialGreeting(); }, 500);
+            themeToggleBtn.addEventListener('click', () => {
+                const currentTheme = body.classList.contains('light-mode') ? 'light' : 'dark';
+                const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+                localStorage.setItem('williex_theme', newTheme);
+                applyTheme(newTheme);
+            });
+            
+            // --- Copy to Clipboard Logic ---
+            function copyToClipboard(text, buttonElement) {
+                const textArea = document.createElement('textarea');
+                textArea.value = text;
+                document.body.appendChild(textArea);
+                textArea.select();
+                try {
+                    document.execCommand('copy');
+                    const originalTitle = buttonElement.title;
+                    buttonElement.title = "Copied!";
+                    setTimeout(() => { buttonElement.title = originalTitle; }, 2000);
+                } catch (err) {
+                    console.error('Fallback: Oops, unable to copy', err);
+                }
+                document.body.removeChild(textArea);
+            }
 
-            sendBtn.addEventListener('click', handleUserInput);
-            userInput.addEventListener('keydown', (e) => { 
-                if (e.key === 'Enter') handleUserInput(); 
-                else handleTypingRipple();
+            copyTranscriptBtn.addEventListener('click', () => {
+                const transcript = Array.from(chatWindow.querySelectorAll('.message-wrapper')).map(wrapper => {
+                    const sender = wrapper.classList.contains('user-wrapper') ? 'User' : 'Bot';
+                    const text = wrapper.querySelector('.message').innerText;
+                    return `${sender}: ${text}`;
+                }).join('\n');
+                copyToClipboard(transcript, copyTranscriptBtn);
             });
-            settingsBtn.addEventListener('click', openSettings);
-            saveApiKeyBtn.addEventListener('click', saveApiKey);
-            closeModalBtn.addEventListener('click', () => settingsModal.close());
-            micBtn.addEventListener('click', () => {
-                if (recognition) { micBtn.classList.add('listening'); recognition.start(); } 
-                else { addMessage("Voice recognition not supported.", 'bot', 'error'); }
+
+            copyLogsBtn.addEventListener('click', () => {
+                const logs = Array.from(logEntries.querySelectorAll('.log-entry')).map(entry => entry.innerText).join('\n');
+                copyToClipboard(logs, copyLogsBtn);
             });
-            voiceToggleBtn.addEventListener('click', () => {
-                isVoiceEnabled = !isVoiceEnabled;
-                voiceToggleBtn.classList.toggle('muted', !isVoiceEnabled);
-                if (!isVoiceEnabled) speechSynthesis.cancel();
-            });
+
+
+            // --- App Initialization & Event Listeners ---
+            function initialize() {
+                if (!localStorage.getItem('williex_onboarding_complete')) {
+                    onboardingModal.showModal();
+                }
+                closeOnboardingBtn.addEventListener('click', () => {
+                    onboardingModal.close();
+                    localStorage.setItem('williex_onboarding_complete', 'true');
+                });
+
+                const savedTheme = localStorage.getItem('williex_theme') || 'dark';
+                applyTheme(savedTheme);
+                updateApiStatus(!!localStorage.getItem('williex_api_key'));
+
+                populateVoiceList(); 
+                setTimeout(() => {
+                    if (!greetingShown) {
+                         const msg = localStorage.getItem('williex_api_key') ? "Advanced core engaged. Awaiting command..." : "Awaiting command... Type /help for local commands.";
+                        addMessage(`Greetings, Operator! WillieX is online. ${msg}`, 'bot');
+                        greetingShown = true;
+                    }
+                }, 500);
+                let greetingShown = false;
+
+                sendBtn.addEventListener('click', handleUserInput);
+                userInput.addEventListener('keydown', (e) => { 
+                    if (e.key === 'Enter') handleUserInput(); 
+                    else handleTypingRipple();
+                });
+                settingsBtn.addEventListener('click', openSettings);
+                saveApiKeyBtn.addEventListener('click', saveApiKey);
+                closeModalBtn.addEventListener('click', () => settingsModal.close());
+                micBtn.addEventListener('click', () => {
+                    if (recognition) { micBtn.classList.add('listening'); recognition.start(); } 
+                    else { addMessage("Voice recognition not supported.", 'bot', 'error'); }
+                });
+                voiceToggleBtn.addEventListener('click', () => {
+                    isVoiceEnabled = !isVoiceEnabled;
+                    voiceToggleBtn.classList.toggle('muted', !isVoiceEnabled);
+                    if (!isVoiceEnabled) speechSynthesis.cancel();
+                });
+                logCollapseBtn.addEventListener('click', () => {
+                    systemLogPanel.classList.toggle('collapsed');
+                    systemLogPanel.classList.remove('mobile-visible');
+                });
+                logPauseBtn.addEventListener('click', () => {
+                    isLogPaused = !isLogPaused;
+                    pauseIcon.style.display = isLogPaused ? 'none' : 'block';
+                    playIcon.style.display = isLogPaused ? 'block' : 'none';
+                    logPauseBtn.title = isLogPaused ? 'Resume Log' : 'Pause Log';
+                });
+                mobileLogToggleBtn.addEventListener('click', () => {
+                    systemLogPanel.classList.toggle('mobile-visible');
+                    systemLogPanel.classList.remove('collapsed');
+                });
+                quantumToggle.addEventListener('change', () => {
+                    body.classList.toggle('quantum-mode', quantumToggle.checked);
+                    quantumIcon.classList.toggle('active', quantumToggle.checked);
+                });
+            }
+
+            initialize();
         });
     </script>
 </body>
