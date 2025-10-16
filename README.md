@@ -78,5 +78,4 @@ This portfolio transforms theory into practice and showcases my skills to employ
 
 <hr>
 
-<p>🔑 <a href="https://github.com/public-apis/public-apis">Public APIs</a>: A list of free APIs for developers.</p>
-<p>💡 <a href="https://github.com/codecrafters-io/build-your-own-x">Build Your Own X</a>: Learn by recreating popular tools.</p>
+
