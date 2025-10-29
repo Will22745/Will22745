@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Bug Reproduction Test</title>
+    <style>
+        body { font-family: sans-serif; }
+        .error-popup {
+            position: absolute;
+            background-color: #ffdddd;
+            border: 1px solid #ff0000;
+            padding: 10px;
+            z-index: 1001;
+        }
+    </style>
+</head>
+<body>
+
+<h1>Bug Fix Verification</h1>
+<p>
+    This test demonstrates the bug where clicking the "Simulate Attack" button multiple times creates stacked, overlapping UI elements. The "fixed" version demonstrates that the issue is resolved.
+</p>
+
+<button id="run-buggy">Run Buggy Version</button>
+<button id="run-fixed">Run Fixed Version</button>
+<button id="clear">Clear</button>
+
+<div id="test-area" style="position: relative; height: 300px; width: 500px; border: 1px solid black; margin-top: 20px;">
+    Test Area
+</div>
+
+<script>
+    const testArea = document.getElementById('test-area');
+
+    function createErrorPopup(message) {
+        const popup = document.createElement('div');
+        popup.className = 'error-popup';
+        popup.textContent = message;
+        const top = Math.random() * 80 + 10;
+        const left = Math.random() * 80 + 10;
+        popup.style.top = top + '%';
+        popup.style.left = left + '%';
+        return popup;
+    }
+
+    // Original buggy function
+    function runAttackSequence_Buggy() {
+        const errors = ['System Breach', 'Kernel Panic', 'Memory Leak', 'CPU Overload'];
+        errors.forEach(error => {
+            testArea.appendChild(createErrorPopup(error));
+        });
+    }
+
+    // Patched function with the fix
+    function runAttackSequence_Fixed() {
+        // --- FIX START ---
+        // Clear existing popups before creating new ones
+        const existingPopups = testArea.querySelectorAll('.error-popup');
+        existingPopups.forEach(popup => popup.remove());
+        // --- FIX END ---
+
+        const errors = ['System Breach', 'Kernel Panic', 'Memory Leak', 'CPU Overload'];
+        errors.forEach(error => {
+            testArea.appendChild(createErrorPopup(error));
+        });
+    }
+
+    document.getElementById('run-buggy').addEventListener('click', runAttackSequence_Buggy);
+    document.getElementById('run-fixed').addEventListener('click', runAttackSequence_Fixed);
+    document.getElementById('clear').addEventListener('click', () => {
+        const existingPopups = testArea.querySelectorAll('.error-popup');
+        existingPopups.forEach(popup => popup.remove());
+    });
+</script>
+
+</body>
+</html>

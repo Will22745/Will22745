@@ -917,6 +917,9 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function runAttackSequence() {
+        // Clear previous attack elements
+        document.querySelectorAll('.error-popup, #attack-overlay, #restore-system').forEach(el => el.remove());
+
         // Create attack overlay
         const attackOverlay = document.createElement('div');
         attackOverlay.id = 'attack-overlay';
