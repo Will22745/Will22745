@@ -1,165 +1,101 @@
-<div align="center">
+<h1>⚡ Willie McClain</h1>
 
-```
-╔══════════════════════════════════════════════════════════════╗
-║  ██╗    ██╗██╗██╗     ██╗     ██╗███████╗    ███╗   ███╗   ║
-║  ██║    ██║██║██║     ██║     ██║██╔════╝    ████╗ ████║   ║
-║  ██║ █╗ ██║██║██║     ██║     ██║█████╗      ██╔████╔██║   ║
-║  ██║███╗██║██║██║     ██║     ██║██╔══╝      ██║╚██╔╝██║   ║
-║  ╚███╔███╔╝██║███████╗███████╗██║███████╗    ██║ ╚═╝ ██║   ║
-║   ╚══╝╚══╝ ╚═╝╚══════╝╚══════╝╚═╝╚══════╝    ╚═╝     ╚═╝   ║
-╚══════════════════════════════════════════════════════════════╝
-```
+<p><strong><code>{ Cybersecurity Grad | Data Science Master’s Student }</code></strong></p>
 
-# Willie McClain
-### M.S. Data Science · Cybersecurity · Full-Stack Developer
+<blockquote>
+  <p><code>System.User.Profile_Loaded</code></p>
+</blockquote>
 
-*Building intelligent systems at the intersection of data, security, and AI.*
+<hr />
 
-[![Portfolio](https://img.shields.io/badge/Portfolio-will22745.github.io-5eead4?style=flat-square&logo=github&logoColor=white)](https://will22745.github.io/Will22745/)
-[![Email](https://img.shields.io/badge/Email-michigan745%40gmail.com-fbbf24?style=flat-square&logo=gmail&logoColor=white)](mailto:michigan745@gmail.com)
-[![GitHub](https://img.shields.io/badge/GitHub-Will22745-a78bfa?style=flat-square&logo=github&logoColor=white)](https://github.com/Will22745)
+<h2>01. About_Me</h2>
 
-</div>
+<p>I am a lifelong learner and dedicated problem solver driven by curiosity and a passion for technology. I hold a Bachelor of Science in Information Technology with a focus on Cybersecurity from Capella University, and I am currently pursuing a Master of Science in Data Analytics - Data Science at Western Governors University.</p>
 
----
+<p>Through hands-on personal projects and home lab experiments, I’m gaining real-world experience in cybersecurity, automation, and applied AI. The purpose of this portfolio is to transform my theoretical knowledge into practical, demonstrable skills. It also serves as a platform to showcase my growth and capabilities to potential employers and mentors.</p>
 
-## `> whoami`
+<p><strong><code>&gt; I am actively seeking an internship or rotational role where I can apply my skills, contribute to meaningful projects, and grow as a professional in the tech industry.</code></strong></p>
 
-```bash
-$ cat /etc/profile.d/willie.sh
+<!-- GitHub blocks text color, so a warning emoji and bold blockquote is the professional standard for callouts -->
+<blockquote>
+  <p>🔴 <strong>ETHICAL USE DISCLAIMER:</strong> All cybersecurity and hacking-related projects listed are strictly for ethical learning purposes and are developed in controlled lab environments that I own. None of these tools or techniques are used or promoted for illegal activities.</p>
+</blockquote>
 
-NAME="Willie McClain"
-DEGREE="Master of Science — Data Science (In Progress)"
-FOCUS=("Artificial Intelligence" "Cybersecurity" "Full-Stack Development")
-LOCATION="United States"
-STATUS="Open to opportunities"
-PHILOSOPHY="Never stop learning. Always be building."
-```
+<hr />
 
-Graduate-level data scientist and self-taught cybersecurity practitioner. I build AI-powered tools, design penetration testing labs, and turn complex data into actionable intelligence. My work spans terminal-style dashboards, custom TTS engines, and hands-on ethical hacking environments — all designed to push the boundaries of what I can build with code.
+<h2>02. Experience_&amp;_Projects</h2>
 
----
+<h3>🛡️ Cybersecurity Focus</h3>
+<p><em>B.S. Information Technology - Capella University</em></p>
 
-## `> ls projects/`
+<ul>
+  <li>
+    <a href="https://github.com/WillieLabs/Pentest-Homelab"><strong>Pentest Home Lab</strong></a> <code>[Planned]</code><br />
+    VirtualBox &amp; Kali Linux lab designed to simulate attacks and test network defenses.
+  </li>
+  <li>
+    <a href="https://github.com/Cyb3rWard0g/Incident-Response-Projects-for-Beginners"><strong>Incident Response</strong></a> <code>[In Progress]</code><br />
+    Simulated phishing, brute-force, malware, and network analysis scenarios for beginners.
+  </li>
+  <li>
+    <a href="https://github.com/TheresAFewConors/Sooty"><strong>Sooty Automation</strong></a> <code>[In Progress]</code><br />
+    Python automation tool for SOC analysts to perform IOC lookups and DNS queries.
+  </li>
+  <li>
+    <a href="https://github.com/PhantomInsights/awesome-soc-analyst"><strong>Awesome SOC Analyst</strong></a> <code>[In Progress]</code><br />
+    Curated resource list containing tools, labs, and courses for SOC analysts.
+  </li>
+</ul>
 
-<details open>
-<summary><strong>🔐 Cybersecurity Labs</strong></summary>
+<h3>🧠 Data Analytics &amp; Data Science</h3>
+<p><em>M.S. Data Analytics - Western Governors Univ.</em></p>
 
-<br>
+<ul>
+  <li>
+    <a href="https://nextjs-ai-chatbot-nine-ruby-16.vercel.app"><strong>Beginner AI Chatbot</strong></a> <code>[Completed]</code><br />
+    Python chatbot that responds to user input and stores simple memory using JSON.
+  </li>
+  <li>
+    <a href="https://github.com/WillieLabs/Live-Translator-App"><strong>Live Translator App</strong></a> <code>[Planned]</code><br />
+    Real-time language translator using Google Translate API with voice input/output.
+  </li>
+  <li>
+    <a href="https://github.com/WillieLabs"><strong>Network Anomaly Detection</strong></a> <code>[Planned]</code><br />
+    Machine learning pipeline using Scikit-Learn to detect malicious network patterns in PCAP datasets.
+  </li>
+  <li>
+    <a href="https://github.com/WillieLabs"><strong>Threat Intel Dashboard</strong></a> <code>[Planned]</code><br />
+    Interactive data visualization tool built with Streamlit and Pandas to track global CVE trends.
+  </li>
+</ul>
 
-### 🖥️ Penetration Testing Home Lab
-> A fully configured VirtualBox-based ethical hacking environment built from scratch.
+<hr />
 
-- **Stack:** Kali Linux · Metasploitable 2 · VirtualBox · Host-only Networking
-- **Tools:** Nmap · Metasploit · Wireshark · Burp Suite · Gobuster · enum4linux · Nikto · SQLMap
-- **Coverage:** Reconnaissance → Scanning → Exploitation → Post-Exploitation → Reporting
-- **CVEs:** CVE-2011-2523 (vsftpd backdoor) · CVE-2007-2447 (Samba usermap) · CVE-2010-2075 (UnrealIRCd)
+<h2>03. Media_&amp;_Content</h2>
 
-[![View Lab](https://img.shields.io/badge/View%20Lab-pentest--homelab-ff4444?style=flat-square&logo=kalilinux&logoColor=white)](https://will22745.github.io/Will22745/pentest-homelab/)
+<p>🎥 <a href="https://youtube.com/@techtalksbywillie?si=BgKTyvWvrELFLZZa"><strong>Tech Talks by Willie</strong></a></p>
 
----
+<blockquote>
+  <p>I walk through the projects featured in my portfolio, explain my thought process, and demonstrate functionality. More videos and tutorials coming soon!</p>
+</blockquote>
 
-### 🚨 Incident Response Lab
-> End-to-end incident response simulations following the NIST SP 800-61 framework.
+<hr />
 
-- **Scenarios:** Phishing attack · Brute-force SSH · Malware analysis
-- **Framework:** NIST SP 800-61 · MITRE ATT&CK (T1036, T1055, T1071.001, T1547.001)
-- **Tools:** Splunk SPL · tcpdump · Wireshark · PowerShell forensics
-- **Artifacts:** IOC tables · SIEM detection rules · Timeline reconstruction · Response checklists
+<h2>🔗 Establish_Connection</h2>
 
-[![View Lab](https://img.shields.io/badge/View%20Lab-incident--response-ff4444?style=flat-square&logo=databricks&logoColor=white)](https://will22745.github.io/Will22745/incident-response/)
+<p>
+  <a href="https://www.linkedin.com/in/williemcclain922/"><img src="https://img.shields.io/badge/LinkedIn-0A66C2?style=for-the-badge&amp;logo=linkedin&amp;logoColor=white" alt="LinkedIn" /></a>
+  <a href="https://www.instagram.com/will22cool/"><img src="https://img.shields.io/badge/Instagram-E4405F?style=for-the-badge&amp;logo=instagram&amp;logoColor=white" alt="Instagram" /></a>
+  <a href="https://www.tiktok.com/@will22cool"><img src="https://img.shields.io/badge/TikTok-000000?style=for-the-badge&amp;logo=tiktok&amp;logoColor=white" alt="TikTok" /></a>
+  <a href="https://www.facebook.com/profile.php?id=100072569739964"><img src="https://img.shields.io/badge/Facebook-1877F2?style=for-the-badge&amp;logo=facebook&amp;logoColor=white" alt="Facebook" /></a>
+  <a href="https://www.upwork.com/freelancers/~013eca3ce95c0a28db?mp_source=share"><img src="https://img.shields.io/badge/Upwork-6FDA44?style=for-the-badge&amp;logo=upwork&amp;logoColor=white" alt="Upwork" /></a>
+</p>
 
----
+<!-- Resume placed cleanly right under the social badges -->
+<p>
+  <a href="Willie%20McClain%20Resume%202025%20PDF.pdf"><strong>📥 Download Resume</strong></a>
+</p>
 
-### 🛡️ SOC Analyst Toolkit
-> Simulated Security Operations Center environment for real-world alert triage and threat hunting.
+<br />
 
-- **Features:** Live alert queue · Log analysis engine · IOC tracker · OSINT tools panel
-- **Integrations:** VirusTotal · Shodan · ANY.RUN · Hybrid Analysis · AlienVault OTX · AbuseIPDB
-- **Skills:** Alert triage · Log correlation · IOC enrichment · Threat intelligence
-
-[![View Lab](https://img.shields.io/badge/View%20Lab-SOC%20Analyst-4488ff?style=flat-square&logo=splunk&logoColor=white)](https://will22745.github.io/Will22745/soc-analyst/)
-
-</details>
-
-<details open>
-<summary><strong>🤖 AI & Data Science Projects</strong></summary>
-
-<br>
-
-### ⚡ WillieX 2.0 — AI Terminal Dashboard
-> A high-performance, terminal-style AI dashboard powered by Google Gemini.
-
-- **Core:** Google Gemini API · Three.js particle field (5000 nodes) · Real-time waveform monitor
-- **Features:** Live data stream · Voice I/O · Quantum Thinking mode · Command autocomplete · Glassmorphism UI
-- **Architecture:** Local knowledge base fallback · Chat history context · Retry logic · Keyboard shortcuts
-- **Themes:** Dark · Light · Quantum (purple with atom animation)
-
-[![View Project](https://img.shields.io/badge/View%20Project-WillieX%202.0-fbbf24?style=flat-square&logo=google&logoColor=white)](https://will22745.github.io/Will22745/myproject/)
-
----
-
-### 🎓 WillieDev Academy — AI Text-to-Speech Engine
-> A professional-grade TTS platform with adaptive learning and multi-language support.
-
-- **Core:** Google Gemini 2.5 Flash TTS API · Web Speech API fallback · PCM-to-WAV conversion
-- **Voices:** 10 neural voices (Kore, Charon, Puck, Leda, Gacrux, and more)
-- **Features:** Teach Me AI lesson generator · Audio visualizer · Progress tracking · 9 languages
-- **Accessibility:** ADHD-optimized lesson modes · Audio download · Grade-level content adaptation
-
-[![View Project](https://img.shields.io/badge/View%20Project-WillieDev%20Academy-5eead4?style=flat-square&logo=google&logoColor=white)](https://will22745.github.io/Will22745/williedev-academy/)
-
-</details>
-
----
-
-## `> cat skills.json`
-
-```json
-{
-  "languages":    ["Python", "JavaScript", "HTML/CSS", "Bash", "SQL"],
-  "ai_ml":        ["Google Gemini API", "LLM Integration", "Prompt Engineering", "TTS Systems"],
-  "cybersecurity":["Penetration Testing", "Incident Response", "OSINT", "SOC Operations",
-                   "Nmap", "Metasploit", "Wireshark", "Burp Suite", "MITRE ATT&CK", "NIST SP 800-61"],
-  "data_science": ["Data Analysis", "Statistical Modeling", "Data Visualization", "Feature Engineering"],
-  "web_dev":      ["Three.js", "Canvas API", "Web Speech API", "REST APIs", "Glassmorphism UI"],
-  "tools":        ["Kali Linux", "VirtualBox", "Git", "GitHub Pages", "Splunk", "VS Code"]
-}
-```
-
----
-
-## `> cat /proc/stats`
-
-<div align="center">
-
-![GitHub Stats](https://github-readme-stats.vercel.app/api?username=Will22745&show_icons=true&theme=dark&bg_color=0a0e17&title_color=5eead4&text_color=e2e8f0&icon_color=fbbf24&border_color=1e293b&hide_border=false)
-
-![Top Languages](https://github-readme-stats.vercel.app/api/top-langs/?username=Will22745&layout=compact&theme=dark&bg_color=0a0e17&title_color=5eead4&text_color=e2e8f0&border_color=1e293b)
-
-</div>
-
----
-
-## `> ping willie --verbose`
-
-```
-Pinging Willie McClain...
-
-[■■■■■■■■■■] Driven by curiosity and a passion for building real-world tools.
-[■■■■■■■■■■] Currently advancing in M.S. Data Science while exploring cybersecurity.
-[■■■■■■■■■■] Every project is an opportunity to learn something new.
-
-Status: ONLINE | Open to: Full-time roles, internships, collaborations
-```
-
-<div align="center">
-
-*"The best way to learn is to build."*
-
----
-
-![Visitor Count](https://komarev.com/ghpvc/?username=Will22745&color=5eead4&style=flat-square&label=Profile+Views)
-
-</div>
+<p><code>sys.exit(0) // &copy; 2026 Willie McClain.</code></p>
