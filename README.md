@@ -47,7 +47,7 @@
   </li>
 </ul>
 
-<h3>🧠 Data Analytics &amp; Data Science</h3>
+<h3>🧠 Data Analytics &amp; Data Science</h3>h
 <p><em>M.S. Data Analytics - Western Governors Univ.</em></p>
 
 <ul>
@@ -93,7 +93,7 @@
 
 <!-- Resume placed cleanly right under the social badges -->
 <p>
-  <a href="Willie%20McClain%20Resume%202025%20PDF.pdf"><strong>📥 Download Resume</strong></a>
+  <a href="Willie%20McClain%20Resume%20-%20Cybersecurity%20SOC%20Analyst%202026.pdf"><strong>📥 Download Resume</strong></a>
 </p>
 
 <br />
